@@ -9,26 +9,26 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacsAdapterConsole", "Apac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacsAdapterService", "ApacsAdapterService\ApacsAdapterService.csproj", "{FFE06482-4BCB-4013-B54B-64714885D5A3}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "http://192.168.0.181", "http://192.168.0.181", "{C956242F-1B1F-4468-9E46-E8DB068F305E}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ApacsAdapterWebService", "http://localhost:33008", "{F57054F7-6451-441C-922B-4B735E6170C5}"
 	ProjectSection(WebsiteProperties) = preProject
-		UseIISExpress = "false"
+		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		ProjectReferences = "{acc18fab-da9b-43aa-aac4-0da5b728af28}|ClassLibrary.dll;"
-		Debug.AspNetCompiler.VirtualPath = "/192.168.0.181"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\..\..\..\..\inetpub\wwwroot\ApacsAdapterWebService\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\192.168.0.181\"
+		ProjectReferences = "{acc18fab-da9b-43aa-aac4-0da5b728af28}|ApacsAdapter.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_33008"
+		Debug.AspNetCompiler.PhysicalPath = "ApacsAdapterWebService\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_33008\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/192.168.0.181"
-		Release.AspNetCompiler.PhysicalPath = "..\..\..\..\..\..\inetpub\wwwroot\ApacsAdapterWebService\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\192.168.0.181\"
+		Release.AspNetCompiler.VirtualPath = "/localhost_33008"
+		Release.AspNetCompiler.PhysicalPath = "ApacsAdapterWebService\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_33008\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		SlnRelativePath = "..\..\..\..\..\..\inetpub\wwwroot\ApacsAdapterWebService\"
+		SlnRelativePath = "ApacsAdapterWebService\"
 	EndProjectSection
 EndProject
 Global
@@ -42,12 +42,17 @@ Global
 		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|x86.ActiveCfg = Release|x86
 		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|x86.Build.0 = Release|x86
 		{A44499B6-38B4-4630-AAE4-1DE9C240BEB1}.Debug|x86.ActiveCfg = Debug|x86
+		{A44499B6-38B4-4630-AAE4-1DE9C240BEB1}.Debug|x86.Build.0 = Debug|x86
 		{A44499B6-38B4-4630-AAE4-1DE9C240BEB1}.Release|x86.ActiveCfg = Release|x86
+		{A44499B6-38B4-4630-AAE4-1DE9C240BEB1}.Release|x86.Build.0 = Release|x86
 		{FFE06482-4BCB-4013-B54B-64714885D5A3}.Debug|x86.ActiveCfg = Debug|x86
 		{FFE06482-4BCB-4013-B54B-64714885D5A3}.Debug|x86.Build.0 = Debug|x86
 		{FFE06482-4BCB-4013-B54B-64714885D5A3}.Release|x86.ActiveCfg = Release|x86
-		{C956242F-1B1F-4468-9E46-E8DB068F305E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C956242F-1B1F-4468-9E46-E8DB068F305E}.Release|x86.ActiveCfg = Debug|Any CPU
+		{FFE06482-4BCB-4013-B54B-64714885D5A3}.Release|x86.Build.0 = Release|x86
+		{F57054F7-6451-441C-922B-4B735E6170C5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F57054F7-6451-441C-922B-4B735E6170C5}.Debug|x86.Build.0 = Debug|Any CPU
+		{F57054F7-6451-441C-922B-4B735E6170C5}.Release|x86.ActiveCfg = Debug|Any CPU
+		{F57054F7-6451-441C-922B-4B735E6170C5}.Release|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
