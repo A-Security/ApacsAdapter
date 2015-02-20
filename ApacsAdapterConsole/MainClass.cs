@@ -13,8 +13,13 @@ namespace ApacsAdapterConsole
     {
         static void Main(string[] args)
         {
-            
-            AdpConfigXml cfg = new AdpConfigXml();
+            AdpGRAdapter gr = new AdpGRAdapter();
+            foreach (string str in gr.getResourceFromRegistry())
+            {
+                Console.WriteLine(str);
+            }
+            Console.ReadLine();
+       /*   AdpConfigXml cfg = new AdpConfigXml();
             ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
             AdpEventsLister eventLister = new AdpEventsLister(apacsInstance, cfg);
             ApcGetDate agd = new ApcGetDate();
@@ -35,7 +40,7 @@ namespace ApacsAdapterConsole
                     default:
                         break;
                 }
-            }
+            }*/
         }
 
     }

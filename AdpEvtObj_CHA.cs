@@ -3,7 +3,7 @@
 namespace ApacsAdapter
 {
     [DataContract]
-    public class AdpCHAEventObject : AdpEventObject
+    public class AdpEvtObj_CHA : AdpEvtObj
     {
         [DataMember]
         public string HolderID { get; set; }

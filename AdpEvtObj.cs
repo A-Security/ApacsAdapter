@@ -7,7 +7,7 @@ using System.Runtime.Serialization.Json;
 namespace ApacsAdapter
 {
     [DataContract]
-    public class AdpEventObject
+    public class AdpEvtObj
     {
         private const string rootNamespace = @"http://schemas.datacontract.org/2004/07/ApacsAdapterService";
         [DataMember]

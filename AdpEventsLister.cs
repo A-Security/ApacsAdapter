@@ -61,13 +61,13 @@ namespace ApacsAdapter
             {
                 case "TApcCardHolderAccess":
                     {
-                        AdpCHAEventObject aeObj = data.getCardHolderEventObjectFromEventSets(evtSet);
+                        AdpEvtObj_CHA aeObj = data.getCardHolderEventObjectFromEventSets(evtSet);
                         aeobjStrXml = aeObj != null ? aeObj.ToXmlString() : null;
                         break;
                     }
                 default:
                     {
-                        AdpEventObject aeObj = data.getShareEventObjectFromEventSets(evtSet);
+                        AdpEvtObj aeObj = data.getShareEventObjectFromEventSets(evtSet);
                         aeobjStrXml = aeObj != null ? aeObj.ToXmlString() : null;
                         break;
                     }

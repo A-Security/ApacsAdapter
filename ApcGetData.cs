@@ -42,7 +42,7 @@ namespace ApacsAdapter
             sb.AppendLine("================END Property=" + apoName + "============");
             return sb.ToString();
         }
-        public AdpCHAEventObject getCardHolderEventObjectFromEventSets(ApacsPropertyObject evtSets)
+        public AdpEvtObj_CHA getCardHolderEventObjectFromEventSets(ApacsPropertyObject evtSets)
         {
             string eventType = evtSets.getStringProperty(ApcEvtProp.strEventTypeID);
             if (eventType.Contains("Will"))
@@ -58,7 +58,7 @@ namespace ApacsAdapter
                 _middleName = holder.getCurrentSettings().getStringProperty(ApcEvtProp.strMiddleName);
                 _firstName = holder.getCurrentSettings().getStringProperty(ApcEvtProp.strFirstName);
             }
-            AdpCHAEventObject aobj = new AdpCHAEventObject
+            AdpEvtObj_CHA aobj = new AdpEvtObj_CHA
             {
                 Time = evtSets.getDateTimeProperty(ApcEvtProp.dtRealDateTime),
                 EventID = evtSets.getStringProperty(ApcEvtProp.SysAddrEventID),
@@ -77,10 +77,10 @@ namespace ApacsAdapter
             };
             return aobj;
         }
-        public AdpEventObject getShareEventObjectFromEventSets (ApacsPropertyObject evtSets)
+        public AdpEvtObj getShareEventObjectFromEventSets (ApacsPropertyObject evtSets)
         {
             string eventType = evtSets.getStringProperty(ApcEvtProp.strEventTypeID);
-            AdpEventObject aeobj = new AdpEventObject
+            AdpEvtObj aeobj = new AdpEvtObj
             {
                 Time = evtSets.getDateTimeProperty(ApcEvtProp.dtRealDateTime),
                 EventID = evtSets.getStringProperty(ApcEvtProp.SysAddrEventID),

@@ -40,9 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdpCardHolder.cs" />
-    <Compile Include="AdpCHAEventObject.cs" />
+    <Compile Include="AdpEvtObj_CHA.cs" />
     <Compile Include="AdpConfigXml.cs" />
-    <Compile Include="AdpEventObject.cs" />
+    <Compile Include="AdpEvtObj.cs" />
     <Compile Include="AdpEventsLister.cs" />
     <Compile Include="AdpGRAdapter.cs" />
     <Compile Include="AdpMBAdapter.cs" />
@@ -60,6 +60,12 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="WSO2\WSO2.csproj">
+      <Project>{81d607fa-37de-4a88-ab0f-64532e2b68d8}</Project>
+      <Name>WSO2</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
