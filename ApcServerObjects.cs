@@ -114,6 +114,19 @@ namespace ApacsAdapter
             return (uint)getProperty(strName);
         }
         
+        public string getFullNameProperty()
+        {
+            string _lastName = getStringProperty(ApcEvtProp.strLastName),
+                   _middleName = getStringProperty(ApcEvtProp.strMiddleName),
+                   _firstName = getStringProperty(ApcEvtProp.strFirstName);
+            return String.Format("{0} {1} {2}", _lastName, _firstName, _middleName);
+        }
+
+        public string getShortNameProperty()
+        {
+            return getStringProperty(ApcObjProp.strName);
+        }
+
         public DateTime getDateTimeProperty(string strName)
         {
             return (DateTime)getProperty(strName);
@@ -152,6 +165,10 @@ namespace ApacsAdapter
                 return null;
             }
             return strUID;
+        }
+        public string getSampleUID()
+        {
+            return getUID().Split('.')[1];
         }
         
         public string getApacsType()
@@ -245,17 +262,14 @@ namespace ApacsAdapter
 
             object[] objChld = new object[] { };
             object[] args = new object[2] { astrTypes, objChld };
-            int nResult 
-                = (int)objWrap
-                    .GetType()
-                        .InvokeMember("getChildrenObjsByTypes",
-                                      BindingFlags.InvokeMethod,
-                                      null,
-                                      objWrap,
-                                      args,
-                                      mods,
-                                      null,
-                                      null);
+            int nResult = (int)objWrap.GetType().InvokeMember("getChildrenObjsByTypes",
+                                                              BindingFlags.InvokeMethod,
+                                                              null,
+                                                              objWrap,
+                                                              args,
+                                                              mods,
+                                                              null,
+                                                              null);
             if (nResult != 0)
             {
                 return null;
@@ -269,6 +283,12 @@ namespace ApacsAdapter
             }
             return result;
         }
+        public byte[] getMainPhoto()
+        {
+            ApacsObject[] photoProp = getChildrenObjsByTypes(new string[] { ApcObjType.TApcCHMainPhoto });
+            return (photoProp.Length > 0) ? photoProp[0].getCurrentSettings().getByteArrayProperty(ApcEvtProp.binBufPhoto) : null;
+        }
+
         public ApacsPropertyObject getChildSettingsForAdd(string aObjType)
         {
             object objSettings = null;

@@ -2,20 +2,20 @@
 {
     public class AdpCardHolder
     {
-        public string Photo { get; set; }
-        public string HolderID { get; set; }
-        public string HolderName { get; set; }      
-        public string HolderShortName { get; set; }
+        public byte[] Photo { get; set; }
+        public string ID { get; set; }
+        public string Name { get; set; }      
+        public string ShortName { get; set; }
         public uint CardNo { get; set; }
         public override string ToString()
         {
-            return "=====================BEGIN "+ HolderShortName +"=====================================\n"
+            return "=====================BEGIN "+ ShortName +"=====================================\n"
                  + "Photo: " + Photo + "\n"
-                 + "HolderID: " + HolderID + "\n"
-                 + "HolderName: " + HolderName + "\n"
-                 + "HolderShortName: " + HolderShortName + "\n"
+                 + "ID: " + ID + "\n"
+                 + "Name: " + Name + "\n"
+                 + "ShortName: " + ShortName + "\n"
                  + "CardNo: " + CardNo.ToString() + "\n"
-                 + "=====================END " + HolderShortName + "=====================================\n";
+                 + "=====================END " + ShortName + "=====================================\n";
         }
     }
 }

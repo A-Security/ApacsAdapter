@@ -50,13 +50,16 @@ namespace ApacsAdapter
                 return null;
             }
             bool isNotErrHolder = !(eventType.EndsWith("_ErrHolder"));
-            string _lastName = null, _middleName = null, _firstName = null;
+            string fullName = null,
+                    shortName = null,
+                    uid = null;
             if (isNotErrHolder)
             {
                 ApacsObject holder = evtSets.getObjectProperty(ApcEvtProp.SysAddrHolder);
-                _lastName = holder.getCurrentSettings().getStringProperty(ApcEvtProp.strLastName);
-                _middleName = holder.getCurrentSettings().getStringProperty(ApcEvtProp.strMiddleName);
-                _firstName = holder.getCurrentSettings().getStringProperty(ApcEvtProp.strFirstName);
+                ApacsPropertyObject holderSets = holder.getCurrentSettings();
+                fullName = holderSets.getFullNameProperty();
+                shortName = holderSets.getShortNameProperty();
+                uid = holder.getSampleUID();
             }
             AdpEvtObj_CHA aobj = new AdpEvtObj_CHA
             {
@@ -66,12 +69,9 @@ namespace ApacsAdapter
                 EventTypeDesc = getTypeDesc(eventType),
                 SourceID = evtSets.getObjectProperty(ApcEvtProp.SysAddrInitObj).getUID(),
                 SourceName = evtSets.getStringProperty(ApcEvtProp.strInitObjName),
-                HolderID = (isNotErrHolder) ?
-                    evtSets.getObjectProperty(ApcEvtProp.SysAddrHolder).getUID() : null,
-                HolderName = (isNotErrHolder) ?
-                    _lastName + " " + _firstName + " " + _middleName : "НЕИЗВЕСТНЫЙ",
-                HolderShortName = (isNotErrHolder) ?
-                    evtSets.getStringProperty(ApcEvtProp.strHolderName) : "НЕИЗВЕСТНЫЙ",
+                HolderID = (isNotErrHolder) ? uid : null,
+                HolderName = (isNotErrHolder) ? fullName : "НЕИЗВЕСТНЫЙ",
+                HolderShortName = (isNotErrHolder) ? shortName : "НЕИЗВЕСТНЫЙ",
                 CardNo = evtSets.getUIntProperty(ApcEvtProp.dwCardNumber)
 
             };
@@ -94,21 +94,13 @@ namespace ApacsAdapter
         public AdpCardHolder getCardHolderObjectFromApacsObject(ApacsObject cardHolderAO)
         {
             ApacsPropertyObject holderSets = cardHolderAO.getCurrentSettings();
-            string _lastName = holderSets.getStringProperty(ApcEvtProp.strLastName),
-                   _middleName = holderSets.getStringProperty(ApcEvtProp.strMiddleName),
-                   _firstName = holderSets.getStringProperty(ApcEvtProp.strFirstName);
-            ApacsObject[] chldHldrObjPhoto = cardHolderAO.getChildrenObjsByTypes(new string[] { ApcObjType.TApcCHMainPhoto });
-            Byte[] photoByteArr = (chldHldrObjPhoto.Length > 0) ?
-                chldHldrObjPhoto[0].getCurrentSettings().getByteArrayProperty(ApcEvtProp.binBufPhoto) : null;
-            
             AdpCardHolder chObj = new AdpCardHolder
             {
-                Photo = (photoByteArr != null) ? Convert.ToBase64String(photoByteArr) : null,
-                HolderID = cardHolderAO.getUID(),
-                HolderName = _lastName + " " + _firstName + " " + _middleName,
-                HolderShortName = holderSets.getStringProperty(ApcObjProp.strName),
+                Photo = cardHolderAO.getMainPhoto(),
+                ID = cardHolderAO.getSampleUID(),
+                Name = holderSets.getFullNameProperty(),
+                ShortName = holderSets.getShortNameProperty(),
                 //CardNo = 
-
             };
             return chObj;
         }

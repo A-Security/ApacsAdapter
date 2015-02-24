@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WSO2;
+using WSO2.Registry;
 
 namespace ApacsAdapter
 {
@@ -21,21 +22,36 @@ namespace ApacsAdapter
         }
         public List<string> getResourceFromRegistry()
         {
-            Resource resource = registry.Get(@"/_system/governance/ssoi/cardholders/Донг Й. Х.");
-            string temp = Encoding.UTF8.GetString(resource.contentFile);
-            string tempWrk = Encoding.UTF8.GetString(registry.GetContent(@"/_system/governance/ssoi/cardholders/Донг Й. Х."));
+
             List<string> result = new List<string>();
-            foreach (WSO2.Registry.WSProperty prop in resource.properties)
-            {
-                StringBuilder sb = new StringBuilder();
-                foreach (string str in prop.values)
-                {
-                    sb.AppendLine(str);
-                }
-                result.Add(prop.key + ": " + sb.ToString());
-            }
+            Collection cardHolderCollection = registry.Get(@"/_system/governance/ssoi/cardholders", 0, int.MaxValue);
+            result = cardHolderCollection.children.ToList<string>();
+            clearCollection(cardHolderCollection);
+            //Resource resource = registry.Get(@"/_system/governance/ssoi/cardholders/Донг Й. Х.");
+            //string temp = Encoding.UTF8.GetString(resource.contentFile);
+            //string tempWrk = Encoding.UTF8.GetString(registry.GetContent(@"/_system/governance/ssoi/cardholders/Донг Й. Х."));
+            //foreach (WSProperty prop in resource.properties)
+            //{
+            //    StringBuilder sb = new StringBuilder();
+            //    foreach (string str in prop.values)
+            //    {
+            //        sb.AppendLine(str);
+            //    }
+            //    result.Add(prop.key + ": " + sb.ToString());
+            //}
             
             return result;
+
+        }
+        public void clearCollection(Collection collect)
+        {
+            foreach (string res in collect.children)
+            {
+                registry.Delete(res);
+            }
+        }
+        public void addCollection(Collection collect)
+        {
 
         }
     }
