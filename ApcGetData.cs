@@ -8,6 +8,15 @@ namespace ApacsAdapter
 {
     public class ApcGetDate
     {
+        private ApacsServer apacsInstance;
+        public ApcGetDate()
+        {
+        }
+
+        public ApcGetDate(ApacsServer apacs)
+        {
+            this.apacsInstance = apacs;
+        }
         private string getTypeDesc(string strType)
         {
             ApcTypesDesc TApc = new ApcTypesDesc();
@@ -104,14 +113,15 @@ namespace ApacsAdapter
             };
             return chObj;
         }
-        public List<AdpCardHolder> getCardHoldersFromApacs(ApacsServer apacs)
+        public AdpCardHolder[] getCardHoldersFromApacs()
         {
-            List<AdpCardHolder> result = new List<AdpCardHolder>();
-            ApacsObject[] cardHolders = apacs.getObjectsByType(ApcObjType.TApcCardHolder);
-            foreach (ApacsObject ao in cardHolders)
+            ApacsObject[] cardHolders = apacsInstance.getObjectsByType(ApcObjType.TApcCardHolder);
+            AdpCardHolder[] result = new AdpCardHolder[cardHolders.Length];
+            for (int i = 0; i < result.Length; i++ )
             {
-                result.Add(getCardHolderObjectFromApacsObject(ao));
+                result[i] = getCardHolderObjectFromApacsObject(cardHolders[i]);
             }
+                
             return result;
         }
         

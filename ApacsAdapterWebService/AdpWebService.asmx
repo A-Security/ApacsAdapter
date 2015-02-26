@@ -14,11 +14,12 @@ using System.Web.Services.Protocols;
 public class AdpWebService  : System.Web.Services.WebService {
 
     [WebMethod]
-    public List<AdpCardHolder> getCardHolders()
+    public List<string> fillCardHoldersToGR()
     {
         AdpConfigXml cfg = new AdpConfigXml();
         ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
-        ApcGetDate data = new ApcGetDate();
-        return data.getCardHoldersFromApacs(apacsInstance);
+        AdpGRAdapter gr = new AdpGRAdapter(cfg);
+        gr.fillGRfromApacs();
+        return gr.getResourceFromRegistry();
     }
 }

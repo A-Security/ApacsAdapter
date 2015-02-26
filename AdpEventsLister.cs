@@ -74,7 +74,7 @@ namespace ApacsAdapter
             }
             if (aeobjStrXml != null)
             {
-                mbAdp.PublishMessage(aeobjStrXml, cfg.MBqueue);
+                mbAdp.PublishMessage(aeobjStrXml, cfg.MBoutQueue);
             }
             
         }

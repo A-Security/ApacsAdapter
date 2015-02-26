@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using WSO2;
 using WSO2.Registry;
 
@@ -10,49 +11,84 @@ namespace ApacsAdapter
 {
     public class AdpGRAdapter
     {
-        private const string BASE_PATH = "/testDotNet";
-        private const string SERVER_URL = "https://192.168.0.151:9443/services/";
-        private const string USERNAME = "admin";
-        private const string PASSWORD = "Flvbybcnhfnjh1";
-
+        private readonly AdpConfigXml cfg;
         private static RegistryClient registry;
-        public AdpGRAdapter()
+        public AdpGRAdapter(AdpConfigXml cfg)
         {
-            registry = new RegistryClient(USERNAME, PASSWORD, SERVER_URL);
+            this.cfg = cfg;
+            registry = new RegistryClient(cfg.GRuser, cfg.GRpassword, cfg.GRserviceUrl);
         }
         public List<string> getResourceFromRegistry()
         {
-
             List<string> result = new List<string>();
-            Collection cardHolderCollection = registry.Get(@"/_system/governance/ssoi/cardholders", 0, int.MaxValue);
-            result = cardHolderCollection.children.ToList<string>();
-            clearCollection(cardHolderCollection);
-            //Resource resource = registry.Get(@"/_system/governance/ssoi/cardholders/Донг Й. Х.");
-            //string temp = Encoding.UTF8.GetString(resource.contentFile);
-            //string tempWrk = Encoding.UTF8.GetString(registry.GetContent(@"/_system/governance/ssoi/cardholders/Донг Й. Х."));
-            //foreach (WSProperty prop in resource.properties)
-            //{
-            //    StringBuilder sb = new StringBuilder();
-            //    foreach (string str in prop.values)
-            //    {
-            //        sb.AppendLine(str);
-            //    }
-            //    result.Add(prop.key + ": " + sb.ToString());
-            //}
-            
-            return result;
-
-        }
-        public void clearCollection(Collection collect)
-        {
-            foreach (string res in collect.children)
+            StringBuilder singleResult = new StringBuilder();
+            Collection cardHolderCollection = (Collection)registry.Get(cfg.GRholdersFullPath);
+            foreach (string str in cardHolderCollection.children)
             {
+                singleResult.Clear();
+                Resource res = registry.Get(str);
+                singleResult.AppendLine(String.Format("======================START {0} ======================", res.name));
+                singleResult.AppendLine(String.Format("======================START {0} Property==============", res.name));
+                foreach (WSProperty prop in res.properties)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (string strv in prop.values)
+                    {
+                        sb.AppendLine(strv);
+                    }
+                    singleResult.AppendLine(String.Format("{0} = {1}", prop.key, sb.ToString()));
+                }
+                singleResult.AppendLine(String.Format("========================END {0} Property==============", res.name));
+                singleResult.AppendLine(String.Format("======================START {0} Content==============", res.name));
+                singleResult.AppendLine(Encoding.UTF8.GetString(res.contentFile));
+                singleResult.AppendLine(String.Format("========================END {0} Content==============", res.name));
+                result.Add(singleResult.ToString());
+            }
+            return result;
+        }
+        public void clearCollection(string collPath)
+        {
+            Collection coll = (Collection)registry.Get(collPath);
+            foreach (string res in coll.children)
+            {
+                if (registry.Get(res).collection)
+                {
+                    clearCollection(res);
+                }
                 registry.Delete(res);
             }
+            
         }
-        public void addCollection(Collection collect)
+        public void fillGRfromApacs()
         {
+            clearCollection(cfg.GRholdersFullPath);
+            ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
+            ApcGetDate agd = new ApcGetDate(apacsInstance);
+            foreach (AdpCardHolder ch in agd.getCardHoldersFromApacs())
+            {
+                Resource resPhoto = registry.NewResource();
+                resPhoto.mediaType = "image/jpeg";
+                Resource resCH = registry.NewResource();
+                resCH.mediaType = "application/vnd.cardholders+xml";
+                resPhoto.contentFile = ch.Photo;
+                resPhoto.name = ch.ID + ".jpg";
+                string resPhotoPath = cfg.GRholdersPhotoFullPath + @"/" + resPhoto.name;
+                registry.Put(resPhotoPath, resPhoto);
+                resCH.name = ch.ID + ".xml";
+                XDocument xdoc = new XDocument();
+                resCH.contentFile = Encoding.UTF8.GetBytes(ch.ToGRxmlContent(cfg));
+                string resCardholderPath = cfg.GRholdersFullPath + @"/" + resCH.name;
+                registry.Put(resCardholderPath, resCH);
+                //res.properties = new WSProperty[]
+                //    {
+                //        new WSProperty(){ key = "ID", values = new string[] { ch.ID } },
+                //        new WSProperty(){ key = "Name", values = new string[] { ch.Name } },
+                //        new WSProperty(){ key = "ShortName", values = new string[] { ch.ShortName } },
+                //        new WSProperty(){ key = "CardNo", values = new string[] { ch.CardNo.ToString() } },
+                //        new WSProperty(){ key = "VIP", values = new string[] { "false" } }
+                //    };
 
+            }
         }
     }
 }
