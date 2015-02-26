@@ -78,16 +78,15 @@ namespace ApacsAdapter
                 XDocument xdoc = new XDocument();
                 resCH.contentFile = Encoding.UTF8.GetBytes(ch.ToGRxmlContent(cfg));
                 string resCardholderPath = cfg.GRholdersFullPath + @"/" + resCH.name;
+                resCH.properties = new WSProperty[]
+                    {
+                        new WSProperty(){ key = "id", values = new string[] { ch.ID } },
+                        new WSProperty(){ key = "name", values = new string[] { ch.Name } },
+                        new WSProperty(){ key = "shortName", values = new string[] { ch.ShortName } },
+                        new WSProperty(){ key = "cardNo", values = new string[] { ch.CardNo.ToString() } },
+                        new WSProperty(){ key = "vip", values = new string[] { bool.FalseString } }
+                    };
                 registry.Put(resCardholderPath, resCH);
-                //res.properties = new WSProperty[]
-                //    {
-                //        new WSProperty(){ key = "ID", values = new string[] { ch.ID } },
-                //        new WSProperty(){ key = "Name", values = new string[] { ch.Name } },
-                //        new WSProperty(){ key = "ShortName", values = new string[] { ch.ShortName } },
-                //        new WSProperty(){ key = "CardNo", values = new string[] { ch.CardNo.ToString() } },
-                //        new WSProperty(){ key = "VIP", values = new string[] { "false" } }
-                //    };
-
             }
         }
     }
