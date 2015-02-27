@@ -21,37 +21,36 @@ namespace ApacsAdapter
 
     public struct ApcObjType
     {
-        public static string TApcCHMainPhoto { get { return "TApcCHMainPhoto"; } }
-        public static string TApcCardHolderAccess { get { return "TApcCardHolderAccess"; } }
-        public static string TApcCardHolder { get { return "TApcCardHolder"; } }
+        public const string TApcCHMainPhoto = "TApcCHMainPhoto";
+        public const string TApcCardHolderAccess = "TApcCardHolderAccess";
+        public const string TApcCardHolder = "TApcCardHolder";
+        public const string TApcAccount2HolderLink = "TApcAccount2HolderLink";
+        public const string TApcAccount = "TApcAccount";
     }
 
     public struct ApcObjProp
     {
-        public static string strName { get { return "strName"; } }
-        public static string strDesc { get { return "strDesc"; } }
-        public static string strAlias { get { return "strAlias"; } }
-        public static string dtCreateTime { get { return "dtCreateTime"; } }
-        public static string dtLastModifyTime { get { return "dtLastModifyTime"; } }
-    }
-
-    public struct ApcEvtProp
-    {
-        public static string dwCardNumber { get { return "dwCardNumber"; } }
-        public static string SysAddrCard { get { return "SysAddrCard"; } }
-        public static string strHolderName { get { return "strHolderName"; } }
-        public static string SysAddrHolder { get { return "SysAddrHolder"; } }
-        public static string isOffLineEvent { get { return "isOffLineEvent"; } }
-        public static string SysAddrEventID { get { return "SysAddrEventID"; } }
-        public static string dtRealDateTime { get { return "dtRealDateTime"; } }
-        public static string dtRegisterTime { get { return "dtRegisterTime"; } }
-        public static string strEventTypeID { get { return "strEventTypeID"; } }
-        public static string SysAddrInitObj { get { return "SysAddrInitObj"; } }
-        public static string strInitObjName { get { return "strInitObjName"; } }
-        public static string binBufPhoto { get { return "binBufPhoto"; } }
-        public static string strLastName { get { return "strLastName"; } }
-        public static string strMiddleName { get { return "strMiddleName"; } }
-        public static string strFirstName { get { return "strFirstName"; } }
+        public const string strName = "strName";
+        public const string strDesc = "strDesc";
+        public const string strAlias = "strAlias";
+        public const string dtCreateTime = "dtCreateTime";
+        public const string dtLastModifyTime = "dtLastModifyTime";
+        public const string dwCardNumber = "dwCardNumber";
+        public const string SysAddrCard = "SysAddrCard";
+        public const string strHolderName = "strHolderName";
+        public const string SysAddrHolder = "SysAddrHolder";
+        public const string isOffLineEvent = "isOffLineEvent";
+        public const string SysAddrEventID = "SysAddrEventID";
+        public const string dtRealDateTime = "dtRealDateTime";
+        public const string dtRegisterTime = "dtRegisterTime";
+        public const string strEventTypeID = "strEventTypeID";
+        public const string SysAddrInitObj = "SysAddrInitObj";
+        public const string strInitObjName = "strInitObjName";
+        public const string binBufPhoto = "binBufPhoto";
+        public const string strLastName = "strLastName";
+        public const string strMiddleName = "strMiddleName";
+        public const string strFirstName = "strFirstName";
+        public const string SysAddrAccount = "SysAddrAccount";
     }
 
     public class ApacsPropertyObject
@@ -116,13 +115,13 @@ namespace ApacsAdapter
         
         public string getFullNameProperty()
         {
-            string _lastName = getStringProperty(ApcEvtProp.strLastName),
-                   _middleName = getStringProperty(ApcEvtProp.strMiddleName),
-                   _firstName = getStringProperty(ApcEvtProp.strFirstName);
+            string _lastName = getStringProperty(ApcObjProp.strLastName),
+                   _middleName = getStringProperty(ApcObjProp.strMiddleName),
+                   _firstName = getStringProperty(ApcObjProp.strFirstName);
             return String.Format("{0} {1} {2}", _lastName, _firstName, _middleName);
         }
 
-        public string getShortNameProperty()
+        public string getNameProperty()
         {
             return getStringProperty(ApcObjProp.strName);
         }
@@ -285,10 +284,26 @@ namespace ApacsAdapter
         }
         public byte[] getMainPhoto()
         {
-            ApacsObject[] photoProp = getChildrenObjsByTypes(new string[] { ApcObjType.TApcCHMainPhoto });
-            return (photoProp.Length > 0) ? photoProp[0].getCurrentSettings().getByteArrayProperty(ApcEvtProp.binBufPhoto) : null;
+            byte[] result = null;
+            ApacsObject[] chMainPhotoAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcCHMainPhoto });
+            foreach (ApacsObject photoProp in chMainPhotoAOs)
+            {
+                result = photoProp.getCurrentSettings().getByteArrayProperty(ApcObjProp.binBufPhoto);
+            }
+            return result;
         }
-
+        public string getCardNumber()
+        {
+            string result = null;
+            ApacsObject[] acc2linkAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcAccount2HolderLink });
+            foreach (ApacsObject chldAO in acc2linkAOs)
+            {
+                ApacsObject sysAdAc = chldAO.getCurrentSettings().getObjectProperty(ApcObjProp.SysAddrAccount);
+                ApacsPropertyObject sysAdAcProp = sysAdAc.getCurrentSettings();
+                result = sysAdAcProp.getNameProperty();
+            }
+            return result;
+        }
         public ApacsPropertyObject getChildSettingsForAdd(string aObjType)
         {
             object objSettings = null;

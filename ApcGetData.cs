@@ -22,7 +22,7 @@ namespace ApacsAdapter
             ApcTypesDesc TApc = new ApcTypesDesc();
             return TApc.typeDescDict.TryGetValue(strType, out strType) ? strType : null;
         }
-        public string getEventPropertiesHierarchy(ApacsPropertyObject objSettings)
+        public string getPropertiesHierarchy(ApacsPropertyObject objSettings)
         {
             StringBuilder sb = new StringBuilder();
             string apoName = objSettings.hasProperty(ApcObjProp.strName) ? objSettings.getStringProperty(ApcObjProp.strName) : "Event";
@@ -37,13 +37,10 @@ namespace ApacsAdapter
                     ApacsObject propCOMObject = objSettings.getObjectProperty(propName);
                     sb.AppendLine("===============Object=" + propName + "================");
                     sb.AppendLine("Object Apacs Type: " + propCOMObject.getApacsType());
-                    sb.AppendLine(getEventPropertiesHierarchy(propCOMObject.getCurrentSettings()));
-                    if (propCOMObject.getChildrenObjs().Length > 0)
+                    sb.AppendLine(getPropertiesHierarchy(propCOMObject.getCurrentSettings()));
+                    foreach (ApacsObject childPropCOMObject in propCOMObject.getChildrenObjs())
                     {
-                        foreach (ApacsObject childPropCOMObject in propCOMObject.getChildrenObjs())
-                        {
-                            sb.AppendLine(getEventPropertiesHierarchy(childPropCOMObject.getCurrentSettings()));
-                        }
+                        sb.AppendLine(getPropertiesHierarchy(childPropCOMObject.getCurrentSettings()));
                     }
                     sb.AppendLine("================END Object=" + propName + "===============");
                 }
@@ -53,7 +50,7 @@ namespace ApacsAdapter
         }
         public AdpEvtObj_CHA getCardHolderEventObjectFromEventSets(ApacsPropertyObject evtSets)
         {
-            string eventType = evtSets.getStringProperty(ApcEvtProp.strEventTypeID);
+            string eventType = evtSets.getStringProperty(ApcObjProp.strEventTypeID);
             if (eventType.Contains("Will"))
             {
                 return null;
@@ -64,43 +61,43 @@ namespace ApacsAdapter
                     uid = null;
             if (isNotErrHolder)
             {
-                ApacsObject holder = evtSets.getObjectProperty(ApcEvtProp.SysAddrHolder);
+                ApacsObject holder = evtSets.getObjectProperty(ApcObjProp.SysAddrHolder);
                 ApacsPropertyObject holderSets = holder.getCurrentSettings();
                 fullName = holderSets.getFullNameProperty();
-                shortName = holderSets.getShortNameProperty();
+                shortName = holderSets.getNameProperty();
                 uid = holder.getSampleUID();
             }
             AdpEvtObj_CHA aobj = new AdpEvtObj_CHA
             {
-                Time = evtSets.getDateTimeProperty(ApcEvtProp.dtRealDateTime),
-                EventID = evtSets.getStringProperty(ApcEvtProp.SysAddrEventID),
+                Time = evtSets.getDateTimeProperty(ApcObjProp.dtRealDateTime),
+                EventID = evtSets.getStringProperty(ApcObjProp.SysAddrEventID),
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
-                SourceID = evtSets.getObjectProperty(ApcEvtProp.SysAddrInitObj).getUID(),
-                SourceName = evtSets.getStringProperty(ApcEvtProp.strInitObjName),
+                SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getUID(),
+                SourceName = evtSets.getStringProperty(ApcObjProp.strInitObjName),
                 HolderID = (isNotErrHolder) ? uid : null,
                 HolderName = (isNotErrHolder) ? fullName : "НЕИЗВЕСТНЫЙ",
                 HolderShortName = (isNotErrHolder) ? shortName : "НЕИЗВЕСТНЫЙ",
-                CardNo = evtSets.getUIntProperty(ApcEvtProp.dwCardNumber)
+                CardNo = evtSets.getUIntProperty(ApcObjProp.dwCardNumber)
 
             };
             return aobj;
         }
-        public AdpEvtObj getShareEventObjectFromEventSets (ApacsPropertyObject evtSets)
+        public AdpEvtObj getCommonEventObjectFromEventSets (ApacsPropertyObject evtSets)
         {
-            string eventType = evtSets.getStringProperty(ApcEvtProp.strEventTypeID);
+            string eventType = evtSets.getStringProperty(ApcObjProp.strEventTypeID);
             AdpEvtObj aeobj = new AdpEvtObj
             {
-                Time = evtSets.getDateTimeProperty(ApcEvtProp.dtRealDateTime),
-                EventID = evtSets.getStringProperty(ApcEvtProp.SysAddrEventID),
+                Time = evtSets.getDateTimeProperty(ApcObjProp.dtRealDateTime),
+                EventID = evtSets.getStringProperty(ApcObjProp.SysAddrEventID),
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
-                SourceID = evtSets.getObjectProperty(ApcEvtProp.SysAddrInitObj).getUID(),
-                SourceName = evtSets.getStringProperty(ApcEvtProp.strInitObjName)
+                SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getUID(),
+                SourceName = evtSets.getStringProperty(ApcObjProp.strInitObjName)
             };
             return aeobj;
         }
-        public AdpCardHolder getCardHolderObjectFromApacsObject(ApacsObject cardHolderAO)
+        public AdpCardHolder getAdpCardHolderFromApacsObject(ApacsObject cardHolderAO)
         {
             ApacsPropertyObject holderSets = cardHolderAO.getCurrentSettings();
             AdpCardHolder chObj = new AdpCardHolder
@@ -108,8 +105,8 @@ namespace ApacsAdapter
                 Photo = cardHolderAO.getMainPhoto(),
                 ID = cardHolderAO.getSampleUID(),
                 Name = holderSets.getFullNameProperty(),
-                ShortName = holderSets.getShortNameProperty(),
-                //CardNo = 
+                ShortName = holderSets.getNameProperty(),
+                CardNo = cardHolderAO.getCardNumber()
             };
             return chObj;
         }
@@ -119,7 +116,7 @@ namespace ApacsAdapter
             AdpCardHolder[] result = new AdpCardHolder[cardHolders.Length];
             for (int i = 0; i < result.Length; i++ )
             {
-                result[i] = getCardHolderObjectFromApacsObject(cardHolders[i]);
+                result[i] = getAdpCardHolderFromApacsObject(cardHolders[i]);
             }
                 
             return result;

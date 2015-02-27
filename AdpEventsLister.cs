@@ -55,7 +55,7 @@ namespace ApacsAdapter
             {
                 return;
             }
-            string evtType = evtSet.getStringProperty(ApcEvtProp.strEventTypeID).Split('_')[0];
+            string evtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID).Split('_')[0];
             string aeobjStrXml;
             switch (evtType)
             {
@@ -67,7 +67,7 @@ namespace ApacsAdapter
                     }
                 default:
                     {
-                        AdpEvtObj aeObj = data.getShareEventObjectFromEventSets(evtSet);
+                        AdpEvtObj aeObj = data.getCommonEventObjectFromEventSets(evtSet);
                         aeobjStrXml = aeObj != null ? aeObj.ToXmlString() : null;
                         break;
                     }

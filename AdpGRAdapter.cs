@@ -66,27 +66,31 @@ namespace ApacsAdapter
             ApcGetDate agd = new ApcGetDate(apacsInstance);
             foreach (AdpCardHolder ch in agd.getCardHoldersFromApacs())
             {
-                Resource resPhoto = registry.NewResource();
-                resPhoto.mediaType = "image/jpeg";
-                Resource resCH = registry.NewResource();
-                resCH.mediaType = "application/vnd.cardholders+xml";
-                resPhoto.contentFile = ch.Photo;
-                resPhoto.name = ch.ID + ".jpg";
-                string resPhotoPath = cfg.GRholdersPhotoFullPath + @"/" + resPhoto.name;
-                registry.Put(resPhotoPath, resPhoto);
-                resCH.name = ch.ID + ".xml";
+                Resource resource = registry.NewResource();
+                resource.mediaType = "image/jpeg";
+                resource.contentFile = ch.Photo;
+                resource.name = ch.ID + ".jpg";
+                string resPath = cfg.GRholdersPhotoFullPath + @"/" + resource.name;
+                registry.Put(resPath, resource);
+                resource = registry.Get(resPath);
+                
+                resource = registry.NewResource();
+                resource.mediaType = "application/vnd.cardholders+xml";
+                resource.name = ch.ID + ".xml";
+                
                 XDocument xdoc = new XDocument();
-                resCH.contentFile = Encoding.UTF8.GetBytes(ch.ToGRxmlContent(cfg));
-                string resCardholderPath = cfg.GRholdersFullPath + @"/" + resCH.name;
-                resCH.properties = new WSProperty[]
-                    {
-                        new WSProperty(){ key = "id", values = new string[] { ch.ID } },
-                        new WSProperty(){ key = "name", values = new string[] { ch.Name } },
-                        new WSProperty(){ key = "shortName", values = new string[] { ch.ShortName } },
-                        new WSProperty(){ key = "cardNo", values = new string[] { ch.CardNo.ToString() } },
-                        new WSProperty(){ key = "vip", values = new string[] { bool.FalseString } }
-                    };
-                registry.Put(resCardholderPath, resCH);
+                
+                resource.contentFile = Encoding.UTF8.GetBytes(ch.ToGRxmlContent(cfg));
+                resPath = cfg.GRholdersFullPath + @"/" + resource.name;
+                //resCH.properties = new WSProperty[]
+                //    {
+                //        new WSProperty(){ key = "holder_id", values = new string[] { ch.ID } },
+                //        new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
+                //        new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
+                //        new WSProperty(){ key = "holder_cardNo", values = new string[] { ch.CardNo.ToString() } },
+                //        new WSProperty(){ key = "holder_vip", values = new string[] { bool.FalseString } }
+                //    };
+                registry.Put(resPath, resource);
             }
         }
     }

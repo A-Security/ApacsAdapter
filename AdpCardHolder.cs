@@ -8,7 +8,7 @@ namespace ApacsAdapter
         public string ID { get; set; }
         public string Name { get; set; }      
         public string ShortName { get; set; }
-        public uint CardNo { get; set; }
+        public string CardNo { get; set; }
         public string ToGRxmlContent(AdpConfigXml cfg) 
         {
 
@@ -25,7 +25,7 @@ namespace ApacsAdapter
             idNode.InnerText = ID;
             shortNameNode.InnerText = ShortName;
             nameNode.InnerText = Name;
-            cardNoNode.InnerText = CardNo.ToString();
+            cardNoNode.InnerText = CardNo;
             string photoResName = @"/" + ID + ".jpg";
             photoNode.InnerText = cfg.GRholdersPhotoPath + photoResName;
             photoLinkNode.InnerText = cfg.GRholdersPhotoPermaLinkUrl + photoResName;
