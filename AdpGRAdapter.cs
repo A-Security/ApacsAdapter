@@ -23,10 +23,11 @@ namespace ApacsAdapter
             List<string> result = new List<string>();
             StringBuilder singleResult = new StringBuilder();
             Collection cardHolderCollection = (Collection)registry.Get(cfg.GRholdersFullPath);
+            Resource res;
             foreach (string str in cardHolderCollection.children)
             {
                 singleResult.Clear();
-                Resource res = registry.Get(str);
+                res = registry.Get(str);
                 singleResult.AppendLine(String.Format("======================START {0} ======================", res.name));
                 singleResult.AppendLine(String.Format("======================START {0} Property==============", res.name));
                 foreach (WSProperty prop in res.properties)
@@ -42,6 +43,7 @@ namespace ApacsAdapter
                 singleResult.AppendLine(String.Format("======================START {0} Content==============", res.name));
                 singleResult.AppendLine(Encoding.UTF8.GetString(res.contentFile));
                 singleResult.AppendLine(String.Format("========================END {0} Content==============", res.name));
+                singleResult.AppendLine(String.Format("========================END {0} ======================", res.name));
                 result.Add(singleResult.ToString());
             }
             return result;
@@ -63,23 +65,19 @@ namespace ApacsAdapter
         {
             clearCollection(cfg.GRholdersFullPath);
             ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
-            ApcGetDate agd = new ApcGetDate(apacsInstance);
-            foreach (AdpCardHolder ch in agd.getCardHoldersFromApacs())
+            ApcGetDate agd = new ApcGetDate();
+            Resource resource;
+            foreach (AdpCardHolder ch in agd.getCardHoldersFromApacs(apacsInstance))
             {
-                Resource resource = registry.NewResource();
+                resource = registry.NewResource();
                 resource.mediaType = "image/jpeg";
                 resource.contentFile = ch.Photo;
                 resource.name = ch.ID + ".jpg";
                 string resPath = cfg.GRholdersPhotoFullPath + @"/" + resource.name;
                 registry.Put(resPath, resource);
-                resource = registry.Get(resPath);
-                
                 resource = registry.NewResource();
                 resource.mediaType = "application/vnd.cardholders+xml";
                 resource.name = ch.ID + ".xml";
-                
-                XDocument xdoc = new XDocument();
-                
                 resource.contentFile = Encoding.UTF8.GetBytes(ch.ToGRxmlContent(cfg));
                 resPath = cfg.GRholdersFullPath + @"/" + resource.name;
                 //resCH.properties = new WSProperty[]
