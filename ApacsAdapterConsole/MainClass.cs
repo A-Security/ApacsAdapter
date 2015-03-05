@@ -7,26 +7,25 @@ namespace ApacsAdapterConsole
     {
         static void Main(string[] args)
         {
-            AdpConfigXml cfg = new AdpConfigXml();
-            //AdpGRAdapter gr = new AdpGRAdapter(cfg);
-            //gr.fillGRfromApacs();
-            //foreach (string str in gr.getResourceFromRegistry())
-            //{
-            //    Console.WriteLine(str);
-            //}
-            //Console.ReadLine();
+            AdpCfgXml cfg = new AdpCfgXml();
             ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
-            //AdpEventsLister eventLister = new AdpEventsLister(apacsInstance, cfg);
-            ApcGetDate agd = new ApcGetDate();
-            foreach (ApacsObject ao in apacsInstance.getObjectsByType(ApcObjType.TApcCardHolder))
+            AdpGRAdapter gr = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
+            if (gr.copyCHfromApacs(apacsInstance))
             {
-                Console.Write(ao.getCurrentSettings().getNameProperty()+" = ");
-                ApacsObject chldAO = ao.getChildrenObjsByTypes(new string[] { ApcObjType.TApcAccount2HolderLink })[0];                
-                ApacsPropertyObject chldProp = chldAO.getCurrentSettings();
-                ApacsObject sysAdAc = chldProp.getObjectProperty(ApcObjProp.SysAddrAccount);
-                ApacsPropertyObject sysAdAcProp = sysAdAc.getCurrentSettings();
-                Console.WriteLine(sysAdAcProp.getNameProperty());
+                foreach (string str in gr.getListStringCHs())
+                {
+                    Console.WriteLine(str);
+                }
             }
+            else
+            {
+                Console.WriteLine("Error filling Governance Registry from APACS 3000 server");
+            }
+            //Console.ReadLine();
+            
+            //AdpEventsLister eventLister = new AdpEventsLister(apacsInstance, cfg);
+            //ApcGetDate agd = new ApcGetDate();
+
             bool isRun = true;
             while (isRun)
             {

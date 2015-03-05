@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace ApacsAdapter
 {
-    public class AdpConfigXml
+    public class AdpCfgXml
     {
         private string path = AppDomain.CurrentDomain.BaseDirectory + "ApacsAdapter.cfg";
         public readonly string MBhost = "192.168.0.74";
@@ -17,28 +17,15 @@ namespace ApacsAdapter
         public readonly string MBoutQueue = "ApacsOUT";
         public readonly string MBport = "5672";
         public readonly string GRhost = "192.168.0.151";
-        public readonly string GRartifactPath = @"/_system/governance";
-        public readonly string GRholdersPath = @"/ssoi/cardholders";
-        public readonly string GRholdersFullPath;
-        public readonly string GRholdersPhotoPath;
-        public readonly string GRholdersPhotoFullPath;
-        public readonly string GRholdersPhotoPermaLinkUrl;
-        public readonly string GRserviceUrl;
-        public readonly string GRpermaLinkBaseUrl;
         public readonly string GRuser = "Apacs";
         public readonly string GRpassword = "Aa1234567";
-        public readonly string apcLogin = "inst";
-        public readonly string apcPasswd = "Aa1234567";
+        public readonly string apcLogin = "Inst";
+        public readonly string apcPasswd = "1945";
 
         private XmlDocument xdoc = new XmlDocument();
-        public AdpConfigXml()
+        public AdpCfgXml()
         {
-            GRserviceUrl = @"https://" + GRhost + @":9443/services/";
-            GRpermaLinkBaseUrl = @"http://" + GRhost + @":9763/registry/resource";
-            GRholdersFullPath = GRartifactPath + GRholdersPath;
-            GRholdersPhotoPath = GRholdersPath + "/photo";
-            GRholdersPhotoFullPath = GRartifactPath + GRholdersPhotoPath;
-            GRholdersPhotoPermaLinkUrl = GRpermaLinkBaseUrl + GRholdersPhotoFullPath;
+
             if (!File.Exists(path))
             {
                 createConfig(path);

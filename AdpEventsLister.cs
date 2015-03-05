@@ -4,12 +4,12 @@ namespace ApacsAdapter
 {
     public class AdpEventsLister
     {
-        private AdpConfigXml cfg;
+        private AdpCfgXml cfg;
         private ApcGetDate data;
         private ApacsServer Apacs;
         private AdpMBAdapter mbAdp;
             
-        public AdpEventsLister(ApacsServer Apacs, AdpConfigXml cfg) 
+        public AdpEventsLister(ApacsServer Apacs, AdpCfgXml cfg) 
         {
             this.Apacs = Apacs;
             this.cfg = cfg;

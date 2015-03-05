@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacsAdapter", "ApacsAdapter.csproj", "{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}"
-	ProjectSection(ProjectDependencies) = postProject
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8} = {81D607FA-37DE-4A88-AB0F-64532E2B68D8}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacsAdapterConsole", "ApacsAdapterConsole\ApacsAdapterConsole.csproj", "{A44499B6-38B4-4630-AAE4-1DE9C240BEB1}"
 EndProject
@@ -16,7 +13,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ApacsAdapterWebService", "h
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		ProjectReferences = "{acc18fab-da9b-43aa-aac4-0da5b728af28}|ApacsAdapter.dll;{81D607FA-37DE-4A88-AB0F-64532E2B68D8}|WSO2.dll;"
+		ProjectReferences = "{acc18fab-da9b-43aa-aac4-0da5b728af28}|ApacsAdapter.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_33008"
 		Debug.AspNetCompiler.PhysicalPath = "ApacsAdapterWebService\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_33008\"
@@ -33,8 +30,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ApacsAdapterWebService", "h
 		Release.AspNetCompiler.Debug = "False"
 		SlnRelativePath = "ApacsAdapterWebService\"
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WSO2", "WSO2\WSO2.csproj", "{81D607FA-37DE-4A88-AB0F-64532E2B68D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,18 +83,6 @@ Global
 		{F57054F7-6451-441C-922B-4B735E6170C5}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
 		{F57054F7-6451-441C-922B-4B735E6170C5}.Release|x86.ActiveCfg = Debug|Any CPU
 		{F57054F7-6451-441C-922B-4B735E6170C5}.Release|x86.Build.0 = Debug|Any CPU
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Debug|x86.ActiveCfg = Debug|x86
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Debug|x86.Build.0 = Debug|x86
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Release|Mixed Platforms.Build.0 = Release|x86
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Release|x86.ActiveCfg = Release|x86
-		{81D607FA-37DE-4A88-AB0F-64532E2B68D8}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

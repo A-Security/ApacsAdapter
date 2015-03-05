@@ -17,7 +17,7 @@ namespace ApacsAdapterService
 
         protected override void OnStart(string[] args)
         {
-            AdpConfigXml cfg = new AdpConfigXml();
+            AdpCfgXml cfg = new AdpCfgXml();
             apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
             eventLister = new AdpEventsLister(apacsInstance, cfg);
         }
