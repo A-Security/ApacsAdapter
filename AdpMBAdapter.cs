@@ -7,34 +7,33 @@ using RabbitMQ.Client.Events;
 namespace ApacsAdapter
 {
 
-    class AdpMBAdapter
+    public class AdpMBAdapter
     {
-        private string ExchangeName { get { return "amq.direct"; } }
-        private string ContentType { get { return "application/xml"; } }
+        private const string ExchangeName = "amq.direct";
+        private const string ContentType = "application/xml";
+        private const string VirtualHost = "/carbon";
         private ConnectionFactory Factory = new ConnectionFactory();
-        private IConnection Connect = null;
-        private IModel Model = null;
+
         public AdpMBAdapter(string hostName, string userName, string password, int port)
         {
-            Factory.VirtualHost = "/carbon";
+            Factory.VirtualHost = VirtualHost;
             Factory.UserName = userName;
             Factory.Password = password;
             Factory.HostName = hostName;
             Factory.Port = port;
-            Factory.Protocol = Protocols.AMQP_0_9_1;
+            Factory.Protocol = Protocols.DefaultProtocol;
         }
         public bool PublishMessage(string msg, string Queue)
         {
+            bool result = false;
             if (String.IsNullOrEmpty(msg) || String.IsNullOrEmpty(Queue))
             {
-                return false;
+                return result;
             }
-            try
+            using (IConnection Connect = Factory.CreateConnection())
             {
-                Connect = Factory.CreateConnection();
-                try 
+                using (IModel Model = Connect.CreateModel())
                 {
-                    Model = Connect.CreateModel();
                     Model.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
                     Model.QueueDeclare(Queue, true, false, false, null);
                     Model.QueueBind(Queue, ExchangeName, Queue);
@@ -45,30 +44,20 @@ namespace ApacsAdapter
                     Model.BasicPublish(ExchangeName, Queue, props, Encoding.UTF8.GetBytes(msg));
                     Model.Close(200, String.Empty);
                     Connect.Close();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    if (Model != null)
-                    { 
-                        Model.Close(200, String.Empty); 
-                    }
-                    Connect.Close();
-                    return false;
+                    result = true;
                 }
             }
-            catch (Exception) { return false; }
+            return result;
         }
-        public string RetriveMessage(string Queue, out bool queueIsEmpty)
+        
+        public string RetriveMessage(string Queue, out bool queueIsNotEmpty)
         {
             string message = null;
-            queueIsEmpty = true;
-            try
+            queueIsNotEmpty = false;
+            using (IConnection Connect = Factory.CreateConnection())
             {
-                Connect = Factory.CreateConnection();
-                try 
+                using (IModel Model = Connect.CreateModel())
                 {
-                    Model = Connect.CreateModel();
                     Model.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
                     Model.QueueDeclare(Queue, true, false, false, null);
                     Model.QueueBind(Queue, ExchangeName, Queue);
@@ -77,8 +66,8 @@ namespace ApacsAdapter
                     try
                     {
                         BasicDeliverEventArgs eventQueue = null;
-                        queueIsEmpty = !consumer.Queue.Dequeue(3000, out eventQueue);
-                        if (!queueIsEmpty)
+                        queueIsNotEmpty = consumer.Queue.Dequeue(2000, out eventQueue);
+                        if (eventQueue != null)
                         {
                             message = Encoding.UTF8.GetString(eventQueue.Body);
                             Model.BasicAck(eventQueue.DeliveryTag, false);
@@ -88,17 +77,7 @@ namespace ApacsAdapter
                     Model.Close(200, String.Empty);
                     Connect.Close();
                 }
-                catch (Exception)
-                {
-                    if (Model != null)
-                    {
-                        Model.Close(200, String.Empty);
-                    }
-                    Connect.Close();
-                }
-                
             }
-            catch (Exception) { }
             return message;
         }
     }

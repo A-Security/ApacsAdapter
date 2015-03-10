@@ -39,7 +39,7 @@ namespace ApacsAdapter
             sb.AppendLine("================END Property=" + apoName + "============");
             return sb.ToString();
         }
-        public AdpEvtObj_CHA getCardHolderEventObjectFromEventSets(ApacsPropertyObject evtSets)
+        public AdpEvtObj_CHA getCHAobjFromEvtSet(ApacsPropertyObject evtSets)
         {
             string eventType = evtSets.getStringProperty(ApcObjProp.strEventTypeID);
             if (eventType.Contains("Will"))
@@ -61,10 +61,10 @@ namespace ApacsAdapter
             AdpEvtObj_CHA aobj = new AdpEvtObj_CHA
             {
                 Time = evtSets.getDateTimeProperty(ApcObjProp.dtRealDateTime),
-                EventID = evtSets.getStringProperty(ApcObjProp.SysAddrEventID),
+                EventID = evtSets.getStringProperty(ApcObjProp.SysAddrEventID).Split('.')[1],
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
-                SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getUID(),
+                SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getSampleUID(),
                 SourceName = evtSets.getStringProperty(ApcObjProp.strInitObjName),
                 HolderID = (isNotErrHolder) ? uid : null,
                 HolderName = (isNotErrHolder) ? fullName : "НЕИЗВЕСТНЫЙ",
@@ -74,22 +74,26 @@ namespace ApacsAdapter
             };
             return aobj;
         }
-        public AdpEvtObj getCommonEventObjectFromEventSets (ApacsPropertyObject evtSets)
+        public AdpEvtObj getEvtObjFromEvtSet (ApacsPropertyObject evtSets)
         {
             string eventType = evtSets.getStringProperty(ApcObjProp.strEventTypeID);
             AdpEvtObj aeobj = new AdpEvtObj
             {
                 Time = evtSets.getDateTimeProperty(ApcObjProp.dtRealDateTime),
-                EventID = evtSets.getStringProperty(ApcObjProp.SysAddrEventID),
+                EventID = evtSets.getStringProperty(ApcObjProp.SysAddrEventID).Split('.')[1],
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
-                SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getUID(),
+                SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getSampleUID(),
                 SourceName = evtSets.getStringProperty(ApcObjProp.strInitObjName)
             };
             return aeobj;
         }
         public AdpCardHolder getAdpCardHolderFromApacsObject(ApacsObject cardHolderAO)
         {
+            if (!ApcObjType.TApcCardHolder.Equals(cardHolderAO.getApacsType()))
+            {
+                return null;
+            }
             ApacsPropertyObject holderSets = cardHolderAO.getCurrentSettings();
             AdpCardHolder chObj = new AdpCardHolder
             {

@@ -57,17 +57,18 @@ namespace ApacsAdapter
             }
             string evtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID).Split('_')[0];
             string aeobjStrXml;
+            
             switch (evtType)
             {
-                case "TApcCardHolderAccess":
+                case ApcObjType.TApcCardHolderAccess:
                     {
-                        AdpEvtObj_CHA aeObj = data.getCardHolderEventObjectFromEventSets(evtSet);
-                        aeobjStrXml = aeObj != null ? aeObj.ToXmlString() : null;
+                        AdpEvtObj_CHA aeCHAobj = data.getCHAobjFromEvtSet(evtSet);
+                        aeobjStrXml = aeCHAobj != null ? aeCHAobj.ToXmlString() : null;
                         break;
                     }
                 default:
                     {
-                        AdpEvtObj aeObj = data.getCommonEventObjectFromEventSets(evtSet);
+                        AdpEvtObj aeObj = data.getEvtObjFromEvtSet(evtSet);
                         aeobjStrXml = aeObj != null ? aeObj.ToXmlString() : null;
                         break;
                     }
@@ -80,15 +81,15 @@ namespace ApacsAdapter
         }
         private void onAddObject(ApacsObject newObject) 
         {
-            
+            newObject.getSampleUID();
         }
         private void onDelObject(ApacsObject delObject)
         {
-
+            delObject.getSampleUID();
         }
-        private void onChangeObject(ApacsObject obj, ApacsPropertyObject evtSet)
+        private void onChangeObject(ApacsObject changeObject, ApacsPropertyObject evtSet)
         {
-
+            changeObject.getSampleUID();
         }
     }
 }

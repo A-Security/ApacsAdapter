@@ -9,7 +9,7 @@ namespace ApacsAdapter
     [DataContract]
     public class AdpEvtObj
     {
-        private const string rootNamespace = @"http://schemas.datacontract.org/2004/07/ApacsAdapterService";
+        private const string rootNamespace = @"http://schemas.datacontract.org/2004/07/ApacsAdapter";
         [DataMember]
         public DateTime Time { get; set; }
         [DataMember]
