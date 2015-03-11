@@ -14,7 +14,7 @@ namespace ApacsAdapter
         private const string VirtualHost = "/carbon";
         private ConnectionFactory Factory = new ConnectionFactory();
 
-        public AdpMBAdapter(string hostName, string userName, string password, int port)
+        public AdpMBAdapter(string hostName, int port, string userName, string password)
         {
             Factory.VirtualHost = VirtualHost;
             Factory.UserName = userName;

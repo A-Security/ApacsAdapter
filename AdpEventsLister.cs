@@ -8,13 +8,12 @@ namespace ApacsAdapter
         private ApcGetDate data;
         private ApacsServer Apacs;
         private AdpMBAdapter mbAdp;
-            
         public AdpEventsLister(ApacsServer Apacs, AdpCfgXml cfg) 
         {
             this.Apacs = Apacs;
             this.cfg = cfg;
             this.data = new ApcGetDate();
-            this.mbAdp = new AdpMBAdapter(cfg.MBhost, cfg.MBuser, cfg.MBpassword, Convert.ToInt32(cfg.MBport));
+            this.mbAdp = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword);
             startEventsLister();
         }
         private void startEventsLister()
