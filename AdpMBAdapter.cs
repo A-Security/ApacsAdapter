@@ -23,10 +23,10 @@ namespace ApacsAdapter
             Factory.Port = port;
             Factory.Protocol = Protocols.DefaultProtocol;
         }
-        public bool PublishMessage(string msg, string Queue)
+        public bool PublishMessage(string queue, string msg)
         {
             bool result = false;
-            if (String.IsNullOrEmpty(msg) || String.IsNullOrEmpty(Queue))
+            if (String.IsNullOrEmpty(msg) || String.IsNullOrEmpty(queue))
             {
                 return result;
             }
@@ -35,13 +35,13 @@ namespace ApacsAdapter
                 using (IModel Model = Connect.CreateModel())
                 {
                     Model.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
-                    Model.QueueDeclare(Queue, true, false, false, null);
-                    Model.QueueBind(Queue, ExchangeName, Queue);
+                    Model.QueueDeclare(queue, true, false, false, null);
+                    Model.QueueBind(queue, ExchangeName, queue);
                     IBasicProperties props = Model.CreateBasicProperties();
                     props.ContentEncoding = Encoding.UTF8.HeaderName;
                     props.ContentType = ContentType;
                     props.DeliveryMode = 2;
-                    Model.BasicPublish(ExchangeName, Queue, props, Encoding.UTF8.GetBytes(msg));
+                    Model.BasicPublish(ExchangeName, queue, props, Encoding.UTF8.GetBytes(msg));
                     Model.Close(200, String.Empty);
                     Connect.Close();
                     result = true;

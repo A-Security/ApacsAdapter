@@ -56,14 +56,13 @@ namespace ApacsAdapter
                 return;
             }
             string evtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID).Split('_')[0];
-            string aeobjStrXml;
-            
+            string aeobjStrXml = null;
             switch (evtType)
             {
                 case ApcObjType.TApcCardHolderAccess:
                     {
-                        AdpEvtObj_CHA aeCHAobj = data.getCHAobjFromEvtSet(evtSet);
-                        aeobjStrXml = aeCHAobj != null ? aeCHAobj.ToXmlString() : null;
+                        AdpEvtObj_CHA aeObj_CHA = data.getCHAobjFromEvtSet(evtSet);
+                        aeobjStrXml = aeObj_CHA != null ? aeObj_CHA.ToXmlString() : null;
                         break;
                     }
                 default:
@@ -75,9 +74,8 @@ namespace ApacsAdapter
             }
             if (aeobjStrXml != null)
             {
-                mbAdp.PublishMessage(aeobjStrXml, cfg.MBoutQueue);
+                mbAdp.PublishMessage(cfg.MBoutQueue, aeobjStrXml);
             }
-            
         }
         private void onAddObject(ApacsObject newObject) 
         {
