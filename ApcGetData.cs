@@ -12,25 +12,25 @@ namespace ApacsAdapter
         {
             return typeDescDict.TryGetValue(strType, out strType) ? strType : null;
         }
-        public string getPropertiesHierarchy(ApacsPropertyObject objSettings)
+        public string getPropHierarchy(ApacsPropertyObject objSets)
         {
             StringBuilder sb = new StringBuilder();
-            string apoName = objSettings.hasProperty(ApcObjProp.strName) ? objSettings.getStringProperty(ApcObjProp.strName) : "Event";
-            string apoAlias = objSettings.hasProperty(ApcObjProp.strAlias) ? objSettings.getStringProperty(ApcObjProp.strAlias) : "Event";
+            string apoName = objSets.hasProperty(ApcObjProp.strName) ? objSets.getStringProperty(ApcObjProp.strName) : "Event";
+            string apoAlias = objSets.hasProperty(ApcObjProp.strAlias) ? objSets.getStringProperty(ApcObjProp.strAlias) : "Event";
             sb.AppendLine("================Property=" + apoName + "==Alias=" + apoAlias + "=======");
-            foreach (string propName in objSettings.getPropertyNames())
+            foreach (string propName in objSets.getPropertyNames())
             {
-                object propObject = objSettings.getProperty(propName);
+                object propObject = objSets.getProperty(propName);
                 sb.AppendLine(propName + ": " + propObject);
-                if (objSettings.getProperty(propName).GetType().IsCOMObject)
+                if (objSets.getProperty(propName).GetType().IsCOMObject)
                 {
-                    ApacsObject propCOMObject = objSettings.getObjectProperty(propName);
+                    ApacsObject propCOMObject = objSets.getObjectProperty(propName);
                     sb.AppendLine("===============Object=" + propName + "================");
                     sb.AppendLine("Object Apacs Type: " + propCOMObject.getApacsType());
-                    sb.AppendLine(getPropertiesHierarchy(propCOMObject.getCurrentSettings()));
+                    sb.AppendLine(getPropHierarchy(propCOMObject.getCurrentSettings()));
                     foreach (ApacsObject childPropCOMObject in propCOMObject.getChildrenObjs())
                     {
-                        sb.AppendLine(getPropertiesHierarchy(childPropCOMObject.getCurrentSettings()));
+                        sb.AppendLine(getPropHierarchy(childPropCOMObject.getCurrentSettings()));
                     }
                     sb.AppendLine("================END Object=" + propName + "===============");
                 }
