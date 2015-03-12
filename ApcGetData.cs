@@ -6,12 +6,11 @@ using System.Text;
 
 namespace ApacsAdapter
 {
-    public class ApcGetDate
+    public partial class ApcGetData
     {
         private string getTypeDesc(string strType)
         {
-            ApcTypesDesc TApc = new ApcTypesDesc();
-            return TApc.typeDescDict.TryGetValue(strType, out strType) ? strType : null;
+            return typeDescDict.TryGetValue(strType, out strType) ? strType : null;
         }
         public string getPropertiesHierarchy(ApacsPropertyObject objSettings)
         {

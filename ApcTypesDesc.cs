@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApacsAdapter
 {
-    internal class ApcTypesDesc
+    partial class ApcGetData
     {
         public Dictionary<string, string> typeDescDict = new Dictionary<string, string>()
             {

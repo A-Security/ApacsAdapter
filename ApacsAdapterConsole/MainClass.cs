@@ -43,7 +43,7 @@ namespace ApacsAdapterConsole
         }
         static void onEvent(ApacsPropertyObject apo)
         {
-            ApcGetDate agd = new ApcGetDate();
+            ApcGetData agd = new ApcGetData();
             AdpEvtObj_CHA ch = agd.getCHAobjFromEvtSet(apo);
             Console.WriteLine(ch.ToXmlString());
         }

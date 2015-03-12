@@ -5,14 +5,14 @@ namespace ApacsAdapter
     public class AdpEventsLister
     {
         private AdpCfgXml cfg;
-        private ApcGetDate data;
+        private ApcGetData data;
         private ApacsServer Apacs;
         private AdpMBAdapter mbAdp;
         public AdpEventsLister(ApacsServer Apacs, AdpCfgXml cfg) 
         {
             this.Apacs = Apacs;
             this.cfg = cfg;
-            this.data = new ApcGetDate();
+            this.data = new ApcGetData();
             this.mbAdp = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword);
             startEventsLister();
         }
