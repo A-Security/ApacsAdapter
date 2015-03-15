@@ -38,7 +38,7 @@ namespace ApacsAdapter
             sb.AppendLine("================END Property=" + apoName + "============");
             return sb.ToString();
         }
-        public AdpEvtObj_CHA getCHAobjFromEvtSet(ApacsPropertyObject evtSets)
+        public AdpEvtObj_CHA getEvtObjFromEvtSet_CHA(ApacsPropertyObject evtSets)
         {
             string eventType = evtSets.getStringProperty(ApcObjProp.strEventTypeID);
             if (eventType.Contains("Will"))
@@ -87,7 +87,7 @@ namespace ApacsAdapter
             };
             return aeobj;
         }
-        public AdpCardHolder getAdpCardHolderFromApacsObject(ApacsObject cardHolderAO)
+        public AdpCardHolder getCardHolderFromAO(ApacsObject cardHolderAO)
         {
             if (!ApcObjType.TApcCardHolder.Equals(cardHolderAO.getApacsType()))
             {
@@ -110,7 +110,7 @@ namespace ApacsAdapter
             AdpCardHolder[] result = new AdpCardHolder[cardHolders.Length];
             for (int i = 0; i < result.Length; i++ )
             {
-                result[i] = getAdpCardHolderFromApacsObject(cardHolders[i]);
+                result[i] = getCardHolderFromAO(cardHolders[i]);
             }
                 
             return result;

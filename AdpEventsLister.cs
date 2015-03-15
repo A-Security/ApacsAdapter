@@ -60,7 +60,7 @@ namespace ApacsAdapter
             {
                 case ApcObjType.TApcCardHolderAccess:
                     {
-                        AdpEvtObj_CHA aeObj_CHA = data.getCHAobjFromEvtSet(evtSet);
+                        AdpEvtObj_CHA aeObj_CHA = data.getEvtObjFromEvtSet_CHA(evtSet);
                         aeobjStrXml = aeObj_CHA != null ? aeObj_CHA.ToXmlString() : null;
                         break;
                     }
