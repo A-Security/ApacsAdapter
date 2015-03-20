@@ -86,23 +86,19 @@ namespace ApacsAdapter
     }
     public class AdpGRAdapter
     {
-        private string artifactPath = @"/_system/governance";
-        private string holdersPath = @"/ssoi/cardholders";
-        private string holdersFullPath;
-        private string holdersPhotoPath;
-        private string holdersPhotoFullPath;
+        private const string artifactPath = @"/_system/governance";
+        private const string holdersPath = @"/ssoi/cardholders";
+        private string holdersFullPath = artifactPath + holdersPath;
+        private const string holdersPhotoPath = holdersPath + @"/photo";
+        private string holdersPhotoFullPath = artifactPath + holdersPhotoPath;
         private string holdersPhotoPermaLinkUrl;
         private string serviceUrl;
         private string permaLinkBaseUrl;
         private static RegistryClient registry;
         public AdpGRAdapter(string GRhost, string GRuser, string GRpassword)
         {
-
-            serviceUrl = @"https://" + GRhost + @":9443/services/";
-            permaLinkBaseUrl = @"http://" + GRhost + @":9763/registry/resource";
-            holdersFullPath = artifactPath + holdersPath;
-            holdersPhotoPath = holdersPath + "/photo";
-            holdersPhotoFullPath = artifactPath + holdersPhotoPath;
+            serviceUrl = String.Format(@"https://{0}:9443/services/", GRhost);
+            permaLinkBaseUrl = String.Format(@"http://{0}:9763/registry/resource", GRhost);
             holdersPhotoPermaLinkUrl = permaLinkBaseUrl + holdersPhotoFullPath;
             registry = new RegistryClient(GRuser, GRpassword, serviceUrl);
         }

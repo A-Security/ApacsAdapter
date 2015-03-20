@@ -1,9 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ApacsAdapter
 {
     public class AdpEventsLister
     {
+        class ListWithOnAddEvents<T> : List<T>
+        {
+            public event EventHandler OnAdd;
+            public void Add(T item)
+            {
+                if (OnAdd != null)
+                {
+                    OnAdd(this, EventArgs.Empty);
+                }
+                base.Add(item);
+            }
+        }
+        private ListWithOnAddEvents<string> dispatchQueue = new ListWithOnAddEvents<string>();
         private AdpCfgXml cfg;
         private ApcGetData data;
         private ApacsServer Apacs;
@@ -25,8 +39,24 @@ namespace ApacsAdapter
                 Apacs.ApacsNotifyDelete += new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
                 Apacs.ApacsNotifyChange += new ApacsServer.ApacsNotifyChangeHandler(onChangeObject);
                 Apacs.ApacsEvent += new ApacsServer.ApacsEventHandler(onEvent);
+                dispatchQueue.OnAdd += new EventHandler(dispatchQueue_OnAdd);
             }
             catch (Exception) { }
+        }
+
+        void dispatchQueue_OnAdd(object sender, EventArgs e)
+        {
+            if (dispatchQueue.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0; i < dispatchQueue.Count; i++)
+            {
+                if (!mbAdp.PublishMessage(cfg.MBoutQueue, dispatchQueue[i]))
+                {
+                    if (i > 0) { i--; }
+                }
+            }
         }
         public void stopEventsLister()
         {
@@ -73,7 +103,10 @@ namespace ApacsAdapter
             }
             if (aeobjStrXml != null)
             {
-                mbAdp.PublishMessage(cfg.MBoutQueue, aeobjStrXml);
+                if (!mbAdp.PublishMessage(cfg.MBoutQueue, aeobjStrXml))
+                {
+                    dispatchQueue.Add(aeobjStrXml);
+                }
             }
         }
         private void onAddObject(ApacsObject newObject) 
