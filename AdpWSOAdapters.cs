@@ -6,6 +6,7 @@ using WSO2;
 using WSO2.Registry;
 using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Linq;
 
 
 namespace ApacsAdapter
@@ -184,35 +185,21 @@ namespace ApacsAdapter
         }
         public byte[] CHtoGRcontent(AdpCardHolder ch)
         {
-            XmlDocument xdoc = new XmlDocument();
-            XmlElement metaNode = xdoc.CreateElement("metadata", @"http://www.wso2.org/governance/metadata");
-            XmlElement holdNode = xdoc.CreateElement("holder");
-            XmlElement idNode = xdoc.CreateElement("id");
-            XmlElement shortNameNode = xdoc.CreateElement("shortName");
-            XmlElement nameNode = xdoc.CreateElement("name");
-            XmlElement cardNoNode = xdoc.CreateElement("cardNo");
-            XmlElement photoNode = xdoc.CreateElement("photo");
-            XmlElement photoLinkNode = xdoc.CreateElement("photoLink");
-            XmlElement vipNode = xdoc.CreateElement("vip");
-            idNode.InnerText = ch.ID;
-            shortNameNode.InnerText = ch.ShortName;
-            nameNode.InnerText = ch.Name;
-            cardNoNode.InnerText = ch.CardNo;
-            string photoResName = @"/" + ch.ID + ".jpg";
-            photoNode.InnerText = holdersPhotoPath + photoResName;
-            photoLinkNode.InnerText = holdersPhotoPermaLinkUrl + photoResName;
-            vipNode.InnerText = bool.FalseString;
-            holdNode.AppendChild(idNode);
-            holdNode.AppendChild(shortNameNode);
-            holdNode.AppendChild(nameNode);
-            holdNode.AppendChild(cardNoNode);
-            holdNode.AppendChild(photoNode);
-            holdNode.AppendChild(photoLinkNode);
-            holdNode.AppendChild(vipNode);
-            metaNode.AppendChild(holdNode);
-            xdoc.AppendChild(metaNode);
-            string result = xdoc.OuterXml.Replace(" xmlns=\"\"", String.Empty);
-            return Encoding.UTF8.GetBytes(result);
+            string photoResName = String.Format(@"/{0}.jpg", ch.ID);
+            XNamespace xn = @"http://www.wso2.org/governance/metadata";
+            XElement xdoc =
+                new XElement(xn + "metadata",
+                    new XElement(xn + "holder",
+                        new XElement(xn + "id", ch.ID),
+                        new XElement(xn + "shortName", ch.ShortName),
+                        new XElement(xn + "name", ch.Name),
+                        new XElement(xn + "cardNo", ch.CardNo),
+                        new XElement(xn + "photo", holdersPhotoPath + photoResName),
+                        new XElement(xn + "photoLink", holdersPhotoPermaLinkUrl + photoResName),
+                        new XElement(xn + "vip", bool.FalseString)
+                    )
+                );
+            return Encoding.UTF8.GetBytes(xdoc.ToString());
         }
     }
 }

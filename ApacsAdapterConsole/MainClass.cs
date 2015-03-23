@@ -8,10 +8,12 @@ namespace ApacsAdapterConsole
         static void Main(string[] args)
         {
             AdpCfgXml cfg = new AdpCfgXml();
-            //ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
-            //AdpGRAdapter gr = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
-            //if (gr.copyCHfromApacs(apacsInstance))
-            //{
+            ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
+            AdpGRAdapter gr = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
+            if (gr.copyCHfromApacs(apacsInstance))
+            {
+                Console.WriteLine("true");
+            }
             //    foreach (string str in gr.getListStringCHs())
             //    {
             //        Console.WriteLine(str);

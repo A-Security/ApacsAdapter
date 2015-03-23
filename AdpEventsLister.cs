@@ -8,7 +8,7 @@ namespace ApacsAdapter
         class ListWithOnAddEvents<T> : List<T>
         {
             public event EventHandler OnAdd;
-            public void Add(T item)
+            public new void Add(T item)
             {
                 if (OnAdd != null)
                 {
