@@ -89,8 +89,10 @@ namespace ApacsAdapter
     {
         private const string artifactPath = @"/_system/governance";
         private const string holdersPath = @"/ssoi/cardholders";
-        private string holdersFullPath = artifactPath + holdersPath;
         private const string holdersPhotoPath = holdersPath + @"/photo";
+        private const string VIPsPath = @"/ssoi/personcontrol";
+        private string holdersFullPath = artifactPath + holdersPath;
+        private string VIPsFullPath = artifactPath + VIPsPath;
         private string holdersPhotoFullPath = artifactPath + holdersPhotoPath;
         private string holdersPhotoPermaLinkUrl;
         private string serviceUrl;
@@ -166,14 +168,14 @@ namespace ApacsAdapter
                     resource.name = ch.ID + ".xml";
                     resource.contentFile = CHtoGRcontent(ch);
                     resPath = holdersFullPath + @"/" + resource.name;
-                    //resCH.properties = new WSProperty[]
-                    //    {
-                    //        new WSProperty(){ key = "holder_id", values = new string[] { ch.ID } },
-                    //        new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
-                    //        new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
-                    //        new WSProperty(){ key = "holder_cardNo", values = new string[] { ch.CardNo.ToString() } },
-                    //        new WSProperty(){ key = "holder_vip", values = new string[] { bool.FalseString } }
-                    //    };
+                    resource.properties = new WSProperty[]
+                    {
+                        new WSProperty(){ key = "holder_id", values = new string[] { ch.ID } },
+                        new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
+                        new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
+                        new WSProperty(){ key = "holder_cardNo", values = new string[] { ch.CardNo } },
+                        new WSProperty(){ key = "holder_vip", values = new string[] { IsVIP(ch.ID).ToString() } }
+                    };
                     registry.Put(resPath, resource);
                 }
             }
@@ -196,10 +198,15 @@ namespace ApacsAdapter
                         new XElement(xn + "cardNo", ch.CardNo),
                         new XElement(xn + "photo", holdersPhotoPath + photoResName),
                         new XElement(xn + "photoLink", holdersPhotoPermaLinkUrl + photoResName),
-                        new XElement(xn + "vip", bool.FalseString)
+                        new XElement(xn + "vip", IsVIP(ch.ID).ToString())
                     )
                 );
             return Encoding.UTF8.GetBytes(xdoc.ToString());
+        }
+        private bool IsVIP(string id)
+        {
+            string VIPpath = VIPsFullPath + @"/" + id;
+            return registry.ResourceExists(VIPpath); ;
         }
     }
 }
