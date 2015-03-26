@@ -47,14 +47,8 @@ namespace ApacsAdapter
             XmlElement configNode = xdoc.DocumentElement;
             foreach (PropertyInfo pi in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                foreach (XmlNode xn in configNode.ChildNodes)
-                {
-                    if (xn.Name == pi.Name)
-                    {
-                        pi.SetValue(this, xn.InnerText);
-                        break;
-                    }
-                }
+                XmlNode xn = configNode.GetElementsByTagName(pi.Name)[0];
+                pi.SetValue(this, xn.InnerText);
             }
         }
         private void createConfig(string path)

@@ -5,19 +5,20 @@ namespace ApacsAdapter
 {
     public class AdpEventsLister
     {
-        class ListWithOnAddEvents<T> : List<T>
+        class ListWithOnAddEvent<T> : List<T>
         {
             public event EventHandler OnAdd;
             public new void Add(T item)
             {
+                base.Add(item);
                 if (OnAdd != null)
                 {
                     OnAdd(this, EventArgs.Empty);
                 }
-                base.Add(item);
             }
         }
-        private ListWithOnAddEvents<string> dispatchQueue = new ListWithOnAddEvents<string>();
+        
+        private ListWithOnAddEvent<MQMessage> dispatchQueue = new ListWithOnAddEvent<MQMessage>();
         private AdpCfgXml cfg;
         private ApcGetData data;
         private ApacsServer Apacs;
@@ -46,15 +47,19 @@ namespace ApacsAdapter
 
         void dispatchQueue_OnAdd(object sender, EventArgs e)
         {
-            if (dispatchQueue.Count == 0)
+            ListWithOnAddEvent<MQMessage> ls = (ListWithOnAddEvent<MQMessage>)sender;
+            if (ls == null || ls.Count == 0)
             {
                 return;
             }
-            for (int i = 0; i < dispatchQueue.Count; i++)
+            for (int i = 0; i < ls.Count; i++)
             {
-                if (!mbAdp.PublishMessage(cfg.MBoutQueue, dispatchQueue[i]))
+                if (!ls[i].IsBodyEmpty || !mbAdp.PublishMessage(cfg.MBoutQueue, ls[i]))
                 {
-                    if (i > 0) { i--; }
+                    if (!ls[i].IsBodyEmpty || i > 0) 
+                    { 
+                        i--; 
+                    }
                 }
             }
         }
@@ -80,32 +85,40 @@ namespace ApacsAdapter
 
         private void onEvent(ApacsPropertyObject evtSet)
         {
+            
+            
             if (evtSet == null)
             {
                 return;
             }
             string evtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID).Split('_')[0];
-            string aeobjStrXml = null;
+            MQMessage msg = null;
             switch (evtType)
             {
                 case ApcObjType.TApcCardHolderAccess:
                     {
                         AdpEvtObj_CHA aeObj_CHA = data.getEvtObjFromEvtSet_CHA(evtSet);
-                        aeobjStrXml = aeObj_CHA != null ? aeObj_CHA.ToXmlString() : null;
+                        if (aeObj_CHA != null)
+                        {
+                            msg = new MQMessage(aeObj_CHA.EventID, aeObj_CHA.ToXmlString());
+                        }
                         break;
                     }
                 default:
                     {
                         AdpEvtObj aeObj = data.getEvtObjFromEvtSet(evtSet);
-                        aeobjStrXml = aeObj != null ? aeObj.ToXmlString() : null;
+                        if (aeObj != null)
+                        {
+                            msg = new MQMessage(aeObj.EventID, aeObj.ToXmlString());
+                        }
                         break;
                     }
             }
-            if (aeobjStrXml != null)
+            if (msg != null || !msg.IsBodyEmpty)
             {
-                if (!mbAdp.PublishMessage(cfg.MBoutQueue, aeobjStrXml))
+                if (!mbAdp.PublishMessage(cfg.MBoutQueue, msg))
                 {
-                    dispatchQueue.Add(aeobjStrXml);
+                    dispatchQueue.Add(msg);
                 }
             }
         }

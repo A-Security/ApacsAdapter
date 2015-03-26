@@ -13,45 +13,53 @@ namespace ApacsAdapter
 {
     public class AdpMBAdapter
     {
-        private const string ExchangeName = "amq.direct";
-        private const string ContentType = "application/xml";
-        private const string VirtualHost = "/carbon";
-        private ConnectionFactory Factory = new ConnectionFactory();
+        private const string EXCHANGE_NAME = "amq.direct";
+        private const string CONTENT_TYPE = "application/xml";
+        private const string VIRTUAL_HOST = "/carbon";
+        private const byte DELIVERY_MODE = 2;
+        private ConnectionFactory Factory;
 
         public AdpMBAdapter(string hostName, int port, string userName, string password)
         {
-            Factory.VirtualHost = VirtualHost;
-            Factory.UserName = userName;
-            Factory.Password = password;
+            Factory = new ConnectionFactory();
+            Factory.VirtualHost = VIRTUAL_HOST;
             Factory.HostName = hostName;
             Factory.Port = port;
+            Factory.UserName = userName;
+            Factory.Password = password;
             Factory.Protocol = Protocols.DefaultProtocol;
         }
-        public bool PublishMessage(string queue, string msg)
+        public bool PublishMessage(string queue, MQMessage msg)
         {
-            bool result = false;
-            if (String.IsNullOrEmpty(msg) || String.IsNullOrEmpty(queue))
+            bool IsSendOk = false;
+            if (String.IsNullOrEmpty(msg.body) || String.IsNullOrEmpty(queue))
             {
-                return result;
+                return IsSendOk;
             }
-            using (IConnection Connect = Factory.CreateConnection())
+            try
             {
-                using (IModel Model = Connect.CreateModel())
+                using (IConnection Connect = Factory.CreateConnection())
                 {
-                    Model.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
-                    Model.QueueDeclare(queue, true, false, false, null);
-                    Model.QueueBind(queue, ExchangeName, queue);
-                    IBasicProperties props = Model.CreateBasicProperties();
-                    props.ContentEncoding = Encoding.UTF8.HeaderName;
-                    props.ContentType = ContentType;
-                    props.DeliveryMode = 2;
-                    Model.BasicPublish(ExchangeName, queue, props, Encoding.UTF8.GetBytes(msg));
-                    Model.Close(200, String.Empty);
-                    Connect.Close();
-                    result = true;
+                    using (IModel Model = Connect.CreateModel())
+                    {
+                        Model.ExchangeDeclare(EXCHANGE_NAME, ExchangeType.Direct);
+                        Model.QueueDeclare(queue, true, false, false, null);
+                        Model.QueueBind(queue, EXCHANGE_NAME, queue);
+                        IBasicProperties props = Model.CreateBasicProperties();
+                        props.MessageId = msg.id;
+                        props.Timestamp = new AmqpTimestamp(msg.time);
+                        props.ContentEncoding = Encoding.UTF8.HeaderName;
+                        props.ContentType = CONTENT_TYPE;
+                        props.DeliveryMode = DELIVERY_MODE;
+                        Model.BasicPublish(EXCHANGE_NAME, queue, props, Encoding.UTF8.GetBytes(msg.body));
+                        Model.Close(200, String.Empty);
+                        Connect.Close();
+                        IsSendOk = true;
+                    }
                 }
             }
-            return result;
+            catch (Exception) { }
+            return IsSendOk;
         }
         
         public string RetriveMessage(string Queue, out bool queueIsNotEmpty)
@@ -62,9 +70,9 @@ namespace ApacsAdapter
             {
                 using (IModel Model = Connect.CreateModel())
                 {
-                    Model.ExchangeDeclare(ExchangeName, ExchangeType.Direct);
+                    Model.ExchangeDeclare(EXCHANGE_NAME, ExchangeType.Direct);
                     Model.QueueDeclare(Queue, true, false, false, null);
-                    Model.QueueBind(Queue, ExchangeName, Queue);
+                    Model.QueueBind(Queue, EXCHANGE_NAME, Queue);
                     QueueingBasicConsumer consumer = new QueueingBasicConsumer(Model);
                     Model.BasicConsume(Queue, false, consumer);
                     try
@@ -87,13 +95,21 @@ namespace ApacsAdapter
     }
     public class AdpGRAdapter
     {
-        private const string artifactPath = @"/_system/governance";
-        private const string holdersPath = @"/ssoi/cardholders";
-        private const string holdersPhotoPath = holdersPath + @"/photo";
-        private const string VIPsPath = @"/ssoi/personcontrol";
-        private string holdersFullPath = artifactPath + holdersPath;
-        private string VIPsFullPath = artifactPath + VIPsPath;
-        private string holdersPhotoFullPath = artifactPath + holdersPhotoPath;
+        class URL
+        {
+
+            public URL()
+            {
+
+            }
+        }
+        private const string ARTIFACT_PATH = @"/_system/governance";
+        private const string HOLDERS_PATH = @"/ssoi/cardholders";
+        private const string HOLDERS_PHOTO_PATH = HOLDERS_PATH + @"/photo";
+        private const string VIPS_PATH = @"/ssoi/personcontrol";
+        private string holdersFullPath = ARTIFACT_PATH + HOLDERS_PATH;
+        private string VIPsFullPath = ARTIFACT_PATH + VIPS_PATH;
+        private string holdersPhotoFullPath = ARTIFACT_PATH + HOLDERS_PHOTO_PATH;
         private string holdersPhotoPermaLinkUrl;
         private string serviceUrl;
         private string permaLinkBaseUrl;
@@ -196,7 +212,7 @@ namespace ApacsAdapter
                         new XElement(xn + "shortName", ch.ShortName),
                         new XElement(xn + "name", ch.Name),
                         new XElement(xn + "cardNo", ch.CardNo),
-                        new XElement(xn + "photo", holdersPhotoPath + photoResName),
+                        new XElement(xn + "photo", HOLDERS_PHOTO_PATH + photoResName),
                         new XElement(xn + "photoLink", holdersPhotoPermaLinkUrl + photoResName),
                         new XElement(xn + "vip", IsVIP(ch.ID).ToString())
                     )

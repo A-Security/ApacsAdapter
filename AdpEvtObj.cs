@@ -9,7 +9,7 @@ namespace ApacsAdapter
     [DataContract]
     public class AdpEvtObj
     {
-        private const string rootNamespace = @"http://schemas.datacontract.org/2004/07/ApacsAdapter";
+        private const string NAMESPACE = @"http://schemas.datacontract.org/2004/07/ApacsAdapter";
         [DataMember]
         public DateTime Time { get; set; }
         [DataMember]
@@ -39,7 +39,7 @@ namespace ApacsAdapter
             try
             {
                 MemoryStream ms = new MemoryStream();
-                DataContractSerializer xmlSerializer = new DataContractSerializer(this.GetType(), EventType, rootNamespace);
+                DataContractSerializer xmlSerializer = new DataContractSerializer(this.GetType(), EventType, NAMESPACE);
                 xmlSerializer.WriteObject(ms, this);
                 ms.Position = 0;
                 return new StreamReader(ms).ReadToEnd();

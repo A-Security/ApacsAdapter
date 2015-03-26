@@ -8,7 +8,11 @@ namespace ApacsAdapter
 {
     partial class ApcGetData
     {
-        public Dictionary<string, string> typeDescDict = new Dictionary<string, string>()
+        private string getTypeDesc(string strType)
+        {
+            return apcTypeDescDict.TryGetValue(strType, out strType) ? strType : null;
+        }
+        public Dictionary<string, string> apcTypeDescDict = new Dictionary<string, string>()
             {
                 {"TApcBolidEvent_Entry", "Проход"},
                 {"TApcCardHolderAccess_DeniedNonEscortedVisitWhileVisit_ErrHolder", "Доступ запрещен, предъявлена карта посетителя, которому не нужен сопровождающий, владелец карты не найден"},
