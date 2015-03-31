@@ -7,6 +7,7 @@ using WSO2.Registry;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
+using RabbitMQ.Client.Exceptions;
 
 
 namespace ApacsAdapter
@@ -58,7 +59,10 @@ namespace ApacsAdapter
                     }
                 }
             }
-            catch (Exception) { }
+            catch (Exception e) 
+            {
+                AdpLog.AddLog(e.ToString());
+            }
             return IsSendOk;
         }
         
@@ -85,7 +89,10 @@ namespace ApacsAdapter
                             Model.BasicAck(eventQueue.DeliveryTag, false);
                         }
                     }
-                    catch (Exception) { }
+                    catch (Exception e)
+                    {
+                        AdpLog.AddLog(e.ToString());
+                    }
                     Model.Close(200, String.Empty);
                     Connect.Close();
                 }
@@ -95,14 +102,6 @@ namespace ApacsAdapter
     }
     public class AdpGRAdapter
     {
-        class URL
-        {
-
-            public URL()
-            {
-
-            }
-        }
         private const string ARTIFACT_PATH = @"/_system/governance";
         private const string HOLDERS_PATH = @"/ssoi/cardholders";
         private const string HOLDERS_PHOTO_PATH = HOLDERS_PATH + @"/photo";
@@ -195,8 +194,9 @@ namespace ApacsAdapter
                     registry.Put(resPath, resource);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                AdpLog.AddLog(e.ToString());
                 return false;
             }
             return true;

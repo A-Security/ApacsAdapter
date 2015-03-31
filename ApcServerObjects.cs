@@ -555,8 +555,12 @@ namespace ApacsAdapter
             try
             {
                 Session.set_onDisconnect(new DisconnectClass(this));
+                AdpLog.AddLog("APACS server connected");
             }
-            catch (Exception) { }
+            catch (Exception e) 
+            {
+                AdpLog.AddLog(e.ToString());
+            }
         }
         public void Dispose()
         {
@@ -566,6 +570,7 @@ namespace ApacsAdapter
                 Session = null;
             }
             Apacs = null;
+            AdpLog.AddLog("APACS Server disposed");
         }
         
         public ApacsObject getObjectByUID(string astrUID)

@@ -7,6 +7,7 @@ namespace ApacsAdapterConsole
     {
         static void Main(string[] args)
         {
+            AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
             ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
             AdpGRAdapter gr = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
@@ -31,13 +32,18 @@ namespace ApacsAdapterConsole
                 {
                     case ConsoleKey.Escape:
                         isRun = false;
-                        //lister.stopEventsLister();
-                        //apacsInstance.Dispose();
+                        lister.stopEventsLister();
+                        apacsInstance.Dispose();
                         break;
                     default:
                         break;
                 }
             }
+            Console.ReadLine();
+        }
+        static void AdpLog_OnAddLog(object sender, EventArgs arg)
+        {
+            Console.WriteLine(sender);
         }
 
     }

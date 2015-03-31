@@ -41,8 +41,12 @@ namespace ApacsAdapter
                 Apacs.ApacsNotifyChange += new ApacsServer.ApacsNotifyChangeHandler(onChangeObject);
                 Apacs.ApacsEvent += new ApacsServer.ApacsEventHandler(onEvent);
                 dispatchQueue.OnAdd += new EventHandler(dispatchQueue_OnAdd);
+                AdpLog.AddLog("Events Lister Started");
             }
-            catch (Exception) { }
+            catch (Exception e) 
+            {
+                AdpLog.AddLog(e.ToString());
+            }
         }
 
         void dispatchQueue_OnAdd(object sender, EventArgs e)
@@ -72,11 +76,16 @@ namespace ApacsAdapter
                 Apacs.ApacsNotifyDelete -= new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
                 Apacs.ApacsNotifyAdd -= new ApacsServer.ApacsNotifyAddHandler(onAddObject);
                 Apacs.ApacsDisconnect -= new ApacsServer.ApacsDisconnectHandler(onDisconnect);
+                AdpLog.AddLog("Events Lister Stopped");
             }
-            catch (Exception) {}
+            catch (Exception e)
+            {
+                AdpLog.AddLog(e.ToString());
+            }
         }
         private void onDisconnect()
         {
+            AdpLog.AddLog("APACS SERVER DISCONNECTED!");
             stopEventsLister();
             Apacs.Dispose();
             Apacs = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
@@ -85,8 +94,6 @@ namespace ApacsAdapter
 
         private void onEvent(ApacsPropertyObject evtSet)
         {
-            
-            
             if (evtSet == null)
             {
                 return;

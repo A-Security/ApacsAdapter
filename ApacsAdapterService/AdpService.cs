@@ -17,6 +17,7 @@ namespace ApacsAdapterService
 
         protected override void OnStart(string[] args)
         {
+            AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
             apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
             eventLister = new AdpEventsLister(apacsInstance, cfg);
@@ -29,7 +30,7 @@ namespace ApacsAdapterService
             if (apacsInstance != null)
                 apacsInstance.Dispose();
         }
-        public void AddLog(string log)
+        static void AdpLog_OnAddLog(object sender, EventArgs arg)
         {
             try
             {
@@ -38,7 +39,7 @@ namespace ApacsAdapterService
                     EventLog.CreateEventSource("ApacsAdapterService", "ApacsAdapterService");
                 }
                 adpServiceLog.Source = "ApacsAdapterService";
-                adpServiceLog.WriteEntry(log);
+                adpServiceLog.WriteEntry(sender.ToString());
             }
             catch { }
         }

@@ -52,7 +52,7 @@ namespace ApacsAdapter
         {
             this.id = id;
             this.body = body;
-            this.time = DateTime.Now.ToBinary();
+            this.time = (DateTime.Now.Ticks - (new DateTime(1970,1,1)).Ticks) / TimeSpan.TicksPerSecond;
         }
         
     }
