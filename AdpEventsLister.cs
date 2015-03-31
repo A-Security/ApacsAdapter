@@ -18,7 +18,7 @@ namespace ApacsAdapter
             }
         }
         
-        private ListWithOnAddEvent<MQMessage> dispatchQueue = new ListWithOnAddEvent<MQMessage>();
+        private ListWithOnAddEvent<AdpMQMessage> dispatchQueue = new ListWithOnAddEvent<AdpMQMessage>();
         private AdpCfgXml cfg;
         private ApcGetData data;
         private ApacsServer Apacs;
@@ -51,7 +51,7 @@ namespace ApacsAdapter
 
         void dispatchQueue_OnAdd(object sender, EventArgs e)
         {
-            ListWithOnAddEvent<MQMessage> ls = (ListWithOnAddEvent<MQMessage>)sender;
+            ListWithOnAddEvent<AdpMQMessage> ls = (ListWithOnAddEvent<AdpMQMessage>)sender;
             if (ls == null || ls.Count == 0)
             {
                 return;
@@ -60,7 +60,7 @@ namespace ApacsAdapter
             {
                 if (!ls[i].IsBodyEmpty || !mbAdp.PublishMessage(cfg.MBoutQueue, ls[i]))
                 {
-                    if (!ls[i].IsBodyEmpty || i > 0) 
+                    if (!ls[i].IsBodyEmpty && i > 0) 
                     { 
                         i--; 
                     }
@@ -99,7 +99,7 @@ namespace ApacsAdapter
                 return;
             }
             string evtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID).Split('_')[0];
-            MQMessage msg = null;
+            AdpMQMessage msg = null;
             switch (evtType)
             {
                 case ApcObjType.TApcCardHolderAccess:
@@ -107,7 +107,7 @@ namespace ApacsAdapter
                         AdpEvtObj_CHA aeObj_CHA = data.getEvtObjFromEvtSet_CHA(evtSet);
                         if (aeObj_CHA != null)
                         {
-                            msg = new MQMessage(aeObj_CHA.EventID, aeObj_CHA.ToXmlString());
+                            msg = new AdpMQMessage(aeObj_CHA.EventID, aeObj_CHA.ToXmlString(), aeObj_CHA.EventType);
                         }
                         break;
                     }
@@ -116,7 +116,7 @@ namespace ApacsAdapter
                         AdpEvtObj aeObj = data.getEvtObjFromEvtSet(evtSet);
                         if (aeObj != null)
                         {
-                            msg = new MQMessage(aeObj.EventID, aeObj.ToXmlString());
+                            msg = new AdpMQMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
                         }
                         break;
                     }
@@ -125,7 +125,8 @@ namespace ApacsAdapter
             {
                 if (!mbAdp.PublishMessage(cfg.MBoutQueue, msg))
                 {
-                    dispatchQueue.Add(msg);
+                    AdpLog.AddLog("Error send event to MB: " + msg.body);
+                    //dispatchQueue.Add(msg);
                 }
             }
         }

@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Text;
+using System.Xml.Linq;
+using System.Collections.Generic;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using WSO2;
 using WSO2.Registry;
-using System.Collections.Generic;
-using System.Xml;
-using System.Xml.Linq;
-using RabbitMQ.Client.Exceptions;
-
 
 namespace ApacsAdapter
 {
     public class AdpMBAdapter
     {
         private const string EXCHANGE_NAME = "amq.direct";
-        private const string CONTENT_TYPE = "application/xml";
+        private const string CONTENT_TYPE = "text/xml";
         private const string VIRTUAL_HOST = "/carbon";
         private const byte DELIVERY_MODE = 2;
         private ConnectionFactory Factory;
@@ -30,7 +27,7 @@ namespace ApacsAdapter
             Factory.Password = password;
             Factory.Protocol = Protocols.DefaultProtocol;
         }
-        public bool PublishMessage(string queue, MQMessage msg)
+        public bool PublishMessage(string queue, AdpMQMessage msg)
         {
             bool IsSendOk = false;
             if (String.IsNullOrEmpty(msg.body) || String.IsNullOrEmpty(queue))
@@ -43,15 +40,17 @@ namespace ApacsAdapter
                 {
                     using (IModel Model = Connect.CreateModel())
                     {
-                        Model.ExchangeDeclare(EXCHANGE_NAME, ExchangeType.Direct);
+                        Model.ExchangeDeclare(EXCHANGE_NAME, ExchangeType.Direct, true);
                         Model.QueueDeclare(queue, true, false, false, null);
                         Model.QueueBind(queue, EXCHANGE_NAME, queue);
                         IBasicProperties props = Model.CreateBasicProperties();
+                        props.AppId = AppDomain.CurrentDomain.FriendlyName;
                         props.MessageId = msg.id;
                         props.Timestamp = new AmqpTimestamp(msg.time);
                         props.ContentEncoding = Encoding.UTF8.HeaderName;
                         props.ContentType = CONTENT_TYPE;
                         props.DeliveryMode = DELIVERY_MODE;
+                        props.Type = msg.type;
                         Model.BasicPublish(EXCHANGE_NAME, queue, props, Encoding.UTF8.GetBytes(msg.body));
                         Model.Close(200, String.Empty);
                         Connect.Close();

@@ -32,7 +32,11 @@ namespace ApacsAdapter
                 ms.Position = 0;
                 return new StreamReader(ms).ReadToEnd();
             }
-            catch (Exception) { return null; }
+            catch (Exception e) 
+            {
+                AdpLog.AddLog(e.ToString());
+                return null; 
+            }
         }
         public string ToXmlString()
         {
@@ -44,7 +48,11 @@ namespace ApacsAdapter
                 ms.Position = 0;
                 return new StreamReader(ms).ReadToEnd();
             }
-            catch (Exception) { return null; }
+            catch (Exception e)
+            {
+                AdpLog.AddLog(e.ToString());
+                return null;
+            }
         }
     }
 }

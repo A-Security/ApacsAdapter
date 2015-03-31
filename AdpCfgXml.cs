@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Diagnostics;
@@ -43,28 +42,42 @@ namespace ApacsAdapter
         }
         private void readConfig(string path)
         {
-            xdoc.Load(path);
-            XmlElement configNode = xdoc.DocumentElement;
-            foreach (PropertyInfo pi in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            try
             {
-                XmlNode xn = configNode.GetElementsByTagName(pi.Name)[0];
-                pi.SetValue(this, xn.InnerText);
+                xdoc.Load(path);
+                XmlElement configNode = xdoc.DocumentElement;
+                foreach (PropertyInfo pi in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    XmlNode xn = configNode.GetElementsByTagName(pi.Name)[0];
+                    pi.SetValue(this, xn.InnerText);
+                }
+            }
+            catch (Exception e)
+            {
+                AdpLog.AddLog(e.ToString());
             }
         }
         private void createConfig(string path)
         {
-            XmlDeclaration xdec = xdoc.CreateXmlDeclaration("1.0", String.Empty, String.Empty);
-            xdoc.InsertBefore(xdec, xdoc.DocumentElement);
-            XmlElement xel = xdoc.CreateElement(this.GetType().Name);
-            XmlNode xn;
-            foreach (PropertyInfo pi in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            try
             {
-                xn = xdoc.CreateElement(pi.Name);
-                xn.InnerText = pi.GetValue(this).ToString();
-                xel.AppendChild(xn);
+                XmlDeclaration xdec = xdoc.CreateXmlDeclaration("1.0", String.Empty, String.Empty);
+                xdoc.InsertBefore(xdec, xdoc.DocumentElement);
+                XmlElement xel = xdoc.CreateElement(this.GetType().Name);
+                XmlNode xn;
+                foreach (PropertyInfo pi in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                {
+                    xn = xdoc.CreateElement(pi.Name);
+                    xn.InnerText = pi.GetValue(this).ToString();
+                    xel.AppendChild(xn);
+                }
+                xdoc.AppendChild(xel);
+                xdoc.Save(path);
             }
-            xdoc.AppendChild(xel);
-            xdoc.Save(path);
+            catch (Exception e)
+            {
+                AdpLog.AddLog(e.ToString());
+            }
         }
     }
 }

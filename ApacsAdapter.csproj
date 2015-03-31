@@ -50,6 +50,7 @@
     <Compile Include="ApcGetData.cs" />
     <Compile Include="ApcServerObjects.cs" />
     <Compile Include="ApcTypesDesc.cs" />
+    <Compile Include="AdpMQMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

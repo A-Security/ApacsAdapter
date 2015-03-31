@@ -55,7 +55,7 @@ namespace ApacsAdapter
 
     public class ApacsPropertyObject
     {
-        public object objSettings = null;
+        internal object objSettings = null;
         public ApacsPropertyObject(object aobjSettings)
         {
             if (aobjSettings == null)
@@ -575,6 +575,10 @@ namespace ApacsAdapter
         
         public ApacsObject getObjectByUID(string astrUID)
         {
+            if (String.IsNullOrEmpty(astrUID) || String.IsNullOrWhiteSpace(astrUID))
+            {
+                return null;
+            }
             object obj = null;
             int nResult = Apacs.getObjectByUID(astrUID, out obj);
             if (nResult != 0 || obj == null)
@@ -582,6 +586,16 @@ namespace ApacsAdapter
                 return null;
             }
             return new ApacsObject((IApcObjectWrap)obj);
+        }
+
+        public ApacsObject getObjectBySampleUID(string UID)
+        {
+            if (String.IsNullOrEmpty(UID) || String.IsNullOrWhiteSpace(UID))
+            {
+                return null;
+            }
+            UID += "SA 0000.";
+            return getObjectByUID(UID);
         }
         
         public ApacsObject getObjectByAlias(string astrAlias)

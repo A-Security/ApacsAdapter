@@ -1,6 +1,4 @@
-﻿using System;
-using System.Xml;
-namespace ApacsAdapter
+﻿namespace ApacsAdapter
 {
     public class AdpCardHolder
     {
