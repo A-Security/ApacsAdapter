@@ -46,7 +46,7 @@ namespace ApacsAdapter
                         IBasicProperties props = Model.CreateBasicProperties();
                         props.AppId = AppDomain.CurrentDomain.FriendlyName;
                         props.MessageId = msg.id;
-                        props.Timestamp = new AmqpTimestamp(msg.time);
+                        props.Timestamp = new AmqpTimestamp(msg.unixTime);
                         props.ContentEncoding = Encoding.UTF8.HeaderName;
                         props.ContentType = CONTENT_TYPE;
                         props.DeliveryMode = DELIVERY_MODE;

@@ -6,7 +6,7 @@ namespace ApacsAdapter
     {
         private string _body;
         private string _id;
-        private long _time;
+        private long _unixTime;
         private string _type;
 
         public AdpMQMessage(string id, string body, string type)
@@ -14,7 +14,7 @@ namespace ApacsAdapter
             this.id = id;
             this.type = type;
             this.body = body;
-            this.time = (DateTime.Now.Ticks - (new DateTime(1970, 1, 1)).Ticks) / TimeSpan.TicksPerSecond;
+            this.unixTime = (DateTime.Now.Ticks - (new DateTime(1970, 1, 1)).Ticks) / TimeSpan.TicksPerSecond;
         }
         public string type
         {
@@ -39,12 +39,12 @@ namespace ApacsAdapter
                 _id = value;
             }
         }
-        public long time
+        public long unixTime
         {
-            get { return _time; }
+            get { return _unixTime; }
             private set
             {
-                _time = value;
+                _unixTime = value;
             }
         }
         public bool IsBodyEmpty { get; private set; }
