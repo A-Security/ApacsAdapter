@@ -9,6 +9,7 @@ namespace ApacsAdapter
 {
     public class AdpCfgXml
     {
+        private AdpLog log = new AdpLog();
         private string path = AppDomain.CurrentDomain.BaseDirectory + "ApacsAdapter.cfg";
         public string MBhost { get ; private set; }
         public string MBuser { get; private set; }
@@ -54,7 +55,7 @@ namespace ApacsAdapter
             }
             catch (Exception e)
             {
-                AdpLog.AddLog(e.ToString());
+                log.AddLog(e.ToString());
             }
         }
         private void createConfig(string path)
@@ -76,7 +77,7 @@ namespace ApacsAdapter
             }
             catch (Exception e)
             {
-                AdpLog.AddLog(e.ToString());
+                log.AddLog(e.ToString());
             }
         }
     }

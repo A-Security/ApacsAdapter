@@ -9,6 +9,7 @@ namespace ApacsAdapter
     [DataContract]
     public class AdpEvtObj
     {
+        private AdpLog log = new AdpLog();
         private const string NAMESPACE = @"http://schemas.datacontract.org/2004/07/ApacsAdapter";
         [DataMember]
         public DateTime Time { get; set; }
@@ -34,7 +35,7 @@ namespace ApacsAdapter
             }
             catch (Exception e) 
             {
-                AdpLog.AddLog(e.ToString());
+                log.AddLog(e.ToString());
                 return null; 
             }
         }
@@ -50,7 +51,7 @@ namespace ApacsAdapter
             }
             catch (Exception e)
             {
-                AdpLog.AddLog(e.ToString());
+                log.AddLog(e.ToString());
                 return null;
             }
         }

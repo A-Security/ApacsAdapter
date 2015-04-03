@@ -11,6 +11,7 @@ namespace ApacsAdapter
 {
     public class AdpMBAdapter
     {
+        private AdpLog log = new AdpLog();
         private const string EXCHANGE_NAME = "amq.direct";
         private const string CONTENT_TYPE = "text/xml";
         private const string VIRTUAL_HOST = "/carbon";
@@ -60,7 +61,7 @@ namespace ApacsAdapter
             }
             catch (Exception e) 
             {
-                AdpLog.AddLog(e.ToString());
+                log.AddLog(e.ToString());
             }
             return IsSendOk;
         }
@@ -90,7 +91,7 @@ namespace ApacsAdapter
                     }
                     catch (Exception e)
                     {
-                        AdpLog.AddLog(e.ToString());
+                        log.AddLog(e.ToString());
                     }
                     Model.Close(200, String.Empty);
                     Connect.Close();
@@ -101,6 +102,7 @@ namespace ApacsAdapter
     }
     public class AdpGRAdapter
     {
+        private AdpLog log = new AdpLog();
         private const string ARTIFACT_PATH = @"/_system/governance";
         private const string HOLDERS_PATH = @"/ssoi/cardholders";
         private const string HOLDERS_PHOTO_PATH = HOLDERS_PATH + @"/photo";
@@ -195,7 +197,7 @@ namespace ApacsAdapter
             }
             catch (Exception e)
             {
-                AdpLog.AddLog(e.ToString());
+                log.AddLog(e.ToString());
                 return false;
             }
             return true;

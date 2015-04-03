@@ -17,7 +17,7 @@ namespace ApacsAdapter
                 }
             }
         }
-        
+        private AdpLog log = new AdpLog();
         private ListWithOnAddEvent<AdpMQMessage> dispatchQueue = new ListWithOnAddEvent<AdpMQMessage>();
         private AdpCfgXml cfg;
         private ApcGetData data;
@@ -41,11 +41,11 @@ namespace ApacsAdapter
                 Apacs.ApacsNotifyChange += new ApacsServer.ApacsNotifyChangeHandler(onChangeObject);
                 Apacs.ApacsEvent += new ApacsServer.ApacsEventHandler(onEvent);
                 dispatchQueue.OnAdd += new EventHandler(dispatchQueue_OnAdd);
-                AdpLog.AddLog("Events Lister Started");
+                log.AddLog("Events Lister Started");
             }
             catch (Exception e) 
             {
-                AdpLog.AddLog(e.ToString());
+                log.AddLog(e.ToString());
             }
         }
 
@@ -76,16 +76,16 @@ namespace ApacsAdapter
                 Apacs.ApacsNotifyDelete -= new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
                 Apacs.ApacsNotifyAdd -= new ApacsServer.ApacsNotifyAddHandler(onAddObject);
                 Apacs.ApacsDisconnect -= new ApacsServer.ApacsDisconnectHandler(onDisconnect);
-                AdpLog.AddLog("Events Lister Stopped");
+                log.AddLog("Events Lister Stopped");
             }
             catch (Exception e)
             {
-                AdpLog.AddLog(e.ToString());
+                log.AddLog(e.ToString());
             }
         }
         private void onDisconnect()
         {
-            AdpLog.AddLog("APACS SERVER DISCONNECTED!");
+            log.AddLog("APACS SERVER DISCONNECTED!");
             stopEventsLister();
             Apacs.Dispose();
             Apacs = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
@@ -98,34 +98,29 @@ namespace ApacsAdapter
             {
                 return;
             }
+            
             string evtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID).Split('_')[0];
             AdpMQMessage msg = null;
+            AdpEvtObj aeObj = null;
             switch (evtType)
             {
                 case ApcObjType.TApcCardHolderAccess:
                     {
-                        AdpEvtObj_CHA aeObj_CHA = data.getEvtObjFromEvtSet_CHA(evtSet);
-                        if (aeObj_CHA != null)
-                        {
-                            msg = new AdpMQMessage(aeObj_CHA.EventID, aeObj_CHA.ToXmlString(), aeObj_CHA.EventType);
-                        }
+                        aeObj = data.getEvtObjFromEvtSet_CHA(evtSet);
                         break;
                     }
                 default:
                     {
-                        AdpEvtObj aeObj = data.getEvtObjFromEvtSet(evtSet);
-                        if (aeObj != null)
-                        {
-                            msg = new AdpMQMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
-                        }
+                        aeObj = data.getEvtObjFromEvtSet(evtSet);
                         break;
                     }
             }
-            if (msg != null || !msg.IsBodyEmpty)
+            if (aeObj != null)
             {
-                if (!mbAdp.PublishMessage(cfg.MBoutQueue, msg))
+                msg = new AdpMQMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
+                if (!msg.IsBodyEmpty && !mbAdp.PublishMessage(cfg.MBoutQueue, msg))
                 {
-                    AdpLog.AddLog("Error send event to MB: " + msg.body);
+                    log.AddLog("Error send event to MB: " + msg.body);
                     //dispatchQueue.Add(msg);
                 }
             }

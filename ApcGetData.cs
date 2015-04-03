@@ -44,8 +44,8 @@ namespace ApacsAdapter
             }
             bool isNotErrHolder = !(eventType.EndsWith("_ErrHolder"));
             string fullName = null,
-                    shortName = null,
-                    uid = null;
+                   shortName = null,
+                   uid = null;
             if (isNotErrHolder)
             {
                 ApacsObject holder = evtSets.getObjectProperty(ApcObjProp.SysAddrHolder);

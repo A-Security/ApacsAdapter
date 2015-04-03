@@ -327,6 +327,7 @@ namespace ApacsAdapter
 
     public class ApacsServer : IDisposable
     {
+        private AdpLog log = new AdpLog();
         IApcServerWrap Apacs = null;
         TApcSession Session = null;
         /*
@@ -555,11 +556,11 @@ namespace ApacsAdapter
             try
             {
                 Session.set_onDisconnect(new DisconnectClass(this));
-                AdpLog.AddLog("APACS server connected");
+                log.AddLog("APACS server connected");
             }
             catch (Exception e) 
             {
-                AdpLog.AddLog(e.ToString());
+                log.AddLog(e.ToString());
             }
         }
         public void Dispose()
@@ -570,7 +571,7 @@ namespace ApacsAdapter
                 Session = null;
             }
             Apacs = null;
-            AdpLog.AddLog("APACS Server disposed");
+            log.AddLog("APACS Server disposed");
         }
         
         public ApacsObject getObjectByUID(string astrUID)

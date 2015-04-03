@@ -7,7 +7,8 @@ namespace ApacsAdapterConsole
     {
         static void Main(string[] args)
         {
-            AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
+            AdpLog log = new AdpLog();
+            log.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
             ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
             AdpGRAdapter gr = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
@@ -43,7 +44,7 @@ namespace ApacsAdapterConsole
         }
         static void AdpLog_OnAddLog(object sender, EventArgs arg)
         {
-            Console.WriteLine(sender);
+            Console.WriteLine(((AdpLog)sender).log);
         }
 
     }

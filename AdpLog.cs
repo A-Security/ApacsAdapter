@@ -4,12 +4,14 @@ namespace ApacsAdapter
 {
     public class AdpLog
     {
-        public static event EventHandler OnAddLog;
-        public static void AddLog(string Log)
+        public string log { get; private set; }
+        public event EventHandler OnAddLog;
+        public void AddLog(string Log)
         {
+            this.log = Log;
             if (OnAddLog != null)
             {
-                OnAddLog(Log, EventArgs.Empty);
+                OnAddLog(this, EventArgs.Empty);
             }
         }
     }
