@@ -121,6 +121,11 @@ namespace ApacsAdapter
             return String.Format("{0} {1} {2}", _lastName, _firstName, _middleName);
         }
 
+        public string getSampleEventUID()
+        {
+            return getStringProperty(ApcObjProp.SysAddrEventID).Split('.')[1];
+        }
+
         public string getNameProperty()
         {
             return getStringProperty(ApcObjProp.strName);

@@ -1,24 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ApacsAdapter
 {
     public class AdpEventsLister
     {
-        class ListWithOnAddEvent<T> : List<T>
-        {
-            public event EventHandler OnAdd;
-            public new void Add(T item)
-            {
-                base.Add(item);
-                if (OnAdd != null)
-                {
-                    OnAdd(this, EventArgs.Empty);
-                }
-            }
-        }
+        private object locker = new object();
+        private static string CUR_EVENTID { get; set; }
         private AdpLog log = new AdpLog();
-        private ListWithOnAddEvent<AdpMQMessage> dispatchQueue = new ListWithOnAddEvent<AdpMQMessage>();
         private AdpCfgXml cfg;
         private ApcGetData data;
         private ApacsServer Apacs;
@@ -29,9 +19,8 @@ namespace ApacsAdapter
             this.cfg = cfg;
             this.data = new ApcGetData();
             this.mbAdp = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword);
-            startEventsLister();
         }
-        private void startEventsLister()
+        public void startEventsLister()
         {
             try
             {
@@ -40,7 +29,6 @@ namespace ApacsAdapter
                 Apacs.ApacsNotifyDelete += new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
                 Apacs.ApacsNotifyChange += new ApacsServer.ApacsNotifyChangeHandler(onChangeObject);
                 Apacs.ApacsEvent += new ApacsServer.ApacsEventHandler(onEvent);
-                dispatchQueue.OnAdd += new EventHandler(dispatchQueue_OnAdd);
                 log.AddLog("Events Lister Started");
             }
             catch (Exception e) 
@@ -49,24 +37,6 @@ namespace ApacsAdapter
             }
         }
 
-        void dispatchQueue_OnAdd(object sender, EventArgs e)
-        {
-            ListWithOnAddEvent<AdpMQMessage> ls = (ListWithOnAddEvent<AdpMQMessage>)sender;
-            if (ls == null || ls.Count == 0)
-            {
-                return;
-            }
-            for (int i = 0; i < ls.Count; i++)
-            {
-                if (!ls[i].IsBodyEmpty || !mbAdp.PublishMessage(cfg.MBoutQueue, ls[i]))
-                {
-                    if (!ls[i].IsBodyEmpty && i > 0) 
-                    { 
-                        i--; 
-                    }
-                }
-            }
-        }
         public void stopEventsLister()
         {
             try
@@ -94,24 +64,29 @@ namespace ApacsAdapter
 
         private void onEvent(ApacsPropertyObject evtSet)
         {
-            if (evtSet == null)
+            string eventId = null;
+            lock(locker)
             {
-                return;
+                if (evtSet == null || AdpEventsLister.CUR_EVENTID == (eventId = evtSet.getSampleEventUID()))
+                {
+                    return;
+                }
+                AdpEventsLister.CUR_EVENTID = eventId;
             }
-            
-            string evtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID).Split('_')[0];
+            string fullEvtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID);
+            string evtType = fullEvtType.Split('_')[0];
             AdpMQMessage msg = null;
             AdpEvtObj aeObj = null;
             switch (evtType)
             {
                 case ApcObjType.TApcCardHolderAccess:
                     {
-                        aeObj = data.getEvtObjFromEvtSet_CHA(evtSet);
+                        aeObj = data.getEvtObjFromEvtSet_CHA(evtSet, fullEvtType);
                         break;
                     }
                 default:
                     {
-                        aeObj = data.getEvtObjFromEvtSet(evtSet);
+                        aeObj = data.getEvtObjFromEvtSet(evtSet, fullEvtType);
                         break;
                     }
             }
@@ -121,7 +96,6 @@ namespace ApacsAdapter
                 if (!msg.IsBodyEmpty && !mbAdp.PublishMessage(cfg.MBoutQueue, msg))
                 {
                     log.AddLog("Error send event to MB: " + msg.body);
-                    //dispatchQueue.Add(msg);
                 }
             }
         }

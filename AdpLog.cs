@@ -5,7 +5,7 @@ namespace ApacsAdapter
     public class AdpLog
     {
         public string log { get; private set; }
-        public event EventHandler OnAddLog;
+        public static event EventHandler OnAddLog;
         public void AddLog(string Log)
         {
             this.log = Log;

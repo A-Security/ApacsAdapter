@@ -35,9 +35,8 @@ namespace ApacsAdapter
             sb.AppendLine("================END Property=" + apoName + "============");
             return sb.ToString();
         }
-        public AdpEvtObj_CHA getEvtObjFromEvtSet_CHA(ApacsPropertyObject evtSets)
+        public AdpEvtObj_CHA getEvtObjFromEvtSet_CHA(ApacsPropertyObject evtSets, string eventType)
         {
-            string eventType = evtSets.getStringProperty(ApcObjProp.strEventTypeID);
             if (eventType.Contains("Will"))
             {
                 return null;
@@ -57,7 +56,7 @@ namespace ApacsAdapter
             AdpEvtObj_CHA aobj = new AdpEvtObj_CHA
             {
                 Time = evtSets.getDateTimeProperty(ApcObjProp.dtRealDateTime),
-                EventID = evtSets.getStringProperty(ApcObjProp.SysAddrEventID).Split('.')[1],
+                EventID = evtSets.getSampleEventUID(),
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
                 SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getSampleUID(),
@@ -70,13 +69,12 @@ namespace ApacsAdapter
             };
             return aobj;
         }
-        public AdpEvtObj getEvtObjFromEvtSet (ApacsPropertyObject evtSets)
+        public AdpEvtObj getEvtObjFromEvtSet(ApacsPropertyObject evtSets, string eventType)
         {
-            string eventType = evtSets.getStringProperty(ApcObjProp.strEventTypeID);
             AdpEvtObj aeobj = new AdpEvtObj
             {
                 Time = evtSets.getDateTimeProperty(ApcObjProp.dtRealDateTime),
-                EventID = evtSets.getStringProperty(ApcObjProp.SysAddrEventID).Split('.')[1],
+                EventID = evtSets.getSampleEventUID(),
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
                 SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getSampleUID(),

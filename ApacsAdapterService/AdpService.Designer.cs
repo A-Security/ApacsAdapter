@@ -28,22 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            AdpService.adpServiceLog = new System.Diagnostics.EventLog();
-            ((System.ComponentModel.ISupportInitialize)(AdpService.adpServiceLog)).BeginInit();
-            // 
-            // adpServiceLog
-            // 
-            AdpService.adpServiceLog.Log = "Application";
+            this.adpServiceLog = new System.Diagnostics.EventLog();
+            ((System.ComponentModel.ISupportInitialize)(this.adpServiceLog)).BeginInit();
             // 
             // AdpService
             // 
+            this.CanPauseAndContinue = true;
             this.ServiceName = "ApacsAdapterService";
-            ((System.ComponentModel.ISupportInitialize)(AdpService.adpServiceLog)).EndInit();
-
+            ((System.ComponentModel.ISupportInitialize)(this.adpServiceLog)).EndInit();
         }
 
         #endregion
 
-        private static System.Diagnostics.EventLog adpServiceLog;
+        private System.Diagnostics.EventLog adpServiceLog;
     }
 }
