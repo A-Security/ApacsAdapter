@@ -93,9 +93,14 @@ namespace ApacsAdapter
             if (aeObj != null)
             {
                 msg = new AdpMQMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
-                if (!msg.IsBodyEmpty && !mbAdp.PublishMessage(cfg.MBoutQueue, msg))
+                byte b = 0;
+                while (!msg.IsBodyEmpty && !mbAdp.PublishMessage(cfg.MBoutQueue, msg))
                 {
-                    log.AddLog("Error send event to MB: " + msg.body);
+                    
+                    log.AddLog("Error send event to MB("+b+"): " + msg.body);
+                    Thread.Sleep(3000);
+                    if (b > 3) break;
+                    b++;
                 }
             }
         }

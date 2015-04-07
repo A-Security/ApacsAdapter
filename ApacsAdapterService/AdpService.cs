@@ -9,12 +9,13 @@ namespace ApacsAdapterService
 {
     public partial class AdpService : ServiceBase
     {
+        AdpLog log = new AdpLog();
         ApacsServer apacsInstance = null;
         AdpEventsLister eventLister = null;
         public AdpService()
         {
             InitializeComponent();
-            RestartServiceSetTask(05, 00, 00);
+            RestartServiceSetTask(03, 00, 00);
         }
 
         protected override void OnStart(string[] args)
@@ -56,18 +57,12 @@ namespace ApacsAdapterService
         }
         private void RestartServiceTimerEvent(object obj)
         {
-            //ExitCode = int.MinValue;
-            //Stop();
-            Dispose(true);
             OnStop();
+            log.AddLog("Stopped service (before disposing)");
+            this.Dispose(true);
+            log.AddLog("Disposing service");
             OnStart(null);
-            //ServiceController svc = new ServiceController(ServiceName);
-            //if (svc.Status == ServiceControllerStatus.Running)
-            //    svc.Stop();
-            //svc.WaitForStatus(ServiceControllerStatus.Stopped, new System.TimeSpan(0, 0, 20));
-            //svc.Start();
-            //svc.WaitForStatus(ServiceControllerStatus.Running, new System.TimeSpan(0, 0, 20));
-            //svc.Dispose();
+            log.AddLog("Starting service (after disposing)");
         }
 
         private void RestartServiceSetTask(byte hh, byte mm, byte ss)
@@ -75,12 +70,12 @@ namespace ApacsAdapterService
             TimerCallback callback = new TimerCallback(RestartServiceTimerEvent);
             DateTime todayTaskTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hh, mm, ss);
             DateTime tomorrowTaskTime = todayTaskTime.AddDays(1);
-            Timer timer;
-            if (DateTime.Now < todayTaskTime)
+            Timer timer = null;
+            if (DateTime.Now <= todayTaskTime)
             {
                 timer = new Timer(callback, null, todayTaskTime - DateTime.Now, TimeSpan.FromDays(1));
             }
-            else if (DateTime.Now < tomorrowTaskTime)
+            else if (DateTime.Now <= tomorrowTaskTime)
             {
                 timer = new Timer(callback, null, tomorrowTaskTime - DateTime.Now, TimeSpan.FromDays(1));
             }
