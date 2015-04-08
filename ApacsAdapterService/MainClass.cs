@@ -14,8 +14,18 @@ namespace ApacsAdapterService
         /// </summary>
         static void Main()
         {
-            ServiceBase[] ServicesToRun = new ServiceBase[] { new AdpService() };
-            ServiceBase.Run(ServicesToRun);
+            if (Environment.UserInteractive)
+            {
+                using (AdpService service = new AdpService())
+                {
+                    service.Run();
+                    Console.ReadLine();
+                }
+            }
+            else
+            {
+                ServiceBase.Run(new AdpService());
+            }
         }
     }
 }

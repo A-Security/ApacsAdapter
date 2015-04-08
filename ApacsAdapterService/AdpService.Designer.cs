@@ -33,7 +33,6 @@
             // 
             // AdpService
             // 
-            this.CanPauseAndContinue = true;
             this.ServiceName = "ApacsAdapterService";
             ((System.ComponentModel.ISupportInitialize)(this.adpServiceLog)).EndInit();
         }

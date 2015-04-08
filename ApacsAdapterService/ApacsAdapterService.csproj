@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{FFE06482-4BCB-4013-B54B-64714885D5A3}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ApacsAdapterService</RootNamespace>
     <AssemblyName>ApacsAdapterService</AssemblyName>
@@ -147,6 +147,7 @@
   <PropertyGroup>
     <PostBuildEvent>net stop ApacsAdapterService
 taskkill /f /im $(TargetFileName)
+IF /I ($(ConfigurationName)==Release) (
 cd $(TargetDir)
 copy ApacsAdapter.dll C:\Windows\SysWOW64\ /y
 copy WSO2.dll C:\Windows\SysWOW64\ /y
@@ -155,7 +156,8 @@ cd C:\Windows\SysWOW64\
 del ApacsAdapter.cfg /F /Q
 C:\Windows\Microsoft.NET\Framework\v4.0.30319\installutil.exe /u ApacsAdapterService.exe
 C:\Windows\Microsoft.NET\Framework\v4.0.30319\installutil.exe ApacsAdapterService.exe
-net start ApacsAdapterService</PostBuildEvent>
+net start ApacsAdapterService
+)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
