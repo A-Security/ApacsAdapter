@@ -26,7 +26,7 @@ namespace ApacsAdapter
             Factory.Port = port;
             Factory.UserName = userName;
             Factory.Password = password;
-            Factory.Protocol = Protocols.DefaultProtocol;
+            Factory.Protocol = Protocols.AMQP_0_9_1;
         }
         public bool PublishMessage(string queue, AdpMQMessage msg)
         {
