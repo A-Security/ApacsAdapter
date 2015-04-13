@@ -46,10 +46,6 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <Project>{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}</Project>
       <Name>ApacsAdapter</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WSO2\WSO2.csproj">
-      <Project>{81D607FA-37DE-4A88-AB0F-64532E2B68D8}</Project>
-      <Name>WSO2</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(_WebPublishTargetsPath)\Web\Microsoft.WebSite.Publishing.targets" />
 </Project>

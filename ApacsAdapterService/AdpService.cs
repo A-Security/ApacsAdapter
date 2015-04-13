@@ -64,7 +64,7 @@ namespace ApacsAdapterService
         }
         internal void Run()
         {
-            SetTaskRestart(15, 30, 00);
+            SetTaskRestart(3, 0, 0);
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
             apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
@@ -78,6 +78,7 @@ namespace ApacsAdapterService
             {
                 th.Start();
             }           
+            eventLister.startEventsLister();
         }
         internal void Break()
         {

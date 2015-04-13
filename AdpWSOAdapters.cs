@@ -13,7 +13,7 @@ namespace ApacsAdapter
     {
         private AdpLog log = new AdpLog();
         private const string EXCHANGE_NAME = "amq.direct";
-        private const string CONTENT_TYPE = "text/xml";
+        private const string CONTENT_TYPE = "application/xml";
         private const string VIRTUAL_HOST = "/carbon";
         private const byte DELIVERY_MODE = 2;
         private ConnectionFactory Factory;
@@ -31,7 +31,7 @@ namespace ApacsAdapter
         public bool PublishMessage(string queue, AdpMQMessage msg)
         {
             bool IsSendOk = false;
-            if (String.IsNullOrEmpty(msg.body) || String.IsNullOrEmpty(queue))
+            if (msg == null || msg.IsBodyEmpty || String.IsNullOrEmpty(queue))
             {
                 return IsSendOk;
             }
@@ -52,11 +52,12 @@ namespace ApacsAdapter
                         props.ContentType = CONTENT_TYPE;
                         props.DeliveryMode = DELIVERY_MODE;
                         props.Type = msg.type;
+                        props.SetPersistent(true);
                         Model.BasicPublish(EXCHANGE_NAME, queue, props, Encoding.UTF8.GetBytes(msg.body));
-                        Model.Close(200, String.Empty);
-                        Connect.Close();
                         IsSendOk = true;
+                        Model.Close();
                     }
+                    Connect.Abort(100);
                 }
             }
             catch (Exception e) 

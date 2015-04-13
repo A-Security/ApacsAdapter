@@ -146,7 +146,7 @@ namespace ApacsAdapter
             string _lastName = getStringProperty(ApcObjProp.strLastName),
                    _middleName = getStringProperty(ApcObjProp.strMiddleName),
                    _firstName = getStringProperty(ApcObjProp.strFirstName);
-            if (String.IsNullOrEmpty(_lastName) | String.IsNullOrEmpty(_middleName) | String.IsNullOrEmpty(_firstName))
+            if (!String.IsNullOrEmpty(_lastName) | !String.IsNullOrEmpty(_middleName) | !String.IsNullOrEmpty(_firstName))
             {
                 return String.Format("{0} {1} {2}", _lastName, _firstName, _middleName);
             }
