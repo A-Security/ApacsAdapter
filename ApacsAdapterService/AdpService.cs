@@ -4,14 +4,19 @@ using ApacsAdapter;
 using System.Diagnostics;
 using System.ServiceProcess;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace ApacsAdapterService
 {
     public partial class AdpService : ServiceBase
     {
-        AdpLog log = new AdpLog();
-        ApacsServer apacsInstance = null;
-        AdpEventsLister eventLister = null;
+        private AdpLog log = new AdpLog();
+        private ApacsServer apacsInstance = null;
+        private AdpEventsLister eventLister = null;
+        private TimerCallback timerCallback = null;
+        private Timer timer = null;
+        private List<Thread> thirds = new List<Thread>();
+        private delegate void StartMethod();
         public AdpService()
         {
             InitializeComponent();
@@ -28,64 +33,81 @@ namespace ApacsAdapterService
         }
         protected void AdpLog_OnAddLog(object sender, EventArgs arg)
         {
-            try
+            if (Environment.UserInteractive)
             {
-                if (!EventLog.SourceExists("ApacsAdapterService"))
-                {
-                    EventLog.CreateEventSource("ApacsAdapterService", "ApacsAdapterService");
-                }
-                adpServiceLog.Source = "ApacsAdapterService";
-                adpServiceLog.WriteEntry(((AdpLog)sender).log);
+                Console.WriteLine(((AdpLog)sender).log);
             }
-            catch { }
+            else
+            {
+                try
+                {
+                    if (!EventLog.SourceExists("ApacsAdapterService"))
+                    {
+                        EventLog.CreateEventSource("ApacsAdapterService", "ApacsAdapterService");
+                    }
+                    adpServiceLog.Source = "ApacsAdapterService";
+                    adpServiceLog.WriteEntry(((AdpLog)sender).log);
+                }
+                catch { }
+            }
         }
         private void TaskRestart(object obj)
         {
+            log.AddLog("Stopped service (everyday Restart Timer)");
             Break();
-            log.AddLog("Stopped service (before disposing)");
+            StopThirds();
             Run();
-            log.AddLog("Starting service (after disposing)");
+            log.AddLog("Starting service (everyday Restart Timer)");
         }
 
         private void SetTaskRestart(byte hh, byte mm, byte ss)
         {
-            TimerCallback callback = new TimerCallback(TaskRestart);
+            this.timerCallback = new TimerCallback(TaskRestart);
             DateTime todayTaskTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hh, mm, ss);
-            DateTime tomorrowTaskTime = todayTaskTime.AddDays(1);
-            Timer timer = null;
-            if (DateTime.Now <= todayTaskTime)
-            {
-                timer = new Timer(callback, null, todayTaskTime - DateTime.Now, TimeSpan.FromDays(1));
-            }
-            else if (DateTime.Now <= tomorrowTaskTime)
-            {
-                timer = new Timer(callback, null, tomorrowTaskTime - DateTime.Now, TimeSpan.FromDays(1));
-            }
+            DateTime nextTaskTime = DateTime.Now <= todayTaskTime ? todayTaskTime : todayTaskTime.AddDays(1);
+            this.timer = new Timer(timerCallback, null, nextTaskTime - DateTime.Now, TimeSpan.FromDays(1));
         }
         internal void Run()
         {
-            SetTaskRestart(3, 0, 0);
+            if (timer == null)
+            {
+                SetTaskRestart(3, 0, 0);
+            }
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
             apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
             eventLister = new AdpEventsLister(apacsInstance, cfg);
-            Thread[] thirds = new Thread[2];
-            for (int i = 0; i < thirds.Length; i++)
-            {
-                thirds[i] = new Thread(eventLister.startEventsLister);
-            }
-            foreach (Thread th in thirds)
-            {
-                th.Start();
-            }           
-            eventLister.startEventsLister();
+            //ThreadPool.QueueUserWorkItem(new WaitCallback(eventLister.startInThreadPool));
+            //StartThirds(eventLister.start);
+            eventLister.start();
+            
         }
         internal void Break()
         {
             if (eventLister != null)
-                eventLister.stopEventsLister();
+                eventLister.stop();
             if (apacsInstance != null)
                 apacsInstance.Dispose();
+
+        }
+        private void StartThirds(StartMethod method)
+        {
+            ThreadStart threadStart = new ThreadStart(method);
+            thirds.Add(new Thread(threadStart));
+            thirds.Add(new Thread(threadStart));
+            foreach (Thread th in thirds)
+            {
+                th.Start();
+            }
+
+        }
+        private void StopThirds()
+        {
+            foreach (Thread th in thirds)
+            {
+                th.Abort();
+            }
+            thirds.Clear();
         }
     }
 }

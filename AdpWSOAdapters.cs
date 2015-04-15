@@ -21,6 +21,7 @@ namespace ApacsAdapter
         public AdpMBAdapter(string hostName, int port, string userName, string password)
         {
             Factory = new ConnectionFactory();
+            Factory.RequestedHeartbeat = 30;
             Factory.VirtualHost = VIRTUAL_HOST;
             Factory.HostName = hostName;
             Factory.Port = port;
@@ -28,10 +29,10 @@ namespace ApacsAdapter
             Factory.Password = password;
             Factory.Protocol = Protocols.AMQP_0_9_1;
         }
-        public bool PublishMessage(string queue, AdpMQMessage msg)
+        public bool PublishMessage(string Queue, AdpMQMessage msg)
         {
             bool IsSendOk = false;
-            if (msg == null || msg.IsBodyEmpty || String.IsNullOrEmpty(queue))
+            if (msg == null || msg.IsBodyEmpty || String.IsNullOrEmpty(Queue))
             {
                 return IsSendOk;
             }
@@ -42,8 +43,8 @@ namespace ApacsAdapter
                     using (IModel Model = Connect.CreateModel())
                     {
                         Model.ExchangeDeclare(EXCHANGE_NAME, ExchangeType.Direct, true);
-                        Model.QueueDeclare(queue, true, false, false, null);
-                        Model.QueueBind(queue, EXCHANGE_NAME, queue);
+                        Model.QueueDeclare(Queue, true, false, false, null);
+                        Model.QueueBind(Queue, EXCHANGE_NAME, Queue);
                         IBasicProperties props = Model.CreateBasicProperties();
                         props.AppId = AppDomain.CurrentDomain.FriendlyName;
                         props.MessageId = msg.id;
@@ -53,7 +54,7 @@ namespace ApacsAdapter
                         props.DeliveryMode = DELIVERY_MODE;
                         props.Type = msg.type;
                         props.SetPersistent(true);
-                        Model.BasicPublish(EXCHANGE_NAME, queue, props, Encoding.UTF8.GetBytes(msg.body));
+                        Model.BasicPublish(EXCHANGE_NAME, Queue, props, Encoding.UTF8.GetBytes(msg.body));
                         IsSendOk = true;
                         Model.Close();
                     }
@@ -191,7 +192,7 @@ namespace ApacsAdapter
                         new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
                         new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
                         new WSProperty(){ key = "holder_cardNo", values = new string[] { ch.CardNo } },
-                        new WSProperty(){ key = "holder_vip", values = new string[] { IsVIP(ch.ID).ToString() } }
+                        new WSProperty(){ key = "holder_vip", values = new string[] { IsVIP(ch.ID).ToString().ToLower() } }
                     };
                     registry.Put(resPath, resource);
                 }
@@ -216,7 +217,7 @@ namespace ApacsAdapter
                         new XElement(xn + "cardNo", ch.CardNo),
                         new XElement(xn + "photo", HOLDERS_PHOTO_PATH + photoResName),
                         new XElement(xn + "photoLink", holdersPhotoPermaLinkUrl + photoResName),
-                        new XElement(xn + "vip", IsVIP(ch.ID).ToString())
+                        new XElement(xn + "vip", IsVIP(ch.ID).ToString().ToLower())
                     )
                 );
             return Encoding.UTF8.GetBytes(xdoc.ToString());

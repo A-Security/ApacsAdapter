@@ -65,7 +65,7 @@ namespace ApacsAdapter
             }
             objSettings = aobjSettings;
         }
-        
+
         public bool hasProperty(string strName)
         {
             try
@@ -78,7 +78,7 @@ namespace ApacsAdapter
                 return false;
             }
         }
-        
+
         public object getProperty(string strName)
         {
             if (objSettings == null || String.IsNullOrEmpty(strName))
@@ -88,26 +88,27 @@ namespace ApacsAdapter
             try
             {
                 return objSettings.GetType().InvokeMember(strName, BindingFlags.GetProperty, null, objSettings, null);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 log.AddLog(e.ToString());
                 return null;
             }
-            
+
         }
-        
+
         public string getStringProperty(string strName)
         {
             object res = getProperty(strName);
             return res == null ? null : res as string;
         }
-        
+
         public byte[] getByteArrayProperty(string strName)
         {
             object res = getProperty(strName);
             return res == null ? null : res as byte[];
         }
-        
+
         public ApacsObject getObjectProperty(string strName)
         {
             object res = getProperty(strName);
@@ -128,19 +129,20 @@ namespace ApacsAdapter
                     list.Add(enumer.Current.ToString());
                 }
                 return list.ToArray();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 log.AddLog(e.ToString());
                 return null;
             }
         }
-        
+
         public uint getUIntProperty(string strName)
         {
             object res = getProperty(strName);
             return res == null ? 0 : (uint)res;
         }
-        
+
         public string getFullNameProperty()
         {
             string _lastName = getStringProperty(ApcObjProp.strLastName),
@@ -182,7 +184,8 @@ namespace ApacsAdapter
             try
             {
                 objSettings.GetType().InvokeMember(strName, BindingFlags.SetProperty, null, objSettings, new object[] { objProp });
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 log.AddLog(e.ToString());
             }
@@ -192,17 +195,18 @@ namespace ApacsAdapter
         {
             setProperty(strName, (obj == null ? null : obj.objWrap));
         }
-        
+
     }
 
     public class ApacsObject
     {
+        private AdpLog log = new AdpLog();
         internal IApcObjectWrap objWrap = null;
         public ApacsObject(IApcObjectWrap aobjWrap)
         {
             this.objWrap = aobjWrap;
         }
-        
+
         public string getUID()
         {
             if (objWrap == null)
@@ -210,7 +214,13 @@ namespace ApacsAdapter
                 return null;
             }
             string strUID = null;
-            objWrap.getUID(out strUID);
+            try
+            {
+                objWrap.getUID(out strUID);
+            } catch (Exception e)
+            {
+                log.AddLog(e.ToString());
+            }
             return strUID;
         }
         public string getSampleUID()
@@ -218,7 +228,7 @@ namespace ApacsAdapter
             string res = getUID();
             return String.IsNullOrEmpty(res) ? null : res.Split('.')[1];
         }
-        
+
         public string getApacsType()
         {
             if (objWrap == null)
@@ -229,7 +239,7 @@ namespace ApacsAdapter
             objWrap.getApacsType(out strApacsType);
             return strApacsType;
         }
-        
+
         public void deleteObject()
         {
             if (objWrap == null)
@@ -238,7 +248,7 @@ namespace ApacsAdapter
             }
             objWrap.deleteObject();
         }
-        
+
         public ApacsObject getParentObject()
         {
             if (objWrap == null)
@@ -248,9 +258,9 @@ namespace ApacsAdapter
             object parent = null;
             objWrap.getParentObject(out parent);
             return parent == null ? null : new ApacsObject(parent as IApcObjectWrap);
-            
+
         }
-        
+
         public ApacsPropertyObject getCurrentSettings()
         {
             if (objWrap == null)
@@ -261,47 +271,61 @@ namespace ApacsAdapter
             objWrap.getCurrentSettings(out objSettings);
             return objSettings == null ? null : new ApacsPropertyObject(objSettings);
         }
-        
+
         public void applySettings(ApacsPropertyObject aobjSettings)
         {
-            object nativeObjSettings = aobjSettings.objSettings;
-            int nResult = objWrap.applySettings(nativeObjSettings);
-            if (nResult != 0)
+            if (objWrap == null || aobjSettings == null)
             {
                 return;
             }
+            object nativeObjSettings = aobjSettings.objSettings;
+            objWrap.applySettings(nativeObjSettings);
+
         }
-        
+
         public ApacsObject[] getChildrenObjs()
         {
-            Array childrenObjs = new object[] { };
-            int nResult = objWrap.getChildrenObjs(out childrenObjs);
-            if (nResult != 0)
+            if (objWrap == null)
             {
                 return null;
             }
-            
+            Array childrenObjs = new object[] { };
+            objWrap.getChildrenObjs(out childrenObjs);
+            if (childrenObjs.Length == 0)
+            {
+                return null;
+            }
+
             ApacsObject[] result = new ApacsObject[childrenObjs.Length];
             for (int i = 0; i < childrenObjs.Length; i++)
             {
-                result[i] = new ApacsObject((IApcObjectWrap)childrenObjs.GetValue(i));
+                object obj = childrenObjs.GetValue(i);
+                result[i] = obj == null ? null : new ApacsObject(obj as IApcObjectWrap);
             }
             return result;
         }
 
         public ApacsObject addChildWithSettings(ApacsPropertyObject aobjSettings)
         {
-            object obj = null;
-            int nResult = objWrap.addChildWithSettings(aobjSettings.objSettings, out obj);
-            if (nResult != 0 || obj == null)
+            if (objWrap == null || aobjSettings == null)
             {
                 return null;
             }
-            return new ApacsObject((IApcObjectWrap)obj);
+            object obj = null;
+            objWrap.addChildWithSettings(aobjSettings.objSettings, out obj);
+            if (obj == null)
+            {
+                return null;
+            }
+            return new ApacsObject(obj as IApcObjectWrap);
         }
 
         public ApacsObject[] getChildrenObjsByTypes(string[] astrTypes)
         {
+            if (objWrap == null)
+            {
+                return null;
+            }
             ParameterModifier p = new ParameterModifier(2);
             p[1] = true;
 
@@ -322,11 +346,12 @@ namespace ApacsAdapter
                 return null;
             }
 
-            object[] childrenObjs = (object[])args[1];
+            object[] childrenObjs = args[1] as object[];
             ApacsObject[] result = new ApacsObject[childrenObjs.Length];
             for (int i = 0; i < childrenObjs.Length; i++)
             {
-                result[i] = new ApacsObject((IApcObjectWrap)childrenObjs.GetValue(i));
+                object obj = childrenObjs.GetValue(i);
+                result[i] = obj == null ? null : new ApacsObject(obj as IApcObjectWrap);
             }
             return result;
         }
@@ -337,6 +362,7 @@ namespace ApacsAdapter
             foreach (ApacsObject photoProp in chMainPhotoAOs)
             {
                 result = photoProp.getCurrentSettings().getByteArrayProperty(ApcObjProp.binBufPhoto);
+                break;
             }
             return result;
         }
@@ -346,14 +372,30 @@ namespace ApacsAdapter
             ApacsObject[] acc2linkAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcAccount2HolderLink });
             foreach (ApacsObject chldAO in acc2linkAOs)
             {
-                ApacsObject sysAdAc = chldAO.getCurrentSettings().getObjectProperty(ApcObjProp.SysAddrAccount);
-                ApacsPropertyObject sysAdAcProp = sysAdAc.getCurrentSettings();
-                result = sysAdAcProp.getNameProperty();
+                ApacsPropertyObject childAOCurSet = chldAO.getCurrentSettings();
+                if (childAOCurSet != null)
+                {
+                    ApacsObject sysAdAc = childAOCurSet.getObjectProperty(ApcObjProp.SysAddrAccount);
+                    if (sysAdAc != null)
+                    {
+                        ApacsPropertyObject sysAdAcProp = sysAdAc.getCurrentSettings();
+                        if (sysAdAcProp != null)
+                        {
+                            result = sysAdAcProp.getNameProperty();
+                        }
+                    }
+                }
+
             }
+
             return result;
         }
         public ApacsPropertyObject getChildSettingsForAdd(string aObjType)
         {
+            if (objWrap == null || String.IsNullOrEmpty(aObjType))
+            {
+                return null;
+            }
             object objSettings = null;
             int nResult = objWrap.getChildSettingsForAdd(aObjType, out objSettings);
             if (nResult != 0 || objSettings == null)
@@ -365,11 +407,11 @@ namespace ApacsAdapter
 
         public int execCmd(string strCmd)
         {
-            return (int)objWrap.GetType().InvokeMember(strCmd, 
-                                                       BindingFlags.InvokeMethod,
-                                                       null,
-                                                       objWrap,
-                                                       null);
+            if (objWrap == null || String.IsNullOrEmpty(strCmd))
+            {
+                return int.MinValue;
+            }
+            return (int)objWrap.GetType().InvokeMember(strCmd, BindingFlags.InvokeMethod, null, objWrap, null);
         }
     }
 
@@ -411,19 +453,19 @@ namespace ApacsAdapter
             {
                 this.Apacs = Apacs;
             }
-            
+
             [System.Runtime.InteropServices.DispId(0)]
-            
+
             public void defaultDispatchHandle(object aEvtSettings)
             {
                 Apacs.onEvent(new ApacsPropertyObject(aEvtSettings));
             }
         }
-        
+
         internal void onEvent(ApacsPropertyObject aEvtSettings)
         {
             ApacsEventImp(aEvtSettings);
-            
+
         }
         /*
          * NotifyAdd
@@ -439,7 +481,7 @@ namespace ApacsAdapter
                 }
                 ApacsNotifyAddImp += value;
             }
-            
+
             remove
             {
                 ApacsNotifyAddImp -= value;
@@ -449,7 +491,7 @@ namespace ApacsAdapter
                 }
             }
         }
-        
+
         private ApacsNotifyAddHandler ApacsNotifyAddImp;
         public class NotifyAddClass
         {
@@ -458,15 +500,15 @@ namespace ApacsAdapter
             {
                 this.Apacs = Apacs;
             }
-            
+
             [System.Runtime.InteropServices.DispId(0)]
-            
+
             public void defaultDispatchHandle(object aAddedObj)
             {
                 Apacs.onNotifyAdd(new ApacsObject((IApcObjectWrap)aAddedObj));
             }
         }
-        
+
         internal void onNotifyAdd(ApacsObject aAddedObj)
         {
             ApacsNotifyAddImp(aAddedObj);
@@ -504,15 +546,15 @@ namespace ApacsAdapter
             {
                 this.Apacs = Apacs;
             }
-            
+
             [System.Runtime.InteropServices.DispId(0)]
-            
+
             public void defaultDispatchHandle(object aChangedObj, object aChangedSettings)
             {
                 Apacs.onNotifyChange(new ApacsObject((IApcObjectWrap)aChangedObj), new ApacsPropertyObject(aChangedSettings));
             }
         }
-        
+
         internal void onNotifyChange(ApacsObject aChandgedObj, ApacsPropertyObject aChangedSettings)
         {
             ApacsNotifyChangeImp(aChandgedObj, aChangedSettings);
@@ -531,7 +573,7 @@ namespace ApacsAdapter
                 }
                 ApacsNotifyDeleteImp += value;
             }
-            
+
             remove
             {
                 ApacsNotifyDeleteImp -= value;
@@ -541,7 +583,7 @@ namespace ApacsAdapter
                 }
             }
         }
-        
+
         private ApacsNotifyDeleteHandler ApacsNotifyDeleteImp;
         public class NotifyDeleteClass
         {
@@ -550,15 +592,15 @@ namespace ApacsAdapter
             {
                 this.Apacs = Apacs;
             }
-            
+
             [System.Runtime.InteropServices.DispId(0)]
-            
+
             public void defaultDispatchHandle(object aDeletedObj)
             {
                 Apacs.onNotifyDeleted(new ApacsObject((IApcObjectWrap)aDeletedObj));
             }
         }
-        
+
         internal void onNotifyDeleted(ApacsObject aAddedObj)
         {
             ApacsNotifyDeleteImp(aAddedObj);
@@ -575,15 +617,15 @@ namespace ApacsAdapter
             {
                 this.Apacs = Apacs;
             }
-            
+
             [System.Runtime.InteropServices.DispId(0)]
-            
+
             public void defaultDispatchHandle()
             {
                 Apacs.onDisconnect();
             }
         }
-        
+
         internal void onDisconnect()
         {
             ApacsDisconnect();
@@ -606,7 +648,7 @@ namespace ApacsAdapter
                 Session.set_onDisconnect(new DisconnectClass(this));
                 log.AddLog("APACS server connected");
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 log.AddLog(e.ToString());
             }
@@ -621,10 +663,10 @@ namespace ApacsAdapter
             Apacs = null;
             log.AddLog("APACS Server disposed");
         }
-        
+
         public ApacsObject getObjectByUID(string astrUID)
         {
-            if (String.IsNullOrEmpty(astrUID) || String.IsNullOrWhiteSpace(astrUID))
+            if (Apacs == null || String.IsNullOrEmpty(astrUID))
             {
                 return null;
             }
@@ -634,83 +676,102 @@ namespace ApacsAdapter
             {
                 return null;
             }
-            return new ApacsObject((IApcObjectWrap)obj);
+            return new ApacsObject(obj as IApcObjectWrap);
         }
 
         public ApacsObject getObjectBySampleUID(string UID)
         {
-            if (String.IsNullOrEmpty(UID) || String.IsNullOrWhiteSpace(UID))
+            if (String.IsNullOrEmpty(UID))
             {
                 return null;
             }
             UID += "SA 0000.";
             return getObjectByUID(UID);
         }
-        
+
         public ApacsObject getObjectByAlias(string astrAlias)
         {
+            if (Apacs == null || String.IsNullOrEmpty(astrAlias))
+            {
+                return null;
+            }
             object obj = null;
             int nResult = Apacs.getObjectByAlias(astrAlias, out obj);
             if (nResult != 0 || obj == null)
             {
                 return null;
             }
-            return new ApacsObject((IApcObjectWrap)obj);
+            return new ApacsObject(obj as IApcObjectWrap);
         }
-        public ApacsObject[] getObjectsByFilter(string astrObjType, string filterValue, string filterStrName)
+        public ApacsObject[] getObjectsByFilter(string astrObjType, string filterStrName, string filterValue)
         {
+            if (Apacs == null || String.IsNullOrEmpty(astrObjType) || String.IsNullOrEmpty(filterStrName) || String.IsNullOrEmpty(filterValue))
+            {
+                return null;
+            }
             Array res = new object[] { };
             TApcEQUALObjFilter apFilter = new TApcEQUALObjFilter();
             apFilter.strName = filterStrName;
             apFilter.Value = filterValue;
             int nResult = Apacs.getObjectsByFilter(astrObjType, apFilter, out res);
-            if (nResult != 0)
-            {
-                return null;
-            }
-            ApacsObject [] result = new ApacsObject[res.Length];
-            for (int i = 0; i < res.Length; i++)
-            {
-                result[i] = new ApacsObject((IApcObjectWrap)res.GetValue(i));
-            }
-            return result;
-        }
-
-        public ApacsObject[] getObjectsByType(string astrObjType)
-        {
-            Array res = new object[] { };
-            int nResult = Apacs.getObjectsByFilter(astrObjType, null, out res);
-            if (nResult != 0)
+            if (nResult != 0 || res == null)
             {
                 return null;
             }
             ApacsObject[] result = new ApacsObject[res.Length];
             for (int i = 0; i < res.Length; i++)
             {
-                result[i] = new ApacsObject((IApcObjectWrap)res.GetValue(i));
+                result[i] = new ApacsObject(res.GetValue(i) as IApcObjectWrap);
+            }
+            return result;
+        }
+
+        public ApacsObject[] getObjectsByType(string astrObjType)
+        {
+            if (Apacs == null || String.IsNullOrEmpty(astrObjType))
+            {
+                return null;
+            }
+            Array res = new object[] { };
+            int nResult = Apacs.getObjectsByFilter(astrObjType, null, out res);
+            if (nResult != 0 || res == null)
+            {
+                return null;
+            }
+            ApacsObject[] result = new ApacsObject[res.Length];
+            for (int i = 0; i < res.Length; i++)
+            {
+                result[i] = new ApacsObject(res.GetValue(i) as IApcObjectWrap);
             }
             return result;
         }
         public ApacsObject getRootObject()
         {
+            if (Apacs == null)
+            {
+                return null;
+            }
             object obj = null;
             int nResult = Apacs.getRootObject(out obj);
             if (nResult != 0 || obj == null)
             {
                 return null;
             }
-            return new ApacsObject((IApcObjectWrap)obj);
+            return new ApacsObject(obj as IApcObjectWrap);
         }
 
         public ApacsPropertyObject[] getEvents(string[] astrTypes, DateTime adtFrom, DateTime adtTo)
         {
-            Array eventsProps = new object[] { };
-            int nResult = Apacs.getEvents(astrTypes, adtFrom, adtTo, out eventsProps);
-            if (nResult != 0)
+            if (Apacs == null || astrTypes == null || adtFrom == null || adtTo == null)
             {
                 return null;
             }
-
+            Array eventsProps = new object[] { };
+            int nResult = Apacs.getEvents(astrTypes, adtFrom, adtTo, out eventsProps);
+            if (nResult != 0 || eventsProps == null)
+            {
+                return null;
+            }
             ApacsPropertyObject[] result = new ApacsPropertyObject[eventsProps.Length];
             for (int i = 0; i < eventsProps.Length; i++)
             {

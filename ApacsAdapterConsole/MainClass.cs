@@ -29,11 +29,11 @@ namespace ApacsAdapterConsole
             //AdpMBAdapter mb = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword);
             
             AdpEventsLister lister = new AdpEventsLister(apacsInstance, cfg);
-            //lister.startEventsLister();
+            //lister.start();
             Thread[] thirds = new Thread[3];
             for (int i = 0; i < thirds.Length; i++)
             {
-                thirds[i] = new Thread(lister.startEventsLister);
+                thirds[i] = new Thread(lister.start);
             }
             foreach (Thread th in thirds)
             {
@@ -47,7 +47,7 @@ namespace ApacsAdapterConsole
             //    {
             //        case ConsoleKey.Escape:
             //            isRun = false;
-            //            lister.stopEventsLister();
+            //            lister.stop();
             //            apacsInstance.Dispose();
             //            break;
             //        default:

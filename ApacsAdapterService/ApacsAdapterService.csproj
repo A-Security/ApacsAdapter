@@ -145,7 +145,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>net stop ApacsAdapterService
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+net stop ApacsAdapterService
 taskkill /f /im $(TargetFileName)
 cd $(TargetDir)
 copy ApacsAdapter.dll C:\Windows\SysWOW64\ /y
@@ -155,7 +156,8 @@ cd C:\Windows\SysWOW64\
 del ApacsAdapter.cfg /F /Q
 C:\Windows\Microsoft.NET\Framework\v4.0.30319\installutil.exe /u ApacsAdapterService.exe
 C:\Windows\Microsoft.NET\Framework\v4.0.30319\installutil.exe ApacsAdapterService.exe
-net start ApacsAdapterService</PostBuildEvent>
+net start ApacsAdapterService
+)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

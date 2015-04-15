@@ -20,7 +20,11 @@ namespace ApacsAdapter
             this.data = new ApcGetData();
             this.mbAdp = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword);
         }
-        public void startEventsLister()
+        public void startInThreadPool (object objState)
+        {
+            start();
+        }
+        public void start()
         {
             try
             {
@@ -37,7 +41,7 @@ namespace ApacsAdapter
             }
         }
 
-        public void stopEventsLister()
+        public void stop()
         {
             try
             {
@@ -56,10 +60,10 @@ namespace ApacsAdapter
         private void onDisconnect()
         {
             log.AddLog("APACS SERVER DISCONNECTED!");
-            stopEventsLister();
+            stop();
             Apacs.Dispose();
             Apacs = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
-            startEventsLister();
+            start();
         }
 
         private void onEvent(ApacsPropertyObject evtSet)
