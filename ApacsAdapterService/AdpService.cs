@@ -70,7 +70,7 @@ namespace ApacsAdapterService
         {
             if (timer == null)
             {
-                SetTaskRestart(16, 46, 0);
+                SetTaskRestart(03, 00, 00);
             }
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
