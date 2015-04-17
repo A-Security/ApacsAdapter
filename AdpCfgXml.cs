@@ -4,7 +4,6 @@ using System.IO;
 using System.Xml;
 using System.Diagnostics;
 
-
 namespace ApacsAdapter
 {
     public class AdpCfgXml
@@ -25,12 +24,15 @@ namespace ApacsAdapter
         private XmlDocument xdoc = new XmlDocument();
         public AdpCfgXml()
         {
-            this.MBhost = "192.168.0.74";
+            // WSO2 Message Broker default settings
+            this.MBhost = "10.28.65.224"; //"192.168.0.74"; - TEST SERVER
             this.MBuser = "Apacs";
             this.MBpassword = "Aa1234567";
             this.MBoutQueue = "ApacsOUT";
             this.MBport = "5672";
-            this.GRhost = "192.168.0.151";
+            
+            // WSO2 Governancy Registry default settings
+            this.GRhost = "10.28.65.228"; // "192.168.0.151"; - TEST SERVER
             this.GRuser = "Apacs";
             this.GRpassword = "Aa1234567";
             this.apcLogin = "Inst";

@@ -55,9 +55,8 @@ namespace ApacsAdapterService
         {
             log.AddLog("Stopped service (everyday Restart Timer)");
             Break();
-            StopThirds();
-            Run();
             log.AddLog("Starting service (everyday Restart Timer)");
+            Run();
         }
 
         private void SetTaskRestart(byte hh, byte mm, byte ss)
@@ -71,23 +70,25 @@ namespace ApacsAdapterService
         {
             if (timer == null)
             {
-                SetTaskRestart(3, 0, 0);
+                SetTaskRestart(16, 46, 0);
             }
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
             apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
             eventLister = new AdpEventsLister(apacsInstance, cfg);
             //ThreadPool.QueueUserWorkItem(new WaitCallback(eventLister.startInThreadPool));
-            //StartThirds(eventLister.start);
-            eventLister.start();
+            StartThirds(eventLister.start);
+            //eventLister.start();
             
         }
         internal void Break()
         {
+            StopThirds();
             if (eventLister != null)
                 eventLister.stop();
             if (apacsInstance != null)
                 apacsInstance.Dispose();
+            AdpLog.OnAddLog -= new EventHandler(AdpLog_OnAddLog);
 
         }
         private void StartThirds(StartMethod method)
