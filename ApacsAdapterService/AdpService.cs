@@ -16,10 +16,11 @@ namespace ApacsAdapterService
         private TimerCallback timerCallback = null;
         private Timer timer = null;
         private List<Thread> thirds = new List<Thread>();
-        private delegate void StartMethod();
+        private delegate void StartMethod(object o);
         public AdpService()
         {
             InitializeComponent();
+            this.setTaskRestart(3, 0, 0);
         }
 
         protected override void OnStart(string[] args)
@@ -59,7 +60,7 @@ namespace ApacsAdapterService
             Run();
         }
 
-        private void SetTaskRestart(byte hh, byte mm, byte ss)
+        private void setTaskRestart(byte hh, byte mm, byte ss)
         {
             this.timerCallback = new TimerCallback(TaskRestart);
             DateTime todayTaskTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hh, mm, ss);
@@ -68,22 +69,14 @@ namespace ApacsAdapterService
         }
         internal void Run()
         {
-            if (timer == null)
-            {
-                SetTaskRestart(03, 00, 00);
-            }
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
             apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
             eventLister = new AdpEventsLister(apacsInstance, cfg);
-            //ThreadPool.QueueUserWorkItem(new WaitCallback(eventLister.startInThreadPool));
-            StartThirds(eventLister.start);
-            //eventLister.start();
-            
+            StartThirds(eventLister.startInThreadPool);
         }
         internal void Break()
         {
-            StopThirds();
             if (eventLister != null)
                 eventLister.stop();
             if (apacsInstance != null)
@@ -93,22 +86,11 @@ namespace ApacsAdapterService
         }
         private void StartThirds(StartMethod method)
         {
-            ThreadStart threadStart = new ThreadStart(method);
-            thirds.Add(new Thread(threadStart));
-            thirds.Add(new Thread(threadStart));
-            foreach (Thread th in thirds)
+            for (int i = 0; i < 2; i++)
             {
-                th.Start();
+                ThreadPool.QueueUserWorkItem(new WaitCallback(method));
             }
 
-        }
-        private void StopThirds()
-        {
-            foreach (Thread th in thirds)
-            {
-                th.Abort();
-            }
-            thirds.Clear();
         }
     }
 }

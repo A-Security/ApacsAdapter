@@ -11,7 +11,8 @@ using System.Web.Services.Protocols;
 [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
 // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
 // [System.Web.Script.Services.ScriptService]
-public class AdpWebService  : WebService {
+public class AdpWebService : WebService
+{
 
     [WebMethod]
     public bool fillGRCardHolders()
@@ -19,6 +20,6 @@ public class AdpWebService  : WebService {
         AdpCfgXml cfg = new AdpCfgXml();
         ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
         AdpGRAdapter gr = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
-        return gr.copyCHfromApacs(apacsInstance); 
+        return gr.copyCHfromApacs(apacsInstance);
     }
 }

@@ -47,8 +47,9 @@
     <Compile Include="AdpCfgXml.cs" />
     <Compile Include="AdpEvtObj.cs" />
     <Compile Include="AdpEventsLister.cs" />
+    <Compile Include="AdpGRAdapter.cs" />
     <Compile Include="AdpLog.cs" />
-    <Compile Include="AdpWSOAdapters.cs" />
+    <Compile Include="AdpMBAdapter.cs" />
     <Compile Include="ApcGetData.cs" />
     <Compile Include="ApcServerObjects.cs" />
     <Compile Include="ApcTypesDesc.cs" />
