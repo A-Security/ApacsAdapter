@@ -91,8 +91,8 @@ namespace ApacsAdapter
                     {
                         log.AddLog(e.ToString());
                     }
-                    Model.Close(200, String.Empty);
-                    Connect.Close();
+                    Model.Close();
+                    Connect.Abort();
                 }
             }
             return message;
