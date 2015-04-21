@@ -54,7 +54,7 @@ namespace ApacsAdapter
                         IsSendOk = true;
                         Model.Close();
                     }
-                    Connect.Abort(100);
+                    Connect.Close(250);
                 }
             }
             catch (Exception e) 
