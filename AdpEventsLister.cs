@@ -4,10 +4,8 @@ using System.Threading;
 
 namespace ApacsAdapter
 {
-    public class AdpEventsLister : IDisposable
+    public class AdpEventsLister
     {
-        private object locker = new object();
-        private static string CUR_EVENTID { get; set; }
         private AdpLog log = new AdpLog();
         private AdpCfgXml cfg;
         private ApcGetData data;
@@ -19,14 +17,6 @@ namespace ApacsAdapter
             this.cfg = cfg;
             this.data = new ApcGetData();
             this.mbAdp = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword);
-        }
-        public void startInThreadPool (object objState)
-        {
-            start();
-        }
-        public void Dispose()
-        {
-            stop();
         }
         public void start()
         {
@@ -72,15 +62,6 @@ namespace ApacsAdapter
 
         private void onEvent(ApacsPropertyObject evtSet)
         {
-            string eventId = null;
-            lock(locker)
-            {
-                if (evtSet == null || AdpEventsLister.CUR_EVENTID == (eventId = evtSet.getSampleEventUID()))
-                {
-                    return;
-                }
-                AdpEventsLister.CUR_EVENTID = eventId;
-            }
             string fullEvtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID);
             string evtType = fullEvtType.Split('_')[0];
             AdpMBMessage msg = null;
@@ -106,7 +87,7 @@ namespace ApacsAdapter
                 {
                     
                     log.AddLog("Error send event to MB("+b+"): " + msg.body);
-                    Thread.Sleep(3000);
+                    Thread.Sleep(500);
                     if (b > 3) break;
                     b++;
                 }
@@ -114,15 +95,15 @@ namespace ApacsAdapter
         }
         private void onAddObject(ApacsObject newObject) 
         {
-            newObject.getSampleUID();
+            //newObject.getSampleUID();
         }
         private void onDelObject(ApacsObject delObject)
         {
-            delObject.getSampleUID();
+            //delObject.getSampleUID();
         }
         private void onChangeObject(ApacsObject changeObject, ApacsPropertyObject evtSet)
         {
-            changeObject.getSampleUID();
+            //changeObject.getSampleUID();
         }
     }
 }

@@ -16,14 +16,12 @@ namespace ApacsAdapter
         public AdpMBAdapter(string hostName, int port, string userName, string password)
         {
             Factory = new ConnectionFactory();
-            Factory.RequestedHeartbeat = 30;
             Factory.VirtualHost = VIRTUAL_HOST;
             Factory.HostName = hostName;
             Factory.Port = port;
             Factory.UserName = userName;
             Factory.Password = password;
-            Factory.Protocol = Protocols.AMQP_0_9_1;
-            Factory.TopologyRecoveryEnabled = true;
+            Factory.Protocol = Protocols.DefaultProtocol;
         }
         public bool PublishMessage(string Queue, AdpMBMessage msg)
         {
@@ -51,9 +49,9 @@ namespace ApacsAdapter
                         props.SetPersistent(true);
                         Model.BasicPublish(EXCHANGE_NAME, Queue, props, Encoding.UTF8.GetBytes(msg.body));
                         IsSendOk = true;
-                        Model.Close();
+                        //Model.Close();
                     }
-                    Connect.Abort(30);
+                    Connect.Abort(500);
                 }
             }
             catch (Exception e) 
