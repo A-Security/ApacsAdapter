@@ -2,14 +2,14 @@
 
 namespace ApacsAdapter
 {
-    public class AdpMQMessage
+    public class AdpMBMessage
     {
         private string _body;
         private string _id;
         private long _unixTime;
         private string _type;
 
-        public AdpMQMessage(string id, string body, string type)
+        public AdpMBMessage(string id, string body, string type)
         {
             this.id = id;
             this.type = type;

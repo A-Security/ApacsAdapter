@@ -28,10 +28,8 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="RabbitMQ.Client, Version=3.5.1.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
-      <HintPath>lib\RabbitMQ.Client.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <Private>False</Private>
+      <HintPath>lib\RabbitMQ.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,7 +54,7 @@
     <Compile Include="ApcGetData.cs" />
     <Compile Include="ApcServerObjects.cs" />
     <Compile Include="ApcTypesDesc.cs" />
-    <Compile Include="AdpMQMessage.cs" />
+    <Compile Include="AdpMBMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

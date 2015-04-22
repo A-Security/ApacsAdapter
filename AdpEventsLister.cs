@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace ApacsAdapter
 {
-    public class AdpEventsLister
+    public class AdpEventsLister : IDisposable
     {
         private object locker = new object();
         private static string CUR_EVENTID { get; set; }
@@ -24,6 +24,10 @@ namespace ApacsAdapter
         {
             start();
         }
+        public void Dispose()
+        {
+            stop();
+        }
         public void start()
         {
             try
@@ -40,7 +44,7 @@ namespace ApacsAdapter
                 log.AddLog(e.ToString());
             }
         }
-
+        
         public void stop()
         {
             try
@@ -79,7 +83,7 @@ namespace ApacsAdapter
             }
             string fullEvtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID);
             string evtType = fullEvtType.Split('_')[0];
-            AdpMQMessage msg = null;
+            AdpMBMessage msg = null;
             AdpEvtObj aeObj = null;
             switch (evtType)
             {
@@ -96,7 +100,7 @@ namespace ApacsAdapter
             }
             if (aeObj != null)
             {
-                msg = new AdpMQMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
+                msg = new AdpMBMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
                 byte b = 0;
                 while (!msg.IsBodyEmpty && !mbAdp.PublishMessage(cfg.MBoutQueue, msg))
                 {
