@@ -52,10 +52,10 @@ namespace ApacsAdapterService
         }
         private void TaskRestart(object obj)
         {
-            log.AddLog("Stopped service (everyday Restart Timer)");
+            log.AddLog("Stop service (everyday restart task)");
             Break();
-            log.AddLog("Starting service (everyday Restart Timer)");
             Run();
+            log.AddLog("Start service (everyday restart task)");
         }
 
         private void setTaskRestart(byte hh, byte mm, byte ss)
