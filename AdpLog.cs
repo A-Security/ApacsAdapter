@@ -6,9 +6,9 @@ namespace ApacsAdapter
     {
         public string log { get; private set; }
         public static event EventHandler OnAddLog;
-        public void AddLog(string Log)
+        public void AddLog(object Log)
         {
-            this.log = Log;
+            this.log = Log.ToString();
             if (OnAddLog != null)
             {
                 OnAddLog(this, EventArgs.Empty);

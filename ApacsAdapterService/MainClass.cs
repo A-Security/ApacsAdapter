@@ -14,15 +14,17 @@ namespace ApacsAdapterService
         /// </summary>
         static void Main()
         {
-            AdpService service = new AdpService();
             if (Environment.UserInteractive)
             {
-                service.Run();
-                Console.ReadLine();
+                using (AdpService service = new AdpService())
+                {
+                    service.Run();
+                    Console.Read();
+                }
             }
             else
             {
-                ServiceBase.Run(service);
+                ServiceBase.Run(new AdpService());
             }
         }
     }

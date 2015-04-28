@@ -1,5 +1,4 @@
 ﻿using System;
-
 using ApacsAdapter;
 using System.Diagnostics;
 using System.ServiceProcess;

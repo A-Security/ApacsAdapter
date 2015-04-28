@@ -9,7 +9,7 @@ namespace ApacsAdapter
     {
         private AdpLog log = new AdpLog();
         private const string EXCHANGE_NAME = "amq.direct";
-        private const string CONTENT_TYPE = "application/xml";
+        private const string CONTENT_TYPE = "text/xml";
         private const string VIRTUAL_HOST = "/carbon";
         private ConnectionFactory Factory;
 
@@ -21,7 +21,7 @@ namespace ApacsAdapter
             Factory.Port = port;
             Factory.UserName = userName;
             Factory.Password = password;
-            Factory.Protocol = Protocols.DefaultProtocol;
+            Factory.Protocol = Protocols.AMQP_0_9_1;
         }
         public bool PublishMessage(string Queue, AdpMBMessage msg)
         {
@@ -49,9 +49,7 @@ namespace ApacsAdapter
                         props.SetPersistent(true);
                         Model.BasicPublish(EXCHANGE_NAME, Queue, props, Encoding.UTF8.GetBytes(msg.body));
                         IsSendOk = true;
-                        //Model.Close();
                     }
-                    Connect.Abort(500);
                 }
             }
             catch (Exception e) 
