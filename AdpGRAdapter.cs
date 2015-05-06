@@ -81,7 +81,7 @@ namespace ApacsAdapter
                 clearCollection(holdersFullPath);
                 ApcData agd = new ApcData();
                 Resource resource;
-                foreach (AdpCardHolder ch in agd.getCardHoldersFromApacs(apacsInstance))
+                foreach (AdpCardHolder ch in agd.getCardHolders(apacsInstance))
                 {
                     resource = registry.NewResource();
                     resource.mediaType = "image/jpeg";

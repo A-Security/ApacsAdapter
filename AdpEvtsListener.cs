@@ -71,12 +71,12 @@ namespace ApacsAdapter
             {
                 case ApcObjType.TApcCardHolderAccess:
                     {
-                        aeObj = data.getEvtObjFromEvtSet_CHA(evtSet, fullEvtType);
+                        aeObj = data.getEvtObj_CHA(evtSet, fullEvtType);
                         break;
                     }
                 default:
                     {
-                        aeObj = data.getEvtObjFromEvtSet(evtSet, fullEvtType);
+                        aeObj = data.getEvtObj(evtSet, fullEvtType);
                         break;
                     }
             }
@@ -85,8 +85,7 @@ namespace ApacsAdapter
                 AdpMBMessage msg = new AdpMBMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
                 if (!mbAdp.PublishMessage(msg))
                 {
-                    //log.AddLog("Error send event to MB " + msg.body);
-                    
+                    log.AddLog("Error send event to MB " + msg.body);
                 }
             }
         }

@@ -35,7 +35,7 @@ namespace ApacsAdapter
             sb.AppendLine("================END Property=" + apoName + "============");
             return sb.ToString();
         }
-        public AdpEvtObj_CHA getEvtObjFromEvtSet_CHA(ApacsPropertyObject evtSets, string eventType)
+        public AdpEvtObj_CHA getEvtObj_CHA(ApacsPropertyObject evtSets, string eventType)
         {
             if (eventType.Contains("Will"))
             {
@@ -69,7 +69,7 @@ namespace ApacsAdapter
             };
             return aobj;
         }
-        public AdpEvtObj getEvtObjFromEvtSet(ApacsPropertyObject evtSets, string eventType)
+        public AdpEvtObj getEvtObj(ApacsPropertyObject evtSets, string eventType)
         {
             AdpEvtObj aeobj = new AdpEvtObj
             {
@@ -82,7 +82,7 @@ namespace ApacsAdapter
             };
             return aeobj;
         }
-        public AdpCardHolder getCardHolderFromAO(ApacsObject cardHolderAO)
+        public AdpCardHolder getCardHolder(ApacsObject cardHolderAO)
         {
             if (!ApcObjType.TApcCardHolder.Equals(cardHolderAO.getApacsType()))
             {
@@ -99,15 +99,14 @@ namespace ApacsAdapter
             };
             return chObj;
         }
-        public AdpCardHolder[] getCardHoldersFromApacs(ApacsServer apacsInstance)
+        public AdpCardHolder[] getCardHolders(ApacsServer apacsInstance)
         {
             ApacsObject[] cardHolders = apacsInstance.getObjectsByType(ApcObjType.TApcCardHolder);
             AdpCardHolder[] result = new AdpCardHolder[cardHolders.Length];
             for (int i = 0; i < result.Length; i++ )
             {
-                result[i] = getCardHolderFromAO(cardHolders[i]);
+                result[i] = getCardHolder(cardHolders[i]);
             }
-                
             return result;
         }
         
