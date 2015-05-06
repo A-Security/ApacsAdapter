@@ -2,7 +2,7 @@
 
 namespace ApacsAdapter
 {
-    partial class ApcGetData
+    partial class ApcData
     {
         private string getTypeDesc(string strType)
         {

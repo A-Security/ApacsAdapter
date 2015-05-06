@@ -28,7 +28,7 @@ namespace ApacsAdapterConsole
 
             //AdpMBAdapter mb = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword);
             
-            AdpEventsLister lister = new AdpEventsLister(apacsInstance, cfg);
+            AdpEvtsListener lister = new AdpEvtsListener(apacsInstance, cfg);
             lister.start();
             //bool isRun = true;
             //while (isRun)
@@ -48,7 +48,7 @@ namespace ApacsAdapterConsole
         }
         private static void AdpLog_OnAddLog(object sender, EventArgs arg)
         {
-            Console.WriteLine(((AdpLog)sender).log);
+            Console.WriteLine(((AdpLog)sender).Log);
         }
 
     }

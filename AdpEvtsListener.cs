@@ -4,19 +4,21 @@ using System.Threading;
 
 namespace ApacsAdapter
 {
-    public class AdpEventsLister
+    public class AdpEvtsListener
     {
-        private AdpLog log = new AdpLog();
+        private AdpLog log;
         private AdpCfgXml cfg;
-        private ApcGetData data;
+        private ApcData data;
         private ApacsServer Apacs;
         private AdpMBAdapter mbAdp;
-        public AdpEventsLister(ApacsServer Apacs, AdpCfgXml cfg) 
+        
+        public AdpEvtsListener(ApacsServer Apacs, AdpCfgXml cfg) 
         {
+            this.log = new AdpLog();
             this.Apacs = Apacs;
             this.cfg = cfg;
-            this.data = new ApcGetData();
-            this.mbAdp = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword);
+            this.data = new ApcData();
+            this.mbAdp = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword, cfg.MBoutQueue);
         }
         public void start()
         {
@@ -64,7 +66,6 @@ namespace ApacsAdapter
         {
             string fullEvtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID);
             string evtType = fullEvtType.Split('_')[0];
-            AdpMBMessage msg = null;
             AdpEvtObj aeObj = null;
             switch (evtType)
             {
@@ -81,15 +82,11 @@ namespace ApacsAdapter
             }
             if (aeObj != null)
             {
-                msg = new AdpMBMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
-                byte b = 0;
-                while (!msg.IsBodyEmpty && !mbAdp.PublishMessage(cfg.MBoutQueue, msg))
+                AdpMBMessage msg = new AdpMBMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
+                if (!mbAdp.PublishMessage(msg))
                 {
+                    //log.AddLog("Error send event to MB " + msg.body);
                     
-                    log.AddLog("Error send event to MB("+b+"): " + msg.body);
-                    Thread.Sleep(500);
-                    if (b > 3) break;
-                    b++;
                 }
             }
         }

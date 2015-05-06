@@ -11,7 +11,7 @@ namespace ApacsAdapterService
     {
         private AdpLog log = new AdpLog();
         private ApacsServer apacsInstance = null;
-        private AdpEventsLister eventLister = null;
+        private AdpEvtsListener eventLister = null;
         private TimerCallback timerCallback = null;
         private Timer timer = null;
 
@@ -33,7 +33,7 @@ namespace ApacsAdapterService
         {
             if (Environment.UserInteractive)
             {
-                Console.WriteLine(((AdpLog)sender).log);
+                Console.WriteLine(((AdpLog)sender).Log);
             }
             else
             {
@@ -44,46 +44,52 @@ namespace ApacsAdapterService
                         EventLog.CreateEventSource("ApacsAdapterService", "ApacsAdapterService");
                     }
                     adpServiceLog.Source = "ApacsAdapterService";
-                    adpServiceLog.WriteEntry(((AdpLog)sender).log);
+                    adpServiceLog.WriteEntry(((AdpLog)sender).Log);
                 }
                 catch { }
             }
         }
-        private void TaskRestart(object obj)
+        private void FlushTask(object obj)
         {
-            log.AddLog("Stop service (everyday restart task)");
-            Break();
-            Run();
-            log.AddLog("Start service (everyday restart task)");
+            GC.Collect();
+            log.AddLog("Resource flushed by GC");
         }
 
-        private void setTaskRestart(byte hh, byte mm, byte ss)
+        private void setFlushTask(byte hh, byte mm, byte ss)
         {
-            if (this.timer != null)
-            {
-                return;
-            }
-            this.timerCallback = new TimerCallback(TaskRestart);
+            this.timerCallback = new TimerCallback(FlushTask);
             DateTime todayTaskTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hh, mm, ss);
             DateTime nextTaskTime = DateTime.Now <= todayTaskTime ? todayTaskTime : todayTaskTime.AddDays(1);
             this.timer = new Timer(timerCallback, null, nextTaskTime - DateTime.Now, TimeSpan.FromDays(1));
         }
         internal void Run()
         {
-            setTaskRestart(3, 0, 0);
+            setFlushTask(3, 0, 0);
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
             apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
-            eventLister = new AdpEventsLister(apacsInstance, cfg);
+            eventLister = new AdpEvtsListener(apacsInstance, cfg);
             eventLister.start();
         }
         internal void Break()
         {
             if (eventLister != null)
+            {
                 eventLister.stop();
+                eventLister = null;
+            }
             if (apacsInstance != null)
+            {
                 apacsInstance.Dispose();
+                apacsInstance = null;
+            }
+            if (timer != null)
+            {
+                timer.Dispose();
+                timer = null;
+            }
             AdpLog.OnAddLog -= new EventHandler(AdpLog_OnAddLog);
+            
         }
     }
 }

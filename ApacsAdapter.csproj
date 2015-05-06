@@ -47,14 +47,14 @@
     <Compile Include="AdpEvtObj_CHA.cs" />
     <Compile Include="AdpCfgXml.cs" />
     <Compile Include="AdpEvtObj.cs" />
-    <Compile Include="AdpEventsLister.cs" />
-    <Compile Include="AdpGRAdapter.cs" />
+    <Compile Include="AdpEvtsListener.cs" />
     <Compile Include="AdpLog.cs" />
     <Compile Include="AdpMBAdapter.cs" />
-    <Compile Include="ApcGetData.cs" />
+    <Compile Include="ApcData.cs" />
     <Compile Include="ApcServerObjects.cs" />
-    <Compile Include="ApcTypesDesc.cs" />
+    <Compile Include="ApcTypes.cs" />
     <Compile Include="AdpMBMessage.cs" />
+    <Compile Include="AdpGRAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

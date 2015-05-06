@@ -10,19 +10,22 @@ namespace ApacsAdapter
     public class AdpGRAdapter
     {
         private AdpLog log = new AdpLog();
-        private const string ARTIFACT_PATH = @"/_system/governance";
-        private const string HOLDERS_PATH = @"/ssoi/cardholders";
-        private const string HOLDERS_PHOTO_PATH = HOLDERS_PATH + @"/photo";
-        private const string VIPS_PATH = @"/ssoi/personcontrol";
-        private string holdersFullPath = ARTIFACT_PATH + HOLDERS_PATH;
-        private string VIPsFullPath = ARTIFACT_PATH + VIPS_PATH;
-        private string holdersPhotoFullPath = ARTIFACT_PATH + HOLDERS_PHOTO_PATH;
+        private const string ARTIFACT_PATH = @"/_system/governance/";
+        private const string HOLDERS_PATH = @"ssoi/cardholders/";
+        private const string HOLDERS_PHOTO_PATH = HOLDERS_PATH + @"photo/";
+        private const string VIPS_PATH = @"ssoi/personcontrol/";
+        private string holdersFullPath;
+        private string VIPsFullPath;
+        private string holdersPhotoFullPath;
         private string holdersPhotoPermaLinkUrl;
         private string serviceUrl;
         private string permaLinkBaseUrl;
         private static RegistryClient registry;
         public AdpGRAdapter(string GRhost, string GRuser, string GRpassword)
         {
+            holdersFullPath = ARTIFACT_PATH + HOLDERS_PATH;
+            VIPsFullPath = ARTIFACT_PATH + VIPS_PATH;
+            holdersPhotoFullPath = ARTIFACT_PATH + HOLDERS_PHOTO_PATH;
             serviceUrl = String.Format(@"https://{0}:9443/services/", GRhost);
             permaLinkBaseUrl = String.Format(@"http://{0}:9763/registry/resource", GRhost);
             holdersPhotoPermaLinkUrl = permaLinkBaseUrl + holdersPhotoFullPath;
@@ -76,7 +79,7 @@ namespace ApacsAdapter
             try
             {
                 clearCollection(holdersFullPath);
-                ApcGetData agd = new ApcGetData();
+                ApcData agd = new ApcData();
                 Resource resource;
                 foreach (AdpCardHolder ch in agd.getCardHoldersFromApacs(apacsInstance))
                 {
@@ -90,15 +93,17 @@ namespace ApacsAdapter
                     resource.mediaType = "application/vnd.cardholders+xml";
                     resource.name = ch.ID + ".xml";
                     resource.contentFile = CHtoGRcontent(ch);
-                    resPath = holdersFullPath + @"/" + resource.name;
                     resource.properties = new WSProperty[]
                     {
                         new WSProperty(){ key = "holder_id", values = new string[] { ch.ID } },
-                        new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
                         new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
+                        new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
                         new WSProperty(){ key = "holder_cardNo", values = new string[] { ch.CardNo } },
+                        new WSProperty(){ key = "holder_photo", values = new string[] { resPath } },
+                        new WSProperty(){ key = "holder_photoLink", values = new string[] { permaLinkBaseUrl + resPath } },
                         new WSProperty(){ key = "holder_vip", values = new string[] { IsVIP(ch.ID).ToString().ToLower() } }
                     };
+                    resPath = holdersFullPath + @"/" + resource.name;
                     registry.Put(resPath, resource);
                 }
             }

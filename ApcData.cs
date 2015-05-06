@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ApacsAdapter
 {
-    public partial class ApcGetData
+    public partial class ApcData
     {
 
         public string getPropHierarchy(ApacsPropertyObject objSets)

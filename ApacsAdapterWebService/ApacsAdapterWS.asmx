@@ -1,0 +1,1 @@
+﻿<%@ WebService Language="C#" CodeBehind="~/App_Code/ApacsAdapterWS.cs" Class="ApacsAdapterWS" %>
