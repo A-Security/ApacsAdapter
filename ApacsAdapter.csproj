@@ -50,8 +50,12 @@
     <Compile Include="AdpEvtsListener.cs" />
     <Compile Include="AdpLog.cs" />
     <Compile Include="AdpMBAdapter.cs" />
+    <Compile Include="ApacsObject.cs" />
+    <Compile Include="ApcObjProp.cs" />
+    <Compile Include="ApacsPropertyObject.cs" />
+    <Compile Include="ApacsServer.cs" />
     <Compile Include="ApcData.cs" />
-    <Compile Include="ApcServerObjects.cs" />
+    <Compile Include="ApcObjType.cs" />
     <Compile Include="ApcTypes.cs" />
     <Compile Include="AdpMBMessage.cs" />
     <Compile Include="AdpGRAdapter.cs" />
