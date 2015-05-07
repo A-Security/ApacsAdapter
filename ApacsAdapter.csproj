@@ -56,7 +56,7 @@
     <Compile Include="ApacsServer.cs" />
     <Compile Include="ApcData.cs" />
     <Compile Include="ApcObjType.cs" />
-    <Compile Include="ApcTypes.cs" />
+    <Compile Include="ApcData.Types.cs" />
     <Compile Include="AdpMBMessage.cs" />
     <Compile Include="AdpGRAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

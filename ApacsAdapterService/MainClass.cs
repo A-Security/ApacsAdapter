@@ -18,7 +18,7 @@ namespace ApacsAdapterService
             {
                 using (AdpService service = new AdpService())
                 {
-                    service.Run();
+                    service.StartService();
                     Console.Read();
                 }
             }

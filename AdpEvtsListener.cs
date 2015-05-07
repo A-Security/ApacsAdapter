@@ -24,6 +24,7 @@ namespace ApacsAdapter
         {
             try
             {
+                mbAdp.connect();
                 Apacs.ApacsDisconnect += new ApacsServer.ApacsDisconnectHandler(onDisconnect);
                 Apacs.ApacsNotifyAdd += new ApacsServer.ApacsNotifyAddHandler(onAddObject);
                 Apacs.ApacsNotifyDelete += new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
@@ -46,6 +47,7 @@ namespace ApacsAdapter
                 Apacs.ApacsNotifyDelete -= new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
                 Apacs.ApacsNotifyAdd -= new ApacsServer.ApacsNotifyAddHandler(onAddObject);
                 Apacs.ApacsDisconnect -= new ApacsServer.ApacsDisconnectHandler(onDisconnect);
+                mbAdp.disconnect();
                 log.AddLog("Events Lister Stopped");
             }
             catch (Exception e)

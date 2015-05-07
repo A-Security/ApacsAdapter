@@ -37,46 +37,21 @@ namespace ApacsAdapter
             this.Factory.Password = password;
             this.Factory.Protocol = Protocols.AMQP_0_9_1;
             this.Queue = queue;
+        }
+        public void connect()
+        {
             this.Conn = Factory.CreateConnection();
             this.Model = Conn.CreateModel();
             this.Conn.ConnectionShutdown += ConnectionShutdownHundler;
             log.AddLog("WSO2 MB connected");
         }
-
         private void ConnectionShutdownHundler(object sender, ShutdownEventArgs e)
         {
             log.AddLog("WSO2 MB connection lost!");
             this.timerCallback = new TimerCallback(recovery);
             this.timer = new Timer(timerCallback, sender, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
         }
-
-        private void recovery(object sender)
-        {
-            if (Conn.IsOpen && Model.IsOpen)
-            {
-                log.AddLog("WSO2 MB connection recovery!");
-                log.AddLog("WSO2 MB deferred message to send: " + deferredMsgs.Count);
-                if (deferredMsgs.Count != 0)
-                {
-                    foreach (AdpMBMessage msg in deferredMsgs.Values)
-                    {
-                        if (PublishMessage(msg))
-                        {
-                            deferredMsgs.Remove(msg.id);
-                        }
-                    }
-                    log.AddLog("WSO2 MB deferred message send successful");
-                }
-                if (timer != null)
-                {
-                    timer.Dispose();
-                    timer = null;
-                }
-                timerCallback = null;
-            }
-        }
-        
-        ~AdpMBAdapter()
+        public void disconnect()
         {
             this.Conn.ConnectionShutdown -= ConnectionShutdownHundler;
             try
@@ -107,18 +82,43 @@ namespace ApacsAdapter
                 Model = null;
                 Conn = null;
             }
-
+            log.AddLog("WSO2 MB disconnected");
         }
+        private void recovery(object sender)
+        {
+            if (Conn.IsOpen && Model.IsOpen)
+            {
+                log.AddLog("WSO2 MB connection recovery!");
+                log.AddLog("WSO2 MB deferred message to send: " + deferredMsgs.Count);
+                if (deferredMsgs.Count != 0)
+                {
+                    foreach (AdpMBMessage msg in deferredMsgs.Values)
+                    {
+                        if (PublishMessage(msg))
+                        {
+                            deferredMsgs.Remove(msg.id);
+                        }
+                    }
+                    log.AddLog("WSO2 MB deferred message send successful");
+                }
+                if (timer != null)
+                {
+                    timer.Dispose();
+                    timer = null;
+                }
+                timerCallback = null;
+            }
+        }
+        
         public bool PublishMessage(AdpMBMessage msg)
         {
-            bool IsSendOk = true;
-            if (Model == null || Model.IsClosed || Conn == null || !Conn.IsOpen || msg == null || msg.IsBodyEmpty || String.IsNullOrEmpty(Queue))
+            bool IsSend = false;
+            if (msg == null || msg.IsBodyEmpty || String.IsNullOrEmpty(Queue))
             {
-                IsSendOk = false;
+                return IsSend;
             }
-            if (IsSendOk)
+            if (!(Model == null || Model.IsClosed || Conn == null || !Conn.IsOpen))
             {
-                IsSendOk = false;
                 try
                 {
                     IBasicProperties props = Model.CreateBasicProperties();
@@ -130,18 +130,18 @@ namespace ApacsAdapter
                     props.Type = msg.type;
                     props.DeliveryMode = DELIVERY_MODE;
                     Model.BasicPublish(String.Empty, Queue, props, Encoding.UTF8.GetBytes(msg.body));
-                    IsSendOk = true;
+                    IsSend = true;
                 }
                 catch (Exception e)
                 {
                     log.AddLog(e.ToString());
                 }
             }
-            if (!IsSendOk && (deferredMsgs.Count == 0 || !deferredMsgs.ContainsKey(msg.id)))
+            else if (deferredMsgs.Count == 0 || !deferredMsgs.ContainsKey(msg.id))
             {
                 deferredMsgs.Add(msg.id, msg);
             }
-            return IsSendOk;
+            return IsSend;
         }
         
         public string RetriveMessage(string Queue, out bool queueIsNotEmpty)

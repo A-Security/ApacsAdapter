@@ -8,7 +8,6 @@ namespace ApacsAdapter
 {
     public partial class ApcData
     {
-
         public string getPropHierarchy(ApacsPropertyObject objSets)
         {
             StringBuilder sb = new StringBuilder();
@@ -109,6 +108,5 @@ namespace ApacsAdapter
             }
             return result;
         }
-        
     }
 }

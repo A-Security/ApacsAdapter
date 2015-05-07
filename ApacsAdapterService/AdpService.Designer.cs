@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+         
             this.adpServiceLog = new System.Diagnostics.EventLog();
             ((System.ComponentModel.ISupportInitialize)(this.adpServiceLog)).BeginInit();
             // 
