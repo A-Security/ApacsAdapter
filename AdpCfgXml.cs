@@ -14,6 +14,7 @@ namespace ApacsAdapter
         public string MBuser { get; private set; }
         public string MBpassword { get; private set; }
         public string MBoutQueue { get; private set; }
+        public string MBinQueue { get; private set; }
         public string MBport { get; private set; }
         public string GRhost { get; private set; }
         public string GRuser { get; private set; }
@@ -30,6 +31,7 @@ namespace ApacsAdapter
             this.MBuser = "Apacs";
             this.MBpassword = "Aa1234567";
             this.MBoutQueue = "ApacsOUT";
+            this.MBinQueue = "ApacsIN";
             this.MBport = "5672";
             
             // WSO2 Governancy Registry default settings
@@ -37,14 +39,21 @@ namespace ApacsAdapter
             this.GRhost = "192.168.0.151"; // TEST SERVER
             this.GRuser = "Apacs";
             this.GRpassword = "Aa1234567";
+
+            // Apacs user\pass settings
             this.apcLogin = "Inst";
             this.apcPasswd = "1945";
+
+            // Create config if file not exists
             if (!File.Exists(path))
             {
                 createConfig(path);
             }
+
             readConfig(path);
         }
+
+        // Read config file and set property value in config class uses reflection
         private void readConfig(string path)
         {
             try
@@ -62,6 +71,8 @@ namespace ApacsAdapter
                 log.AddLog(e.ToString());
             }
         }
+
+        // Create config file uses default property value 
         private void createConfig(string path)
         {
             try

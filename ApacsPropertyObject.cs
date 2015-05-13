@@ -109,18 +109,32 @@ namespace ApacsAdapter
                 return null;
             }
         }
-
+        public DateTime getRealDateTime()
+        {
+            return getDateTimeProperty(ApcObjProp.dtRealDateTime);
+        }
         public string getSampleEventUID()
         {
             string res = getStringProperty(ApcObjProp.SysAddrEventID);
             return String.IsNullOrEmpty(res) ? null : res.Split('.')[1];
         }
-
+        public string getSampleSourceUID()
+        {
+            ApacsObject sourceObj = getObjectProperty(ApcObjProp.SysAddrInitObj);
+            return sourceObj == null ? null : sourceObj.getSampleUID();
+        }
         public string getNameProperty()
         {
             return getStringProperty(ApcObjProp.strName);
         }
-
+        public string getSourceNameProperty()
+        {
+            return getStringProperty(ApcObjProp.strInitObjName);
+        }
+        public uint getDwCardNumber()
+        {
+            return getUIntProperty(ApcObjProp.dwCardNumber);
+        }
         public DateTime getDateTimeProperty(string strName)
         {
             object res = getProperty(strName);

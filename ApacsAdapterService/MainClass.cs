@@ -19,7 +19,19 @@ namespace ApacsAdapterService
                 using (AdpService service = new AdpService())
                 {
                     service.StartService();
-                    Console.Read();
+                    bool isRun = true;
+                    while (isRun)
+                    {
+                        switch (Console.ReadKey().Key)
+                        {
+                            case ConsoleKey.Escape:
+                                isRun = false;
+                                service.StopService();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
             }
             else

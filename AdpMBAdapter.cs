@@ -8,9 +8,11 @@ using System.Threading;
 
 namespace ApacsAdapter
 {
-    public class AdpMBAdapter
+    public class AdpMBAdapter : IDisposable
     {
-        
+        private delegate void ConsumerDelegate();
+        public delegate void onReceiveMessage(AdpMBMessage msg);
+        public event onReceiveMessage onMessageReceived;
         private const string EXCHANGE_NAME = "amq.direct";
         private const string CONTENT_TYPE = "text/xml";
         private const string VIRTUAL_HOST = "/carbon";
@@ -23,7 +25,9 @@ namespace ApacsAdapter
         private IModel Model;
         private Timer timer;
         private TimerCallback timerCallback;
-        
+        private bool isConsuming;
+
+
         public AdpMBAdapter(string hostName, int port, string userName, string password, string queue)
         {
             this.log = new AdpLog();
@@ -37,6 +41,7 @@ namespace ApacsAdapter
             this.Factory.Password = password;
             this.Factory.Protocol = Protocols.AMQP_0_9_1;
             this.Queue = queue;
+            this.isConsuming = false;
         }
         public void connect()
         {
@@ -53,24 +58,17 @@ namespace ApacsAdapter
         }
         public void disconnect()
         {
+            this.isConsuming = false;
             this.Conn.ConnectionShutdown -= ConnectionShutdownHundler;
             try
             {
-                if (Model != null)
-                {
-                    if (Model.IsOpen)
-                    {
-                        Model.Close();
-                    }
-                    Model.Dispose();
-                }
                 if (Conn != null)
                 {
-                    if (Conn.IsOpen)
-                    {
-                        Conn.Abort(5);
-                    }
-                    Conn.Dispose();
+                    Conn.Close();
+                }
+                if (Model != null)
+                {
+                    Model.Abort();
                 }
             }
             catch (Exception e)
@@ -86,8 +84,9 @@ namespace ApacsAdapter
         }
         private void recovery(object sender)
         {
-            if (Conn.IsOpen && Model.IsOpen)
+            if (Conn != null && Conn.IsOpen && Model != null && Model.IsOpen)
             {
+                isConsuming = true;
                 log.AddLog("WSO2 MB connection recovery!");
                 log.AddLog("WSO2 MB deferred message to send: " + deferredMsgs.Count);
                 if (deferredMsgs.Count != 0)
@@ -109,7 +108,7 @@ namespace ApacsAdapter
                 timerCallback = null;
             }
         }
-        
+
         public bool PublishMessage(AdpMBMessage msg)
         {
             bool IsSend = false;
@@ -129,7 +128,7 @@ namespace ApacsAdapter
                     props.ContentType = CONTENT_TYPE;
                     props.Type = msg.type;
                     props.DeliveryMode = DELIVERY_MODE;
-                    Model.BasicPublish(String.Empty, Queue, props, Encoding.UTF8.GetBytes(msg.body));
+                    Model.BasicPublish(String.Empty, Queue, props, msg.body);
                     IsSend = true;
                 }
                 catch (Exception e)
@@ -137,46 +136,48 @@ namespace ApacsAdapter
                     log.AddLog(e.ToString());
                 }
             }
-            else if (deferredMsgs.Count == 0 || !deferredMsgs.ContainsKey(msg.id))
+            if (!IsSend && (deferredMsgs.Count == 0 || !deferredMsgs.ContainsKey(msg.id)))
             {
                 deferredMsgs.Add(msg.id, msg);
             }
             return IsSend;
         }
-        
-        public string RetriveMessage(string Queue, out bool queueIsNotEmpty)
+
+        public void RetrieveMessage()
         {
-            string message = null;
-            queueIsNotEmpty = false;
-            using (IConnection Connect = Factory.CreateConnection())
+            isConsuming = true;
+            ConsumerDelegate cons = new ConsumerDelegate(Consume);
+            cons.BeginInvoke(null, null);
+        }
+        private void Consume()
+        {
+            QueueingBasicConsumer consumer = new QueueingBasicConsumer(Model);
+            Model.BasicConsume(Queue, false, consumer);
+            while (isConsuming)
             {
-                using (IModel Model = Connect.CreateModel())
+                try
                 {
-                    Model.ExchangeDeclare(EXCHANGE_NAME, ExchangeType.Direct);
-                    Model.QueueDeclare(Queue, true, false, false, null);
-                    Model.QueueBind(Queue, EXCHANGE_NAME, Queue);
-                    QueueingBasicConsumer consumer = new QueueingBasicConsumer(Model);
-                    Model.BasicConsume(Queue, false, consumer);
-                    try
+                    BasicDeliverEventArgs eventQueue = consumer.Queue.Dequeue();
+                    if (onMessageReceived != null && eventQueue != null)
                     {
-                        BasicDeliverEventArgs eventQueue = null;
-                        queueIsNotEmpty = consumer.Queue.Dequeue(2000, out eventQueue);
-                        if (eventQueue != null)
-                        {
-                            message = Encoding.UTF8.GetString(eventQueue.Body);
-                            Model.BasicAck(eventQueue.DeliveryTag, false);
-                        }
+                        IBasicProperties props = eventQueue.BasicProperties;
+                        AdpMBMessage msg = new AdpMBMessage(props.MessageId, eventQueue.Body, props.Type, props.Timestamp.UnixTime, props.AppId);
+                        onMessageReceived(msg);
+                        Model.BasicAck(eventQueue.DeliveryTag, false);
                     }
-                    catch (Exception e)
-                    {
-                        log.AddLog(e.ToString());
-                    }
-                    Model.Close();
-                    Connect.Abort();
+                }
+                catch (Exception e)
+                {
+                    log.AddLog(e.ToString());
+                    break;
                 }
             }
-            return message;
+        }
+
+        public void Dispose()
+        {
+            disconnect();
         }
     }
-    
+
 }

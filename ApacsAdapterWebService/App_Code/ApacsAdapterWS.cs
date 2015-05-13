@@ -12,10 +12,12 @@ using System.Web.Services;
 // [System.Web.Script.Services.ScriptService]
 public class ApacsAdapterWS : System.Web.Services.WebService
 {
-
+    private AdpCfgXml cfg;
+    private ApacsServer apacsInstance;
     public ApacsAdapterWS()
     {
-
+        this.cfg = new AdpCfgXml();
+        this.apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
         //Uncomment the following line if using designed components 
         //InitializeComponent(); 
     }
@@ -23,10 +25,15 @@ public class ApacsAdapterWS : System.Web.Services.WebService
     [WebMethod]
     public bool fillGRCardHolders()
     {
-        AdpCfgXml cfg = new AdpCfgXml();
-        ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
         AdpGRAdapter gr = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
-        return gr.copyCHfromApacs(apacsInstance);
+        return gr.fillGRfromApacsCH(apacsInstance);
+    }
+
+    [WebMethod]
+    public AdpCardHolder getCardHolderByUID(string sampleUID)
+    {
+        ApcData data = new ApcData();
+        return data.getCardHolderByUID(apacsInstance, sampleUID);
     }
 
 }

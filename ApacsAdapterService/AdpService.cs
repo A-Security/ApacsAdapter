@@ -12,14 +12,10 @@ namespace ApacsAdapterService
         private AdpLog log = new AdpLog();
         private ApacsServer apacsInstance = null;
         private AdpEvtsListener eventLister = null;
-        private TimerCallback timerCallback = null;
-        private Timer timer = null;
 
         public AdpService()
         {
             InitializeComponent();
-            AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
-            setRestartServiceTask(3, 0, 0);
         }
 
         protected override void OnStart(string[] args)
@@ -43,7 +39,7 @@ namespace ApacsAdapterService
                 {
                     if (!EventLog.SourceExists("ApacsAdapterService"))
                     {
-                        EventLog.CreateEventSource("ApacsAdapterService", "ApacsAdapterService");
+                        EventLog.CreateEventSource("ApacsAdapterService", "ApacsAdapter");
                     }
                     adpServiceLog.Source = "ApacsAdapterService";
                     adpServiceLog.WriteEntry(((AdpLog)sender).Log);
@@ -51,23 +47,9 @@ namespace ApacsAdapterService
                 catch { }
             }
         }
-        private void RestartService(object obj)
-        {
-            log.AddLog("Run everyday restart task");
-            StopService();
-            StartService();
-        }
-
-        private void setRestartServiceTask(byte hh, byte mm, byte ss)
-        {
-            this.timerCallback = new TimerCallback(RestartService);
-            DateTime todayTaskTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, hh, mm, ss);
-            DateTime nextTaskTime = DateTime.Now <= todayTaskTime ? todayTaskTime : todayTaskTime.AddDays(1);
-            this.timer = new Timer(timerCallback, null, nextTaskTime - DateTime.Now, TimeSpan.FromDays(1));
-        }
         internal void StartService()
         {
-            
+            AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
             apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
             eventLister = new AdpEvtsListener(apacsInstance, cfg);
@@ -85,6 +67,7 @@ namespace ApacsAdapterService
                 apacsInstance.Dispose();
                 apacsInstance = null;
             }
+            AdpLog.OnAddLog -= new EventHandler(AdpLog_OnAddLog);
         }
     }
 }

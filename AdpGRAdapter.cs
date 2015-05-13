@@ -74,7 +74,7 @@ namespace ApacsAdapter
             }
 
         }
-        public bool copyCHfromApacs(ApacsServer apacsInstance)
+        public bool fillGRfromApacsCH(ApacsServer apacsInstance)
         {
             try
             {

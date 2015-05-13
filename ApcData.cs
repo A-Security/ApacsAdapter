@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 
 namespace ApacsAdapter
 {
     public partial class ApcData
-    {
+    {       
         public string getPropHierarchy(ApacsPropertyObject objSets)
         {
             StringBuilder sb = new StringBuilder();
@@ -54,16 +50,16 @@ namespace ApacsAdapter
             }
             AdpEvtObj_CHA aobj = new AdpEvtObj_CHA
             {
-                Time = evtSets.getDateTimeProperty(ApcObjProp.dtRealDateTime),
+                Time = evtSets.getRealDateTime(),
                 EventID = evtSets.getSampleEventUID(),
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
-                SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getSampleUID(),
-                SourceName = evtSets.getStringProperty(ApcObjProp.strInitObjName),
+                SourceID = evtSets.getSampleSourceUID(),
+                SourceName = evtSets.getSourceNameProperty(),
                 HolderID = (isNotErrHolder) ? uid : null,
                 HolderName = (isNotErrHolder) ? fullName : "НЕИЗВЕСТНЫЙ",
                 HolderShortName = (isNotErrHolder) ? shortName : "НЕИЗВЕСТНЫЙ",
-                CardNo = evtSets.getUIntProperty(ApcObjProp.dwCardNumber)
+                CardNo = evtSets.getDwCardNumber()
 
             };
             return aobj;
@@ -72,12 +68,12 @@ namespace ApacsAdapter
         {
             AdpEvtObj aeobj = new AdpEvtObj
             {
-                Time = evtSets.getDateTimeProperty(ApcObjProp.dtRealDateTime),
+                Time = evtSets.getRealDateTime(),
                 EventID = evtSets.getSampleEventUID(),
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
-                SourceID = evtSets.getObjectProperty(ApcObjProp.SysAddrInitObj).getSampleUID(),
-                SourceName = evtSets.getStringProperty(ApcObjProp.strInitObjName)
+                SourceID = evtSets.getSampleSourceUID(),
+                SourceName = evtSets.getSourceNameProperty()
             };
             return aeobj;
         }
@@ -107,6 +103,11 @@ namespace ApacsAdapter
                 result[i] = getCardHolder(cardHolders[i]);
             }
             return result;
+        }
+        public AdpCardHolder getCardHolderByUID(ApacsServer apacsInstance, string SampleUID)
+        {
+            ApacsObject ch = apacsInstance.getObjectBySampleUID(SampleUID);
+            return getCardHolder(ch);
         }
     }
 }

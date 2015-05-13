@@ -44,6 +44,7 @@
             this.serviceInstaller.DisplayName = "Apacs Adapter Service";
             this.serviceInstaller.ServiceName = "ApacsAdapterService";
             this.serviceInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            this.serviceInstaller.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller_AfterInstall);
             // 
             // AdpServiceInstaller
             // 

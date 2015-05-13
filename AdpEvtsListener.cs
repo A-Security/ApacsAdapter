@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace ApacsAdapter
@@ -10,7 +11,7 @@ namespace ApacsAdapter
         private AdpCfgXml cfg;
         private ApcData data;
         private ApacsServer Apacs;
-        private AdpMBAdapter mbAdp;
+        private AdpMBAdapter producer;
         
         public AdpEvtsListener(ApacsServer Apacs, AdpCfgXml cfg) 
         {
@@ -18,19 +19,19 @@ namespace ApacsAdapter
             this.Apacs = Apacs;
             this.cfg = cfg;
             this.data = new ApcData();
-            this.mbAdp = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword, cfg.MBoutQueue);
+            this.producer = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword, cfg.MBoutQueue);
         }
         public void start()
         {
             try
             {
-                mbAdp.connect();
+                producer.connect();
                 Apacs.ApacsDisconnect += new ApacsServer.ApacsDisconnectHandler(onDisconnect);
                 Apacs.ApacsNotifyAdd += new ApacsServer.ApacsNotifyAddHandler(onAddObject);
                 Apacs.ApacsNotifyDelete += new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
                 Apacs.ApacsNotifyChange += new ApacsServer.ApacsNotifyChangeHandler(onChangeObject);
                 Apacs.ApacsEvent += new ApacsServer.ApacsEventHandler(onEvent);
-                log.AddLog("Events Lister Started");
+                log.AddLog("Apacs events listener started");
             }
             catch (Exception e) 
             {
@@ -47,8 +48,8 @@ namespace ApacsAdapter
                 Apacs.ApacsNotifyDelete -= new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
                 Apacs.ApacsNotifyAdd -= new ApacsServer.ApacsNotifyAddHandler(onAddObject);
                 Apacs.ApacsDisconnect -= new ApacsServer.ApacsDisconnectHandler(onDisconnect);
-                mbAdp.disconnect();
-                log.AddLog("Events Lister Stopped");
+                producer.disconnect();
+                log.AddLog("Apacs events listener stopped");
             }
             catch (Exception e)
             {
@@ -84,8 +85,9 @@ namespace ApacsAdapter
             }
             if (aeObj != null)
             {
-                AdpMBMessage msg = new AdpMBMessage(aeObj.EventID, aeObj.ToXmlString(), aeObj.EventType);
-                if (!mbAdp.PublishMessage(msg))
+                byte[] msgBody = Encoding.UTF8.GetBytes(aeObj.ToXmlString());
+                AdpMBMessage msg = new AdpMBMessage(aeObj.EventID, msgBody, aeObj.EventType);
+                if (!producer.PublishMessage(msg))
                 {
                     log.AddLog("Error send event to MB " + msg.body);
                 }
@@ -93,15 +95,27 @@ namespace ApacsAdapter
         }
         private void onAddObject(ApacsObject newObject) 
         {
-            //newObject.getSampleUID();
+            //TODO
+            if (!ApcObjType.TApcCardHolder.Equals(newObject.getApacsType()))
+            {
+                return;
+            }
         }
         private void onDelObject(ApacsObject delObject)
         {
-            //delObject.getSampleUID();
+            //TODO
+            if (!ApcObjType.TApcCardHolder.Equals(delObject.getApacsType()))
+            {
+                return;
+            }
         }
         private void onChangeObject(ApacsObject changeObject, ApacsPropertyObject evtSet)
         {
-            //changeObject.getSampleUID();
+            //TODO
+            if (!ApcObjType.TApcCardHolder.Equals(changeObject.getApacsType()))
+            {
+                return;
+            }
         }
     }
 }
