@@ -11,7 +11,7 @@ namespace ApacsAdapter
     public class AdpMBAdapter : IDisposable
     {
         private delegate void ConsumerDelegate();
-        public delegate void onReceiveMessage(AdpMBMessage msg);
+        public delegate void onReceiveMessage(AdpMBMsgObj msg);
         public event onReceiveMessage onMessageReceived;
         private const string EXCHANGE_NAME = "amq.direct";
         private const string CONTENT_TYPE = "text/xml";
@@ -19,7 +19,7 @@ namespace ApacsAdapter
         private const byte DELIVERY_MODE = 2;
         private string Queue;
         private AdpLog log;
-        private Dictionary<string, AdpMBMessage> deferredMsgs;
+        private Dictionary<string, AdpMBMsgObj> deferredMsgs;
         private ConnectionFactory Factory;
         private IConnection Conn;
         private IModel Model;
@@ -31,7 +31,7 @@ namespace ApacsAdapter
         public AdpMBAdapter(string hostName, int port, string userName, string password, string queue)
         {
             this.log = new AdpLog();
-            this.deferredMsgs = new Dictionary<string, AdpMBMessage>();
+            this.deferredMsgs = new Dictionary<string, AdpMBMsgObj>();
             this.Factory = new ConnectionFactory();
             this.Factory.AutomaticRecoveryEnabled = true;
             this.Factory.VirtualHost = VIRTUAL_HOST;
@@ -91,7 +91,7 @@ namespace ApacsAdapter
                 log.AddLog("WSO2 MB deferred message to send: " + deferredMsgs.Count);
                 if (deferredMsgs.Count != 0)
                 {
-                    foreach (AdpMBMessage msg in deferredMsgs.Values)
+                    foreach (AdpMBMsgObj msg in deferredMsgs.Values)
                     {
                         if (PublishMessage(msg))
                         {
@@ -109,7 +109,7 @@ namespace ApacsAdapter
             }
         }
 
-        public bool PublishMessage(AdpMBMessage msg)
+        public bool PublishMessage(AdpMBMsgObj msg)
         {
             bool IsSend = false;
             if (msg == null || msg.IsBodyEmpty || String.IsNullOrEmpty(Queue))
@@ -161,7 +161,7 @@ namespace ApacsAdapter
                     if (onMessageReceived != null && eventQueue != null)
                     {
                         IBasicProperties props = eventQueue.BasicProperties;
-                        AdpMBMessage msg = new AdpMBMessage(props.MessageId, eventQueue.Body, props.Type, props.Timestamp.UnixTime, props.AppId);
+                        AdpMBMsgObj msg = new AdpMBMsgObj(props.MessageId, eventQueue.Body, props.Type, props.Timestamp.UnixTime, props.AppId);
                         onMessageReceived(msg);
                         Model.BasicAck(eventQueue.DeliveryTag, false);
                     }

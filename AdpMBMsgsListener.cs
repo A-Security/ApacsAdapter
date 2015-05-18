@@ -36,7 +36,7 @@ namespace ApacsAdapter
             }
         }
 
-        private void onMessageReceived(AdpMBMessage msg)
+        private void onMessageReceived(AdpMBMsgObj msg)
         {
             log.AddLog(Encoding.UTF8.GetString(msg.body));
         }

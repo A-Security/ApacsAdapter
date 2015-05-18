@@ -80,20 +80,31 @@ namespace ApacsAdapter
             {
                 clearCollection(holdersFullPath);
                 ApcData agd = new ApcData();
-                Resource resource;
                 foreach (AdpCardHolder ch in agd.getCardHolders(apacsInstance))
                 {
-                    resource = registry.NewResource();
-                    resource.mediaType = "image/jpeg";
-                    resource.contentFile = ch.Photo;
-                    resource.name = ch.ID + ".jpg";
-                    string resPath = holdersPhotoFullPath + @"/" + resource.name;
-                    registry.Put(resPath, resource);
-                    resource = registry.NewResource();
-                    resource.mediaType = "application/vnd.cardholders+xml";
-                    resource.name = ch.ID + ".xml";
-                    resource.contentFile = CHtoGRcontent(ch);
-                    resource.properties = new WSProperty[]
+                    putCardHolder(ch);
+                }
+            }
+            catch (Exception e)
+            {
+                log.AddLog(e.ToString());
+                return false;
+            }
+            return true;
+        }
+        public void putCardHolder(AdpCardHolder ch)
+        {
+            Resource resource = registry.NewResource();
+            resource.mediaType = "image/jpeg";
+            resource.contentFile = ch.Photo;
+            resource.name = ch.ID + ".jpg";
+            string resPath = holdersPhotoFullPath + resource.name;
+            registry.Put(resPath, resource);
+            resource = registry.NewResource();
+            resource.mediaType = "application/vnd.cardholders+xml";
+            resource.name = ch.ID + ".xml";
+            resource.contentFile = CHtoGRcontent(ch);
+            resource.properties = new WSProperty[]
                     {
                         new WSProperty(){ key = "holder_id", values = new string[] { ch.ID } },
                         new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
@@ -103,16 +114,8 @@ namespace ApacsAdapter
                         new WSProperty(){ key = "holder_photoLink", values = new string[] { permaLinkBaseUrl + resPath } },
                         new WSProperty(){ key = "holder_vip", values = new string[] { IsVIP(ch.ID).ToString().ToLower() } }
                     };
-                    resPath = holdersFullPath + @"/" + resource.name;
-                    registry.Put(resPath, resource);
-                }
-            }
-            catch (Exception e)
-            {
-                log.AddLog(e.ToString());
-                return false;
-            }
-            return true;
+            resPath = holdersFullPath + resource.name;
+            registry.Put(resPath, resource);
         }
         public byte[] CHtoGRcontent(AdpCardHolder ch)
         {
@@ -134,8 +137,29 @@ namespace ApacsAdapter
         }
         private bool IsVIP(string id)
         {
-            string VIPpath = VIPsFullPath + @"/" + id;
+            string VIPpath = VIPsFullPath + id;
             return registry.ResourceExists(VIPpath); ;
+        }
+        public void removeCardHolder(string id, bool withVIP)
+        {
+            string chPath = holdersFullPath + id + ".xml";
+            string chPhotoPath = holdersPhotoFullPath + id + ".jpg";
+            if (registry.ResourceExists(chPath))
+            {
+                registry.Delete(chPath);
+            }
+            if (registry.ResourceExists(chPhotoPath))
+            {
+                registry.Delete(chPhotoPath);
+            }
+            if (withVIP)
+            {
+                string VIPpath = VIPsFullPath + id;
+                if (registry.ResourceExists(VIPpath))
+                {
+                    registry.Delete(VIPpath);
+                }
+            }
         }
     }
 }

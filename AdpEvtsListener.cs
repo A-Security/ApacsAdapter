@@ -12,6 +12,7 @@ namespace ApacsAdapter
         private ApcData data;
         private ApacsServer Apacs;
         private AdpMBAdapter producer;
+        private AdpGRAdapter grAdp;
         
         public AdpEvtsListener(ApacsServer Apacs, AdpCfgXml cfg) 
         {
@@ -20,6 +21,7 @@ namespace ApacsAdapter
             this.cfg = cfg;
             this.data = new ApcData();
             this.producer = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword, cfg.MBoutQueue);
+            this.grAdp = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
         }
         public void start()
         {
@@ -86,7 +88,7 @@ namespace ApacsAdapter
             if (aeObj != null)
             {
                 byte[] msgBody = Encoding.UTF8.GetBytes(aeObj.ToXmlString());
-                AdpMBMessage msg = new AdpMBMessage(aeObj.EventID, msgBody, aeObj.EventType);
+                AdpMBMsgObj msg = new AdpMBMsgObj(aeObj.EventID, msgBody, aeObj.EventType);
                 if (!producer.PublishMessage(msg))
                 {
                     log.AddLog("Error send event to MB " + msg.body);
@@ -95,27 +97,28 @@ namespace ApacsAdapter
         }
         private void onAddObject(ApacsObject newObject) 
         {
-            //TODO
-            if (!ApcObjType.TApcCardHolder.Equals(newObject.getApacsType()))
-            {
-                return;
-            }
+            grObjWorker(newObject, false);
         }
         private void onDelObject(ApacsObject delObject)
         {
-            //TODO
-            if (!ApcObjType.TApcCardHolder.Equals(delObject.getApacsType()))
-            {
-                return;
-            }
+            grObjWorker(delObject, true);
         }
         private void onChangeObject(ApacsObject changeObject, ApacsPropertyObject evtSet)
         {
-            //TODO
-            if (!ApcObjType.TApcCardHolder.Equals(changeObject.getApacsType()))
+            grObjWorker(changeObject, false);
+        }
+        private void grObjWorker(ApacsObject ch, bool IsDelete)
+        {
+            if (ch == null || !String.Equals(ApcObjType.TApcCardHolder, ch.getApacsType()))
             {
                 return;
             }
+            grAdp.removeCardHolder(ch.getSampleUID(), IsDelete);
+            if (IsDelete)
+            {
+                return;
+            }
+            grAdp.putCardHolder(data.getCardHolder(ch));
         }
     }
 }

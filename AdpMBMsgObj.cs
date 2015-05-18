@@ -2,7 +2,7 @@
 
 namespace ApacsAdapter
 {
-    public class AdpMBMessage
+    public class AdpMBMsgObj
     {
         private string _appid;
         private byte[] _body;
@@ -11,7 +11,7 @@ namespace ApacsAdapter
         private string _type;
         private long unixTimeOffset = new DateTime(1970, 1, 1).Ticks;
 
-        public AdpMBMessage(string id, byte[] body, string type)
+        public AdpMBMsgObj(string id, byte[] body, string type)
         {
             this.id = id;
             this.type = type;
@@ -19,7 +19,7 @@ namespace ApacsAdapter
             this.unixTime = (DateTime.Now.Ticks - unixTimeOffset) / TimeSpan.TicksPerSecond;
             this.appid = AppDomain.CurrentDomain.FriendlyName;
         }
-        public AdpMBMessage (string id, byte[] body, string type, long unixTime, string appid) : this(id, body, type)
+        public AdpMBMsgObj (string id, byte[] body, string type, long unixTime, string appid) : this(id, body, type)
         {
             this.unixTime = unixTime;
             this.appid = appid;
