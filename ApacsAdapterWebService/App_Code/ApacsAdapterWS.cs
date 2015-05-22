@@ -13,11 +13,11 @@ using System.Web.Services;
 public class ApacsAdapterWS : System.Web.Services.WebService
 {
     private AdpCfgXml cfg;
-    private ApacsServer apacsInstance;
+    private ApcServer apacsInstance;
     public ApacsAdapterWS()
     {
         this.cfg = new AdpCfgXml();
-        this.apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
+        this.apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
         //Uncomment the following line if using designed components 
         //InitializeComponent(); 
     }
@@ -30,7 +30,7 @@ public class ApacsAdapterWS : System.Web.Services.WebService
     }
 
     [WebMethod]
-    public AdpCardHolder getCardHolderByUID(string sampleUID)
+    public AdpCHObj getCardHolderByUID(string sampleUID)
     {
         ApcData data = new ApcData();
         return data.getCardHolderByUID(apacsInstance, sampleUID);

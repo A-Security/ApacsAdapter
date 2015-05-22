@@ -3,7 +3,7 @@ using System;
 
 namespace ApacsAdapter
 {
-    public class ApacsServer : IDisposable
+    public class ApcServer : IDisposable
     {
         private AdpLog log = new AdpLog();
         IApcServerWrap Apacs = null;
@@ -11,7 +11,7 @@ namespace ApacsAdapter
         /*
          * Event
          */
-        public delegate void ApacsEventHandler(ApacsPropertyObject aEvtSettings);
+        public delegate void ApacsEventHandler(ApcPropObj aEvtSettings);
         public event ApacsEventHandler ApacsEvent
         {
             add
@@ -36,8 +36,8 @@ namespace ApacsAdapter
         private ApacsEventHandler ApacsEventImp;
         public class EventClass
         {
-            private ApacsServer Apacs = null;
-            public EventClass(ApacsServer Apacs)
+            private ApcServer Apacs = null;
+            public EventClass(ApcServer Apacs)
             {
                 this.Apacs = Apacs;
             }
@@ -46,11 +46,11 @@ namespace ApacsAdapter
 
             public void defaultDispatchHandle(object aEvtSettings)
             {
-                Apacs.onEvent(new ApacsPropertyObject(aEvtSettings));
+                Apacs.onEvent(new ApcPropObj(aEvtSettings));
             }
         }
 
-        internal void onEvent(ApacsPropertyObject aEvtSettings)
+        internal void onEvent(ApcPropObj aEvtSettings)
         {
             ApacsEventImp(aEvtSettings);
 
@@ -58,7 +58,7 @@ namespace ApacsAdapter
         /*
          * NotifyAdd
          */
-        public delegate void ApacsNotifyAddHandler(ApacsObject aAddedObj);
+        public delegate void ApacsNotifyAddHandler(ApcObj aAddedObj);
         public event ApacsNotifyAddHandler ApacsNotifyAdd
         {
             add
@@ -83,8 +83,8 @@ namespace ApacsAdapter
         private ApacsNotifyAddHandler ApacsNotifyAddImp;
         public class NotifyAddClass
         {
-            private ApacsServer Apacs = null;
-            public NotifyAddClass(ApacsServer Apacs)
+            private ApcServer Apacs = null;
+            public NotifyAddClass(ApcServer Apacs)
             {
                 this.Apacs = Apacs;
             }
@@ -93,18 +93,18 @@ namespace ApacsAdapter
 
             public void defaultDispatchHandle(object aAddedObj)
             {
-                Apacs.onNotifyAdd(new ApacsObject((IApcObjectWrap)aAddedObj));
+                Apacs.onNotifyAdd(new ApcObj((IApcObjectWrap)aAddedObj));
             }
         }
 
-        internal void onNotifyAdd(ApacsObject aAddedObj)
+        internal void onNotifyAdd(ApcObj aAddedObj)
         {
             ApacsNotifyAddImp(aAddedObj);
         }
         /*
          * NotifyChange
          */
-        public delegate void ApacsNotifyChangeHandler(ApacsObject aChandgedObj, ApacsPropertyObject aChangedSettings);
+        public delegate void ApacsNotifyChangeHandler(ApcObj aChandgedObj, ApcPropObj aChangedSettings);
         public event ApacsNotifyChangeHandler ApacsNotifyChange
         {
             add
@@ -129,8 +129,8 @@ namespace ApacsAdapter
         private ApacsNotifyChangeHandler ApacsNotifyChangeImp;
         public class NotifyChangeClass
         {
-            private ApacsServer Apacs = null;
-            public NotifyChangeClass(ApacsServer Apacs)
+            private ApcServer Apacs = null;
+            public NotifyChangeClass(ApcServer Apacs)
             {
                 this.Apacs = Apacs;
             }
@@ -139,18 +139,18 @@ namespace ApacsAdapter
 
             public void defaultDispatchHandle(object aChangedObj, object aChangedSettings)
             {
-                Apacs.onNotifyChange(new ApacsObject((IApcObjectWrap)aChangedObj), new ApacsPropertyObject(aChangedSettings));
+                Apacs.onNotifyChange(new ApcObj((IApcObjectWrap)aChangedObj), new ApcPropObj(aChangedSettings));
             }
         }
 
-        internal void onNotifyChange(ApacsObject aChandgedObj, ApacsPropertyObject aChangedSettings)
+        internal void onNotifyChange(ApcObj aChandgedObj, ApcPropObj aChangedSettings)
         {
             ApacsNotifyChangeImp(aChandgedObj, aChangedSettings);
         }
         /*
          * NotifyDelete
          */
-        public delegate void ApacsNotifyDeleteHandler(ApacsObject aDeletedObj);
+        public delegate void ApacsNotifyDeleteHandler(ApcObj aDeletedObj);
         public event ApacsNotifyDeleteHandler ApacsNotifyDelete
         {
             add
@@ -175,8 +175,8 @@ namespace ApacsAdapter
         private ApacsNotifyDeleteHandler ApacsNotifyDeleteImp;
         public class NotifyDeleteClass
         {
-            private ApacsServer Apacs = null;
-            public NotifyDeleteClass(ApacsServer Apacs)
+            private ApcServer Apacs = null;
+            public NotifyDeleteClass(ApcServer Apacs)
             {
                 this.Apacs = Apacs;
             }
@@ -185,11 +185,11 @@ namespace ApacsAdapter
 
             public void defaultDispatchHandle(object aDeletedObj)
             {
-                Apacs.onNotifyDeleted(new ApacsObject((IApcObjectWrap)aDeletedObj));
+                Apacs.onNotifyDeleted(new ApcObj((IApcObjectWrap)aDeletedObj));
             }
         }
 
-        internal void onNotifyDeleted(ApacsObject aAddedObj)
+        internal void onNotifyDeleted(ApcObj aAddedObj)
         {
             ApacsNotifyDeleteImp(aAddedObj);
         }
@@ -200,8 +200,8 @@ namespace ApacsAdapter
         public event ApacsDisconnectHandler ApacsDisconnect;
         public class DisconnectClass
         {
-            private ApacsServer Apacs = null;
-            public DisconnectClass(ApacsServer Apacs)
+            private ApcServer Apacs = null;
+            public DisconnectClass(ApcServer Apacs)
             {
                 this.Apacs = Apacs;
             }
@@ -219,7 +219,7 @@ namespace ApacsAdapter
             ApacsDisconnect();
         }
 
-        public ApacsServer(string astrLogin, string astrPassword)
+        public ApcServer(string astrLogin, string astrPassword)
         {
             TApcConnection Connection = new TApcConnection();
             int nResult = int.MinValue;
@@ -252,7 +252,7 @@ namespace ApacsAdapter
             log.AddLog("APACS Server disposed");
         }
 
-        public ApacsObject getObjectByUID(string astrUID)
+        public ApcObj getObjectByUID(string astrUID)
         {
             if (Apacs == null || String.IsNullOrEmpty(astrUID))
             {
@@ -264,10 +264,10 @@ namespace ApacsAdapter
             {
                 return null;
             }
-            return new ApacsObject(obj as IApcObjectWrap);
+            return new ApcObj(obj as IApcObjectWrap);
         }
 
-        public ApacsObject getObjectBySampleUID(string UID)
+        public ApcObj getObjectBySampleUID(string UID)
         {
             if (String.IsNullOrEmpty(UID))
             {
@@ -277,7 +277,7 @@ namespace ApacsAdapter
             return getObjectByUID(UID);
         }
 
-        public ApacsObject getObjectByAlias(string astrAlias)
+        public ApcObj getObjectByAlias(string astrAlias)
         {
             if (Apacs == null || String.IsNullOrEmpty(astrAlias))
             {
@@ -289,9 +289,9 @@ namespace ApacsAdapter
             {
                 return null;
             }
-            return new ApacsObject(obj as IApcObjectWrap);
+            return new ApcObj(obj as IApcObjectWrap);
         }
-        public ApacsObject[] getObjectsByFilter(string astrObjType, string filterStrName, string filterValue)
+        public ApcObj[] getObjectsByFilter(string astrObjType, string filterStrName, string filterValue)
         {
             if (Apacs == null || String.IsNullOrEmpty(astrObjType) || String.IsNullOrEmpty(filterStrName) || String.IsNullOrEmpty(filterValue))
             {
@@ -306,15 +306,15 @@ namespace ApacsAdapter
             {
                 return null;
             }
-            ApacsObject[] result = new ApacsObject[res.Length];
+            ApcObj[] result = new ApcObj[res.Length];
             for (int i = 0; i < res.Length; i++)
             {
-                result[i] = new ApacsObject(res.GetValue(i) as IApcObjectWrap);
+                result[i] = new ApcObj(res.GetValue(i) as IApcObjectWrap);
             }
             return result;
         }
 
-        public ApacsObject[] getObjectsByType(string astrObjType)
+        public ApcObj[] getObjectsByType(string astrObjType)
         {
             if (Apacs == null || String.IsNullOrEmpty(astrObjType))
             {
@@ -326,14 +326,14 @@ namespace ApacsAdapter
             {
                 return null;
             }
-            ApacsObject[] result = new ApacsObject[res.Length];
+            ApcObj[] result = new ApcObj[res.Length];
             for (int i = 0; i < res.Length; i++)
             {
-                result[i] = new ApacsObject(res.GetValue(i) as IApcObjectWrap);
+                result[i] = new ApcObj(res.GetValue(i) as IApcObjectWrap);
             }
             return result;
         }
-        public ApacsObject getRootObject()
+        public ApcObj getRootObject()
         {
             if (Apacs == null)
             {
@@ -345,10 +345,10 @@ namespace ApacsAdapter
             {
                 return null;
             }
-            return new ApacsObject(obj as IApcObjectWrap);
+            return new ApcObj(obj as IApcObjectWrap);
         }
 
-        public ApacsPropertyObject[] getEvents(string[] astrTypes, DateTime adtFrom, DateTime adtTo)
+        public ApcPropObj[] getEvents(string[] astrTypes, DateTime adtFrom, DateTime adtTo)
         {
             if (Apacs == null || astrTypes == null || adtFrom == null || adtTo == null)
             {
@@ -360,10 +360,10 @@ namespace ApacsAdapter
             {
                 return null;
             }
-            ApacsPropertyObject[] result = new ApacsPropertyObject[eventsProps.Length];
+            ApcPropObj[] result = new ApcPropObj[eventsProps.Length];
             for (int i = 0; i < eventsProps.Length; i++)
             {
-                result[i] = new ApacsPropertyObject(eventsProps.GetValue(i));
+                result[i] = new ApcPropObj(eventsProps.GetValue(i));
             }
             return result;
         }

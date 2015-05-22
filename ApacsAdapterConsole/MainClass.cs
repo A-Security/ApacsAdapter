@@ -12,7 +12,7 @@ namespace ApacsAdapterConsole
         {
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
-            ApacsServer apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
+            ApcServer apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             AdpMBMsgsListener lister = new AdpMBMsgsListener(apacsInstance, cfg);
             lister.start();
             bool isRun = true;

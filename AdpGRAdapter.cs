@@ -74,13 +74,13 @@ namespace ApacsAdapter
             }
 
         }
-        public bool fillGRfromApacsCH(ApacsServer apacsInstance)
+        public bool fillGRfromApacsCH(ApcServer apacsInstance)
         {
             try
             {
                 clearCollection(holdersFullPath);
                 ApcData agd = new ApcData();
-                foreach (AdpCardHolder ch in agd.getCardHolders(apacsInstance))
+                foreach (AdpCHObj ch in agd.getCardHolders(apacsInstance))
                 {
                     putCardHolder(ch);
                 }
@@ -92,7 +92,7 @@ namespace ApacsAdapter
             }
             return true;
         }
-        public void putCardHolder(AdpCardHolder ch)
+        public void putCardHolder(AdpCHObj ch)
         {
             Resource resource = registry.NewResource();
             resource.mediaType = "image/jpeg";
@@ -117,9 +117,9 @@ namespace ApacsAdapter
             resPath = holdersFullPath + resource.name;
             registry.Put(resPath, resource);
         }
-        public byte[] CHtoGRcontent(AdpCardHolder ch)
+        public byte[] CHtoGRcontent(AdpCHObj ch)
         {
-            string photoResName = String.Format(@"/{0}.jpg", ch.ID);
+            string photoResName = ch.ID + ".jpg";
             XNamespace xn = @"http://www.wso2.org/governance/metadata";
             XElement xdoc =
                 new XElement(xn + "metadata",

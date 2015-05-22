@@ -43,18 +43,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdpCardHolder.cs" />
+    <Compile Include="AdpCHObj.cs" />
     <Compile Include="AdpMBMsgsListener.cs" />
-    <Compile Include="AdpEvtObj_CHA.cs" />
+    <Compile Include="AdpAPCEvtObj_CHA.cs" />
     <Compile Include="AdpCfgXml.cs" />
-    <Compile Include="AdpEvtObj.cs" />
-    <Compile Include="AdpEvtsListener.cs" />
+    <Compile Include="AdpAPCEvtObj.cs" />
+    <Compile Include="AdpAPCEvtsListener.cs" />
     <Compile Include="AdpLog.cs" />
     <Compile Include="AdpMBAdapter.cs" />
-    <Compile Include="ApacsObject.cs" />
+    <Compile Include="ApcObj.cs" />
     <Compile Include="ApcObjProp.cs" />
-    <Compile Include="ApacsPropertyObject.cs" />
-    <Compile Include="ApacsServer.cs" />
+    <Compile Include="ApcPropObj.cs" />
+    <Compile Include="ApcServer.cs" />
     <Compile Include="ApcData.cs" />
     <Compile Include="ApcObjType.cs" />
     <Compile Include="ApcData.Types.cs" />

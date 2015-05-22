@@ -4,11 +4,11 @@ using System.Reflection;
 
 namespace ApacsAdapter
 {
-    public class ApacsObject
+    public class ApcObj
     {
         private AdpLog log = new AdpLog();
         internal IApcObjectWrap objWrap = null;
-        public ApacsObject(IApcObjectWrap aobjWrap)
+        public ApcObj(IApcObjectWrap aobjWrap)
         {
             this.objWrap = aobjWrap;
         }
@@ -56,7 +56,7 @@ namespace ApacsAdapter
             objWrap.deleteObject();
         }
 
-        public ApacsObject getParentObject()
+        public ApcObj getParentObject()
         {
             if (objWrap == null)
             {
@@ -64,11 +64,11 @@ namespace ApacsAdapter
             }
             object parent = null;
             objWrap.getParentObject(out parent);
-            return parent == null ? null : new ApacsObject(parent as IApcObjectWrap);
+            return parent == null ? null : new ApcObj(parent as IApcObjectWrap);
 
         }
 
-        public ApacsPropertyObject getCurrentSettings()
+        public ApcPropObj getCurrentSettings()
         {
             if (objWrap == null)
             {
@@ -76,10 +76,10 @@ namespace ApacsAdapter
             }
             object objSettings = null;
             objWrap.getCurrentSettings(out objSettings);
-            return objSettings == null ? null : new ApacsPropertyObject(objSettings);
+            return objSettings == null ? null : new ApcPropObj(objSettings);
         }
 
-        public void applySettings(ApacsPropertyObject aobjSettings)
+        public void applySettings(ApcPropObj aobjSettings)
         {
             if (objWrap == null || aobjSettings == null)
             {
@@ -90,7 +90,7 @@ namespace ApacsAdapter
 
         }
 
-        public ApacsObject[] getChildrenObjs()
+        public ApcObj[] getChildrenObjs()
         {
             if (objWrap == null)
             {
@@ -103,16 +103,16 @@ namespace ApacsAdapter
                 return null;
             }
 
-            ApacsObject[] result = new ApacsObject[childrenObjs.Length];
+            ApcObj[] result = new ApcObj[childrenObjs.Length];
             for (int i = 0; i < childrenObjs.Length; i++)
             {
                 object obj = childrenObjs.GetValue(i);
-                result[i] = obj == null ? null : new ApacsObject(obj as IApcObjectWrap);
+                result[i] = obj == null ? null : new ApcObj(obj as IApcObjectWrap);
             }
             return result;
         }
 
-        public ApacsObject addChildWithSettings(ApacsPropertyObject aobjSettings)
+        public ApcObj addChildWithSettings(ApcPropObj aobjSettings)
         {
             if (objWrap == null || aobjSettings == null)
             {
@@ -124,10 +124,10 @@ namespace ApacsAdapter
             {
                 return null;
             }
-            return new ApacsObject(obj as IApcObjectWrap);
+            return new ApcObj(obj as IApcObjectWrap);
         }
 
-        public ApacsObject[] getChildrenObjsByTypes(string[] astrTypes)
+        public ApcObj[] getChildrenObjsByTypes(string[] astrTypes)
         {
             if (objWrap == null)
             {
@@ -154,19 +154,19 @@ namespace ApacsAdapter
             }
 
             object[] childrenObjs = args[1] as object[];
-            ApacsObject[] result = new ApacsObject[childrenObjs.Length];
+            ApcObj[] result = new ApcObj[childrenObjs.Length];
             for (int i = 0; i < childrenObjs.Length; i++)
             {
                 object obj = childrenObjs.GetValue(i);
-                result[i] = obj == null ? null : new ApacsObject(obj as IApcObjectWrap);
+                result[i] = obj == null ? null : new ApcObj(obj as IApcObjectWrap);
             }
             return result;
         }
         public byte[] getMainPhoto()
         {
             byte[] result = null;
-            ApacsObject[] chMainPhotoAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcCHMainPhoto });
-            foreach (ApacsObject photoProp in chMainPhotoAOs)
+            ApcObj[] chMainPhotoAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcCHMainPhoto });
+            foreach (ApcObj photoProp in chMainPhotoAOs)
             {
                 result = photoProp.getCurrentSettings().getByteArrayProperty(ApcObjProp.binBufPhoto);
                 break;
@@ -176,16 +176,16 @@ namespace ApacsAdapter
         public string getCardNumber()
         {
             string result = null;
-            ApacsObject[] acc2linkAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcAccount2HolderLink });
-            foreach (ApacsObject chldAO in acc2linkAOs)
+            ApcObj[] acc2linkAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcAccount2HolderLink });
+            foreach (ApcObj chldAO in acc2linkAOs)
             {
-                ApacsPropertyObject childAOCurSet = chldAO.getCurrentSettings();
+                ApcPropObj childAOCurSet = chldAO.getCurrentSettings();
                 if (childAOCurSet != null)
                 {
-                    ApacsObject sysAdAc = childAOCurSet.getObjectProperty(ApcObjProp.SysAddrAccount);
+                    ApcObj sysAdAc = childAOCurSet.getObjectProperty(ApcObjProp.SysAddrAccount);
                     if (sysAdAc != null)
                     {
-                        ApacsPropertyObject sysAdAcProp = sysAdAc.getCurrentSettings();
+                        ApcPropObj sysAdAcProp = sysAdAc.getCurrentSettings();
                         if (sysAdAcProp != null)
                         {
                             result = sysAdAcProp.getNameProperty();
@@ -197,7 +197,7 @@ namespace ApacsAdapter
 
             return result;
         }
-        public ApacsPropertyObject getChildSettingsForAdd(string aObjType)
+        public ApcPropObj getChildSettingsForAdd(string aObjType)
         {
             if (objWrap == null || String.IsNullOrEmpty(aObjType))
             {
@@ -209,7 +209,7 @@ namespace ApacsAdapter
             {
                 return null;
             }
-            return new ApacsPropertyObject(objSettings);
+            return new ApcPropObj(objSettings);
         }
 
         public int execCmd(string strCmd)

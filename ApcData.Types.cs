@@ -4,13 +4,13 @@ namespace ApacsAdapter
 {
     partial class ApcData
     {
-        private string getTypeDesc(string strType)
+        public string getTypeDesc(string strType)
         {
             string strTypeDesc = null;
             apcTypeDesc.TryGetValue(strType, out strTypeDesc);
             return strTypeDesc;
         }
-        public Dictionary<string, string> apcTypeDesc = new Dictionary<string, string>()
+        private Dictionary<string, string> apcTypeDesc = new Dictionary<string, string>()
             {
                 {"TApcBolidEvent_Entry", "Проход"},
                 {"TApcCardHolderAccess_DeniedNonEscortedVisitWhileVisit_ErrHolder", "Доступ запрещен, предъявлена карта посетителя, которому не нужен сопровождающий, владелец карты не найден"},
@@ -76,12 +76,12 @@ namespace ApacsAdapter
                 {"TAplMCEventReaderModeChange", "Контроллером изменён режим считывателя"},
                 {"TAplSCEvAccReqNoCard_Diddle", "Попытка подбора кода"},
                 {"TApcAuditEvent_Execute", "Аудит выполнения команды на объекте"},
-                {"TApcCardHolderAccess_DeniedAPB", "Доступ запрещён, ошибка КПВ"},
+                {"TApcCardHolderAccess_DeniedAPB", "Доступ запрещён, повторный проход"},
                 {"TApcCardHolderAccess_GrantedEscortAccNoEntry_ErrHolder", "Доступ сопровождающему разрешён, проход не осуществлён, владелец карты не найден"},
                 {"TApcCardHolderAccess_WillGranted", "Будет доступ"},
                 {"TAplMCEventStatusChangeLog_FaultNonSpecific", "Ошибка на входе"},
                 {"TApcBolidEvent_Armed", "Взят"},
-                {"TApcCardHolderAccess_DeniedAPB_ErrHolder", "Доступ запрещён, ошибка КПВ, владелец карты не найден"},
+                {"TApcCardHolderAccess_DeniedAPB_ErrHolder", "Доступ запрещён, повторный проход, владелец карты не найден"},
                 {"TApcEvAccordExtBlock_Online", "Блок-расширитель на связи"},
                 {"TApcVEvInput_Deactiv", "Вход деактивирован"},
                 {"TAplMCEventFloorUsed", "Была нажата кнопка выбора этажа"},

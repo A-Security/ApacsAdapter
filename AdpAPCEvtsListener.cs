@@ -5,16 +5,16 @@ using System.Threading;
 
 namespace ApacsAdapter
 {
-    public class AdpEvtsListener
+    public class AdpAPCEvtsListener
     {
         private AdpLog log;
         private AdpCfgXml cfg;
         private ApcData data;
-        private ApacsServer Apacs;
+        private ApcServer Apacs;
         private AdpMBAdapter producer;
         private AdpGRAdapter grAdp;
         
-        public AdpEvtsListener(ApacsServer Apacs, AdpCfgXml cfg) 
+        public AdpAPCEvtsListener(ApcServer Apacs, AdpCfgXml cfg) 
         {
             this.log = new AdpLog();
             this.Apacs = Apacs;
@@ -28,11 +28,11 @@ namespace ApacsAdapter
             try
             {
                 producer.connect();
-                Apacs.ApacsDisconnect += new ApacsServer.ApacsDisconnectHandler(onDisconnect);
-                Apacs.ApacsNotifyAdd += new ApacsServer.ApacsNotifyAddHandler(onAddObject);
-                Apacs.ApacsNotifyDelete += new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
-                Apacs.ApacsNotifyChange += new ApacsServer.ApacsNotifyChangeHandler(onChangeObject);
-                Apacs.ApacsEvent += new ApacsServer.ApacsEventHandler(onEvent);
+                Apacs.ApacsDisconnect += new ApcServer.ApacsDisconnectHandler(onDisconnect);
+                Apacs.ApacsNotifyAdd += new ApcServer.ApacsNotifyAddHandler(onAddObject);
+                Apacs.ApacsNotifyDelete += new ApcServer.ApacsNotifyDeleteHandler(onDelObject);
+                Apacs.ApacsNotifyChange += new ApcServer.ApacsNotifyChangeHandler(onChangeObject);
+                Apacs.ApacsEvent += new ApcServer.ApacsEventHandler(onEvent);
                 log.AddLog("Apacs events listener started");
             }
             catch (Exception e) 
@@ -45,11 +45,11 @@ namespace ApacsAdapter
         {
             try
             {
-                Apacs.ApacsEvent -= new ApacsServer.ApacsEventHandler(onEvent);
-                Apacs.ApacsNotifyChange -= new ApacsServer.ApacsNotifyChangeHandler(onChangeObject);
-                Apacs.ApacsNotifyDelete -= new ApacsServer.ApacsNotifyDeleteHandler(onDelObject);
-                Apacs.ApacsNotifyAdd -= new ApacsServer.ApacsNotifyAddHandler(onAddObject);
-                Apacs.ApacsDisconnect -= new ApacsServer.ApacsDisconnectHandler(onDisconnect);
+                Apacs.ApacsEvent -= new ApcServer.ApacsEventHandler(onEvent);
+                Apacs.ApacsNotifyChange -= new ApcServer.ApacsNotifyChangeHandler(onChangeObject);
+                Apacs.ApacsNotifyDelete -= new ApcServer.ApacsNotifyDeleteHandler(onDelObject);
+                Apacs.ApacsNotifyAdd -= new ApcServer.ApacsNotifyAddHandler(onAddObject);
+                Apacs.ApacsDisconnect -= new ApcServer.ApacsDisconnectHandler(onDisconnect);
                 producer.disconnect();
                 log.AddLog("Apacs events listener stopped");
             }
@@ -63,15 +63,15 @@ namespace ApacsAdapter
             log.AddLog("APACS SERVER DISCONNECTED!");
             stop();
             Apacs.Dispose();
-            Apacs = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
+            Apacs = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             start();
         }
 
-        private void onEvent(ApacsPropertyObject evtSet)
+        private void onEvent(ApcPropObj evtSet)
         {
             string fullEvtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID);
             string evtType = fullEvtType.Split('_')[0];
-            AdpEvtObj aeObj = null;
+            AdpAPCEvtObj aeObj = null;
             switch (evtType)
             {
                 case ApcObjType.TApcCardHolderAccess:
@@ -95,19 +95,19 @@ namespace ApacsAdapter
                 }
             }
         }
-        private void onAddObject(ApacsObject newObject) 
+        private void onAddObject(ApcObj newObject) 
         {
             grObjWorker(newObject, false);
         }
-        private void onDelObject(ApacsObject delObject)
+        private void onDelObject(ApcObj delObject)
         {
             grObjWorker(delObject, true);
         }
-        private void onChangeObject(ApacsObject changeObject, ApacsPropertyObject evtSet)
+        private void onChangeObject(ApcObj changeObject, ApcPropObj evtSet)
         {
             grObjWorker(changeObject, false);
         }
-        private void grObjWorker(ApacsObject ch, bool IsDelete)
+        private void grObjWorker(ApcObj ch, bool IsDelete)
         {
             if (ch == null || !String.Equals(ApcObjType.TApcCardHolder, ch.getApacsType()))
             {

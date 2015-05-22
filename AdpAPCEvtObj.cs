@@ -7,7 +7,7 @@ using System.Runtime.Serialization.Json;
 namespace ApacsAdapter
 {
     [DataContract]
-    public class AdpEvtObj
+    public class AdpAPCEvtObj
     {
         private AdpLog log = new AdpLog();
         private const string NAMESPACE = @"http://schemas.datacontract.org/2004/07/ApacsAdapter";

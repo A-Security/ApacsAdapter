@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Reflection;
 namespace ApacsAdapter
 {
-    public class ApacsPropertyObject
+    public class ApcPropObj
     {
         AdpLog log = new AdpLog();
         internal object objSettings = null;
-        public ApacsPropertyObject(object aobjSettings)
+        public ApcPropObj(object aobjSettings)
         {
             if (aobjSettings == null)
             {
@@ -61,10 +61,10 @@ namespace ApacsAdapter
             return res == null ? null : res as byte[];
         }
 
-        public ApacsObject getObjectProperty(string strName)
+        public ApcObj getObjectProperty(string strName)
         {
             object res = getProperty(strName);
-            return res == null ? null : new ApacsObject(res as IApcObjectWrap);
+            return res == null ? null : new ApcObj(res as IApcObjectWrap);
         }
         public string[] getPropertyNames()
         {
@@ -120,7 +120,7 @@ namespace ApacsAdapter
         }
         public string getSampleSourceUID()
         {
-            ApacsObject sourceObj = getObjectProperty(ApcObjProp.SysAddrInitObj);
+            ApcObj sourceObj = getObjectProperty(ApcObjProp.SysAddrInitObj);
             return sourceObj == null ? null : sourceObj.getSampleUID();
         }
         public string getNameProperty()
@@ -140,6 +140,18 @@ namespace ApacsAdapter
             object res = getProperty(strName);
             return res == null ? new DateTime() : (DateTime)res;
         }
+        public string getCompanyNameProperty()
+        {
+            ApcObj sysAddrCompany = getObjectProperty(ApcObjProp.SysAddrCompany);
+            ApcPropObj sysAddrCompProp = sysAddrCompany != null ? sysAddrCompany.getCurrentSettings() : null;
+            return sysAddrCompProp != null ? sysAddrCompProp.getNameProperty() : null;
+        }
+        public string getJobTitleNameProperty()
+        {
+            ApcObj sysAddrJobTitle = getObjectProperty(ApcObjProp.SysAddrJobTitle);
+            ApcPropObj sysAddrJobTitleProp = sysAddrJobTitle != null ? sysAddrJobTitle.getCurrentSettings() : null;
+            return sysAddrJobTitleProp != null ? sysAddrJobTitleProp.getNameProperty() : null;
+        }
 
         public void setProperty(string strName, object objProp)
         {
@@ -157,7 +169,7 @@ namespace ApacsAdapter
             }
         }
 
-        public void setObjectProperty(string strName, ApacsObject obj)
+        public void setObjectProperty(string strName, ApcObj obj)
         {
             setProperty(strName, (obj == null ? null : obj.objWrap));
         }

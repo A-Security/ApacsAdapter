@@ -3,7 +3,7 @@
 namespace ApacsAdapter
 {
     [DataContract]
-    public class AdpEvtObj_CHA : AdpEvtObj
+    public class AdpAPCEvtObj_CHA : AdpAPCEvtObj
     {
         [DataMember]
         public string HolderID { get; set; }
@@ -13,5 +13,9 @@ namespace ApacsAdapter
         public string HolderShortName { get; set; }
         [DataMember]
         public uint CardNo { get; set; }
+        [DataMember]
+        public string HolderCompany { get; set; }
+        [DataMember]
+        public string HolderJobTitle { get; set; }
     }
 }

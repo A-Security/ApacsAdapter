@@ -26,8 +26,8 @@ namespace ApacsAdapter
         public AdpCfgXml()
         {
             // WSO2 Message Broker default settings
-            //this.MBhost = "10.28.65.224"; // PROD SERVER
-            this.MBhost = "192.168.0.74"; // TEST SERVER
+            this.MBhost = "10.28.65.224"; // PROD SERVER
+            //this.MBhost = "192.168.0.74"; // TEST SERVER
             this.MBuser = "Apacs";
             this.MBpassword = "Aa1234567";
             this.MBoutQueue = "ApacsOUT";
@@ -35,8 +35,8 @@ namespace ApacsAdapter
             this.MBport = "5672";
             
             // WSO2 Governancy Registry default settings
-            //this.GRhost = "10.28.65.228"; // PROD SERVER
-            this.GRhost = "192.168.0.151"; // TEST SERVER
+            this.GRhost = "10.28.65.228"; // PROD SERVER
+            //this.GRhost = "192.168.0.151"; // TEST SERVER
             this.GRuser = "Apacs";
             this.GRpassword = "Aa1234567";
 

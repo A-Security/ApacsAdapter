@@ -10,10 +10,10 @@ namespace ApacsAdapter
     {
         private AdpLog log;
         private AdpCfgXml cfg;
-        private ApacsServer Apacs;
+        private ApcServer Apacs;
         private AdpMBAdapter consumer;
         
-        public AdpMBMsgsListener(ApacsServer Apacs, AdpCfgXml cfg) 
+        public AdpMBMsgsListener(ApcServer Apacs, AdpCfgXml cfg) 
         {
             this.log = new AdpLog();
             this.Apacs = Apacs;
@@ -26,7 +26,7 @@ namespace ApacsAdapter
             {
                 consumer.connect();
                 consumer.onMessageReceived += onMessageReceived;
-                Apacs.ApacsDisconnect += new ApacsServer.ApacsDisconnectHandler(onDisconnect);
+                Apacs.ApacsDisconnect += new ApcServer.ApacsDisconnectHandler(onDisconnect);
                 consumer.RetrieveMessage();
                 log.AddLog("WSO2 MB incoming messages listener started");
             }
@@ -45,7 +45,7 @@ namespace ApacsAdapter
         {
             try
             {
-                Apacs.ApacsDisconnect -= new ApacsServer.ApacsDisconnectHandler(onDisconnect);
+                Apacs.ApacsDisconnect -= new ApcServer.ApacsDisconnectHandler(onDisconnect);
                 consumer.onMessageReceived -= onMessageReceived;
                 consumer.disconnect();
                 log.AddLog("WSO2 MB incoming messages listener stopped");
@@ -60,7 +60,7 @@ namespace ApacsAdapter
             log.AddLog("APACS SERVER DISCONNECTED!");
             stop();
             Apacs.Dispose();
-            Apacs = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
+            Apacs = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             start();
         }
     }

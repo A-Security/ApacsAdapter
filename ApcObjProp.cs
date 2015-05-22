@@ -23,5 +23,7 @@
         public const string strMiddleName = "strMiddleName";
         public const string strFirstName = "strFirstName";
         public const string SysAddrAccount = "SysAddrAccount";
+        public const string SysAddrJobTitle = "SysAddrJobTitle";
+        public const string SysAddrCompany = "SysAddrCompany";
     }
 }

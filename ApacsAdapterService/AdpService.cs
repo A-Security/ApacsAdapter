@@ -10,8 +10,8 @@ namespace ApacsAdapterService
     public partial class AdpService : ServiceBase
     {
         private AdpLog log = new AdpLog();
-        private ApacsServer apacsInstance = null;
-        private AdpEvtsListener eventLister = null;
+        private ApcServer apacsInstance = null;
+        private AdpAPCEvtsListener eventLister = null;
 
         public AdpService()
         {
@@ -51,8 +51,8 @@ namespace ApacsAdapterService
         {
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCfgXml cfg = new AdpCfgXml();
-            apacsInstance = new ApacsServer(cfg.apcLogin, cfg.apcPasswd);
-            eventLister = new AdpEvtsListener(apacsInstance, cfg);
+            apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
+            eventLister = new AdpAPCEvtsListener(apacsInstance, cfg);
             eventLister.start();
         }
         internal void StopService()

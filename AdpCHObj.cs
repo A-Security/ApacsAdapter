@@ -1,6 +1,6 @@
 ﻿namespace ApacsAdapter
 {
-    public class AdpCardHolder
+    public class AdpCHObj
     {
         public string ID { get; set; }
         public string Name { get; set; }      
