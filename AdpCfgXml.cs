@@ -21,13 +21,15 @@ namespace ApacsAdapter
         public string GRpassword { get; private set; }
         public string apcLogin { get; private set; }
         public string apcPasswd { get; private set; }
+        public string lastSentEventTime { get; private set; }
 
         private XmlDocument xdoc = new XmlDocument();
         public AdpCfgXml()
         {
+            
             // WSO2 Message Broker default settings
-            this.MBhost = "10.28.65.224"; // PROD SERVER
-            //this.MBhost = "192.168.0.74"; // TEST SERVER
+            //this.MBhost = "10.28.65.224"; // PROD SERVER
+            this.MBhost = "192.168.0.74"; // TEST SERVER
             this.MBuser = "Apacs";
             this.MBpassword = "Aa1234567";
             this.MBoutQueue = "ApacsOUT";
@@ -35,14 +37,17 @@ namespace ApacsAdapter
             this.MBport = "5672";
             
             // WSO2 Governancy Registry default settings
-            this.GRhost = "10.28.65.228"; // PROD SERVER
-            //this.GRhost = "192.168.0.151"; // TEST SERVER
+            //this.GRhost = "10.28.65.228"; // PROD SERVER
+            this.GRhost = "192.168.0.151"; // TEST SERVER
             this.GRuser = "Apacs";
             this.GRpassword = "Aa1234567";
 
             // Apacs user\pass settings
             this.apcLogin = "Inst";
             this.apcPasswd = "1945";
+
+            // Default last send event time - yesterday
+            this.lastSentEventTime = DateTime.Now.AddDays(-1).ToString();
 
             // Create config if file not exists
             if (!File.Exists(path))
@@ -84,7 +89,7 @@ namespace ApacsAdapter
                 foreach (PropertyInfo pi in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
                 {
                     xn = xdoc.CreateElement(pi.Name);
-                    xn.InnerText = pi.GetValue(this).ToString();
+                    xn.InnerText = pi.GetValue(this) as string;
                     xel.AppendChild(xn);
                 }
                 xdoc.AppendChild(xel);
@@ -94,6 +99,14 @@ namespace ApacsAdapter
             {
                 log.AddLog(e.ToString());
             }
+        }
+        public void saveLastSentEventTime(string eventTime)
+        {
+            xdoc.Load(path);
+            XmlElement configNode = xdoc.DocumentElement;
+            XmlNode latestEventSendTimeNode = configNode.GetElementsByTagName("lastSentEventTime")[0];
+            latestEventSendTimeNode.InnerText = eventTime;
+            xdoc.Save(path);
         }
     }
 }

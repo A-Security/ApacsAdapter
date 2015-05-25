@@ -53,6 +53,7 @@ namespace ApacsAdapterService
             AdpCfgXml cfg = new AdpCfgXml();
             apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             eventLister = new AdpAPCEvtsListener(apacsInstance, cfg);
+            eventLister.sendLatestEvents();
             eventLister.start();
         }
         internal void StopService()

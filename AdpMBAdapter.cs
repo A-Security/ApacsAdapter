@@ -45,6 +45,11 @@ namespace ApacsAdapter
         }
         public void connect()
         {
+            if (Conn != null && Conn.IsOpen && Model != null && Model.IsOpen)
+            {
+                log.AddLog("WSO2 MB already connected");
+                return;
+            }
             this.Conn = Factory.CreateConnection();
             this.Model = Conn.CreateModel();
             this.Conn.ConnectionShutdown += ConnectionShutdownHundler;

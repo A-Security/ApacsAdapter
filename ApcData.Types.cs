@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ApacsAdapter
 {
@@ -9,6 +10,14 @@ namespace ApacsAdapter
             string strTypeDesc = null;
             apcTypeDesc.TryGetValue(strType, out strTypeDesc);
             return strTypeDesc;
+        }
+        public string[] getTApcCHAEvents()
+        {
+            return apcTypeDesc.Where(x => x.Key.StartsWith(ApcObjType.TApcCardHolderAccess)).Select(x => x.Key).ToArray();
+        }
+        public string[] getTApcEvents()
+        {
+            return apcTypeDesc.Select(x => x.Key).ToArray();
         }
         private Dictionary<string, string> apcTypeDesc = new Dictionary<string, string>()
             {

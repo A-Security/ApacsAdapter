@@ -23,6 +23,22 @@ namespace ApacsAdapter
             this.producer = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword, cfg.MBoutQueue);
             this.grAdp = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
         }
+        public void sendLatestEvents()
+        {
+            producer.connect();
+            if (String.IsNullOrEmpty(cfg.lastSentEventTime))
+            {
+                return;
+            }
+            ApcPropObj[] events = Apacs.getEvents(data.getTApcEvents(), DateTime.Parse(cfg.lastSentEventTime), DateTime.Now);
+            log.AddLog("Send latest " + events.Length + " events");
+            foreach(ApcPropObj aop in events)
+            {
+                onEvent(aop);
+            }
+            log.AddLog("Send complete");
+            
+        }
         public void start()
         {
             try
@@ -91,29 +107,41 @@ namespace ApacsAdapter
                 AdpMBMsgObj msg = new AdpMBMsgObj(aeObj.EventID, msgBody, aeObj.EventType);
                 if (!producer.PublishMessage(msg))
                 {
-                    log.AddLog("Error send event to MB " + msg.body);
+                    log.AddLog("Error send event to MB " + Encoding.UTF8.GetString(msg.body));
+                }
+                else
+                {
+                    cfg.saveLastSentEventTime(aeObj.Time.ToString());
                 }
             }
         }
         private void onAddObject(ApcObj newObject) 
         {
+            if (newObject == null || !String.Equals(ApcObjType.TApcCardHolder, newObject.getApacsType()))
+            {
+                return;
+            }
             grObjWorker(newObject, false);
         }
         private void onDelObject(ApcObj delObject)
         {
+            if (delObject == null || !String.Equals(ApcObjType.TApcCardHolder, delObject.getApacsType()))
+            {
+                return;
+            }
             grObjWorker(delObject, true);
         }
         private void onChangeObject(ApcObj changeObject, ApcPropObj evtSet)
         {
+            if (changeObject == null || !String.Equals(ApcObjType.TApcCardHolder, changeObject.getApacsType()))
+            {
+                return;
+            }
             grObjWorker(changeObject, false);
         }
         private void grObjWorker(ApcObj ch, bool IsDelete)
         {
-            if (ch == null || !String.Equals(ApcObjType.TApcCardHolder, ch.getApacsType()))
-            {
-                return;
-            }
-            grAdp.removeCardHolder(ch.getSampleUID(), IsDelete);
+            grAdp.removeCardHolder(ch.getSampleUID());
             if (IsDelete)
             {
                 return;

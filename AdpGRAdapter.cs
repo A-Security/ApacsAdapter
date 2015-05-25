@@ -17,7 +17,6 @@ namespace ApacsAdapter
         private string holdersFullPath;
         private string VIPsFullPath;
         private string holdersPhotoFullPath;
-        private string holdersPhotoPermaLinkUrl;
         private string serviceUrl;
         private string permaLinkBaseUrl;
         private static RegistryClient registry;
@@ -28,7 +27,6 @@ namespace ApacsAdapter
             holdersPhotoFullPath = ARTIFACT_PATH + HOLDERS_PHOTO_PATH;
             serviceUrl = String.Format(@"https://{0}:9443/services/", GRhost);
             permaLinkBaseUrl = String.Format(@"http://{0}:9763/registry/resource", GRhost);
-            holdersPhotoPermaLinkUrl = permaLinkBaseUrl + holdersPhotoFullPath;
             registry = new RegistryClient(GRuser, GRpassword, serviceUrl);
         }
         public List<string> getListStringCHs()
@@ -94,53 +92,61 @@ namespace ApacsAdapter
         }
         public void putCardHolder(AdpCHObj ch)
         {
-            Resource resource = registry.NewResource();
-            resource.mediaType = "image/jpeg";
-            resource.contentFile = ch.Photo;
-            resource.name = ch.ID + ".jpg";
-            string resPath = holdersPhotoFullPath + resource.name;
-            registry.Put(resPath, resource);
-            resource = registry.NewResource();
-            resource.mediaType = "application/vnd.cardholders+xml";
-            resource.name = ch.ID + ".xml";
-            resource.contentFile = CHtoGRcontent(ch);
-            resource.properties = new WSProperty[]
+            string holderVipValue = IsVIP(ch.ID).ToString().ToLower();
+            string holderResName =  ch.ID + ".xml";
+            string holderPhotoResName =  ch.ID + ".jpg";
+            string holderPhotoPath = @"/" + HOLDERS_PHOTO_PATH + holderPhotoResName;
+            Resource holderPhotoRes = registry.NewResource();
+            holderPhotoRes.mediaType = "image/jpeg";
+            holderPhotoRes.contentFile = ch.Photo;
+            holderPhotoRes.name = holderPhotoResName;
+            string holderPhotoResPath = holdersPhotoFullPath + holderPhotoResName;
+            holderPhotoRes.properties = new WSProperty[]
                     {
                         new WSProperty(){ key = "holder_id", values = new string[] { ch.ID } },
                         new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
                         new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
                         new WSProperty(){ key = "holder_cardNo", values = new string[] { ch.CardNo } },
-                        new WSProperty(){ key = "holder_photo", values = new string[] { resPath } },
-                        new WSProperty(){ key = "holder_photoLink", values = new string[] { permaLinkBaseUrl + resPath } },
-                        new WSProperty(){ key = "holder_vip", values = new string[] { IsVIP(ch.ID).ToString().ToLower() } }
+                        new WSProperty(){ key = "holder_path", values = new string[] { @"/" + HOLDERS_PATH + holderResName } },
+                        new WSProperty(){ key = "holder_vip", values = new string[] { holderVipValue } }
                     };
-            resPath = holdersFullPath + resource.name;
-            registry.Put(resPath, resource);
-        }
-        public byte[] CHtoGRcontent(AdpCHObj ch)
-        {
-            string photoResName = ch.ID + ".jpg";
+            registry.Put(holderPhotoResPath, holderPhotoRes);
+            Resource holderRes = registry.NewResource();
+            holderRes.mediaType = "application/vnd.cardholders+xml";
+            holderRes.name = holderResName;
+            string holderPhotoLinkValue = permaLinkBaseUrl + holderPhotoResPath;
             XNamespace xn = @"http://www.wso2.org/governance/metadata";
-            XElement xdoc =
+            XElement holderResContentXDoc =
                 new XElement(xn + "metadata",
                     new XElement(xn + "holder",
                         new XElement(xn + "id", ch.ID),
                         new XElement(xn + "shortName", ch.ShortName),
                         new XElement(xn + "name", ch.Name),
                         new XElement(xn + "cardNo", ch.CardNo),
-                        new XElement(xn + "photo", HOLDERS_PHOTO_PATH + photoResName),
-                        new XElement(xn + "photoLink", holdersPhotoPermaLinkUrl + photoResName),
-                        new XElement(xn + "vip", IsVIP(ch.ID).ToString().ToLower())
+                        new XElement(xn + "photo", holderPhotoPath),
+                        new XElement(xn + "photoLink", holderPhotoLinkValue),
+                        new XElement(xn + "vip", holderVipValue)
                     )
                 );
-            return Encoding.UTF8.GetBytes(xdoc.ToString());
+            holderRes.contentFile = Encoding.UTF8.GetBytes(holderResContentXDoc.ToString());
+            holderRes.properties = new WSProperty[]
+                    {
+                        new WSProperty(){ key = "holder_id", values = new string[] { ch.ID } },
+                        new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
+                        new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
+                        new WSProperty(){ key = "holder_cardNo", values = new string[] { ch.CardNo } },
+                        new WSProperty(){ key = "holder_photo", values = new string[] { holderPhotoPath } },
+                        new WSProperty(){ key = "holder_photoLink", values = new string[] { holderPhotoLinkValue } },
+                        new WSProperty(){ key = "holder_vip", values = new string[] { holderVipValue } }
+                    };
+            registry.Put(holdersFullPath + holderResName, holderRes);
         }
         private bool IsVIP(string id)
         {
             string VIPpath = VIPsFullPath + id;
             return registry.ResourceExists(VIPpath); ;
         }
-        public void removeCardHolder(string id, bool withVIP)
+        public void removeCardHolder(string id)
         {
             string chPath = holdersFullPath + id + ".xml";
             string chPhotoPath = holdersPhotoFullPath + id + ".jpg";
@@ -151,14 +157,6 @@ namespace ApacsAdapter
             if (registry.ResourceExists(chPhotoPath))
             {
                 registry.Delete(chPhotoPath);
-            }
-            if (withVIP)
-            {
-                string VIPpath = VIPsFullPath + id;
-                if (registry.ResourceExists(VIPpath))
-                {
-                    registry.Delete(VIPpath);
-                }
             }
         }
     }
