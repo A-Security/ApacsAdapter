@@ -10,7 +10,8 @@ namespace ApacsAdapter
 {
     public class AdpMBAdapter : IDisposable
     {
-        private delegate void VoidDelegate();
+        private delegate void ConsumeDelegate();
+        private delegate void SendDeferredMsgDelegate();
         public delegate void ReceiverMessage(AdpMBMsgObj msg);
         public event ReceiverMessage onMessageReceived;
         private const string EXCHANGE_NAME = "amq.direct";
@@ -19,7 +20,7 @@ namespace ApacsAdapter
         private const byte DELIVERY_MODE = 2;
         private string Queue;
         private AdpLog log;
-        private static Dictionary<string, AdpMBMsgObj> deferredMsgs;
+        private static Dictionary<string, AdpMBMsgObj> deferredMsgs = new Dictionary<string, AdpMBMsgObj>();
         private ConnectionFactory Factory;
         private IConnection Conn;
         private IModel Model;
@@ -44,7 +45,6 @@ namespace ApacsAdapter
         public AdpMBAdapter(string hostName, int port, string userName, string password, string queue)
         {
             this.log = new AdpLog();
-            deferredMsgs = new Dictionary<string, AdpMBMsgObj>();
             this.Factory = new ConnectionFactory();
             this.Factory.AutomaticRecoveryEnabled = true;
             this.Factory.VirtualHost = VIRTUAL_HOST;
@@ -108,8 +108,8 @@ namespace ApacsAdapter
                 log.AddLog("WSO2 MB deferred message to send: " + deferredMsgs.Count);
                 if (!isConsuming)
                 {
-                    VoidDelegate sendDM = new VoidDelegate(sendDeferredMsg);
-                    sendDM.DynamicInvoke(null);
+                    SendDeferredMsgDelegate sendDM = new SendDeferredMsgDelegate(sendDeferredMsg);
+                    sendDM.BeginInvoke(null, null);
                 }
                 if (timer != null)
                 {
@@ -157,8 +157,8 @@ namespace ApacsAdapter
         public void RetrieveMessage()
         {
             isConsuming = true;
-            VoidDelegate consume = new VoidDelegate(Consume);
-            consume.DynamicInvoke(null);
+            ConsumeDelegate consume = new ConsumeDelegate(Consume);
+            consume.BeginInvoke(null, null);
         }
         private void Consume()
         {

@@ -38,7 +38,7 @@ namespace ApacsAdapter
             
             AdpAPCEvtObj aobj = new AdpAPCEvtObj
             {
-                Time = evtSets.getRealDateTime(),
+                Time = evtSets.getRealDateTime().ToString("yyyy-MM-dd HH:mm:ss.fff"),
                 EventID = evtSets.getSampleEventUID(),
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),

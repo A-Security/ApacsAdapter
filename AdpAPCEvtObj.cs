@@ -13,7 +13,7 @@ namespace ApacsAdapter
         private AdpLog log = new AdpLog();
         private const string NAMESPACE = @"http://schemas.datacontract.org/2004/07/ApacsAdapter";
         [DataMember]
-        public DateTime Time { get; set; }
+        public string Time { get; set; }
         [DataMember]
         public string SourceID { get; set; }
         [DataMember]

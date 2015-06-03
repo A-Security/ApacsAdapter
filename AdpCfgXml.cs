@@ -47,7 +47,7 @@ namespace ApacsAdapter
             this.apcPasswd = "1945";
 
             // Default last send event time - yesterday
-            this.lastSentEventTime = DateTime.Now.AddDays(-1).ToString();
+            this.lastSentEventTime = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss.fff");
 
             // Create config if file not exists
             if (!File.Exists(path))

@@ -39,7 +39,7 @@ namespace ApacsAdapter
         private void sendLatestEvents()
         {
             SendLatestEventsDelegate sender = new SendLatestEventsDelegate(sendLatestEvents);
-            sender.DynamicInvoke(new object[] { lastSentEventTime, DateTime.Now });
+            sender.BeginInvoke(lastSentEventTime, DateTime.Now, null, null);
         }
         public void start()
         {
@@ -97,7 +97,7 @@ namespace ApacsAdapter
             }
             else
             {
-                cfg.setLastSentEventTime(aeObj.Time.ToString());
+                cfg.setLastSentEventTime(aeObj.Time);
             }
             
         }
