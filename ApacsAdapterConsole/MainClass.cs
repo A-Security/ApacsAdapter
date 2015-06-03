@@ -14,9 +14,7 @@ namespace ApacsAdapterConsole
             AdpCfgXml cfg = new AdpCfgXml();
             ApcServer apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             ApcData data = new ApcData();
-            ApcPropObj[] events = apacsInstance.getEvents(data.getTApcEvents(), DateTime.Now.AddMinutes(-5), DateTime.Now);
-            AdpAPCEvtsListener lister = new AdpAPCEvtsListener(apacsInstance, cfg);
-            lister.sendLatestEvents();
+            Console.WriteLine(data.getPropHierarchy(apacsInstance.getObjectBySampleUID("00000189").getCurrentSettings()));
             //AdpMBMsgsListener lister = new AdpMBMsgsListener(apacsInstance, cfg);
             
             /*lister.start();
@@ -35,6 +33,7 @@ namespace ApacsAdapterConsole
                 }
             }
             */
+            Console.ReadLine();
         }
         private static void AdpLog_OnAddLog(object sender, EventArgs arg)
         {

@@ -30,29 +30,13 @@ namespace ApacsAdapter
             sb.AppendLine("================END Property=" + apoName + "============");
             return sb.ToString();
         }
-        public AdpAPCEvtObj_CHA getEvtObj_CHA(ApcPropObj evtSets, string eventType)
+        public AdpAPCEvtObj getEvtObj(ApcPropObj evtSets)
         {
-            if (eventType.Contains("Will"))
-            {
-                return null;
-            }
-            bool isNotErrHolder = !(eventType.EndsWith("_ErrHolder"));
-            string fullName = "НЕИЗВЕСТНЫЙ",
-                   shortName = "НЕИЗВЕСТНЫЙ",
-                   uid = null,
-                   company = null,
-                   jobTitle = null;
-            if (isNotErrHolder)
-            {
-                ApcObj holder = evtSets.getObjectProperty(ApcObjProp.SysAddrHolder);
-                ApcPropObj holderSets = holder.getCurrentSettings();
-                fullName = holderSets.getFullNameProperty();
-                shortName = holderSets.getNameProperty();
-                uid = holder.getSampleUID();
-                company = holderSets.getCompanyNameProperty();
-                jobTitle = holderSets.getJobTitleNameProperty();
-            }
-            AdpAPCEvtObj_CHA aobj = new AdpAPCEvtObj_CHA
+            string eventType = evtSets.getEventTypeProperty();
+            ApcObj holder = evtSets.getObjectProperty(ApcObjProp.SysAddrHolder);
+            ApcPropObj holderSets = holder.getCurrentSettings();
+            
+            AdpAPCEvtObj aobj = new AdpAPCEvtObj
             {
                 Time = evtSets.getRealDateTime(),
                 EventID = evtSets.getSampleEventUID(),
@@ -60,28 +44,16 @@ namespace ApacsAdapter
                 EventTypeDesc = getTypeDesc(eventType),
                 SourceID = evtSets.getSampleSourceUID(),
                 SourceName = evtSets.getSourceNameProperty(),
-                HolderID = uid,
-                HolderName = fullName,
-                HolderShortName = shortName,
-                HolderCompany = company,
-                HolderJobTitle = jobTitle,
+                HolderID = holder.getSampleUID(),
+                HolderName = holderSets.getFullNameProperty(),
+                HolderShortName = holderSets.getNameProperty(),
+                HolderCompany = holderSets.getCompanyNameProperty(),
+                HolderJobTitle = holderSets.getJobTitleNameProperty(),
+                HolderCategory = holderSets.getbEmployeeProperty(),
                 CardNo = evtSets.getDwCardNumber()
 
             };
             return aobj;
-        }
-        public AdpAPCEvtObj getEvtObj(ApcPropObj evtSets, string eventType)
-        {
-            AdpAPCEvtObj aeobj = new AdpAPCEvtObj
-            {
-                Time = evtSets.getRealDateTime(),
-                EventID = evtSets.getSampleEventUID(),
-                EventType = eventType,
-                EventTypeDesc = getTypeDesc(eventType),
-                SourceID = evtSets.getSampleSourceUID(),
-                SourceName = evtSets.getSourceNameProperty()
-            };
-            return aeobj;
         }
         public AdpCHObj getCardHolder(ApcObj cardHolderAO)
         {

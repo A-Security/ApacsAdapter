@@ -28,9 +28,6 @@ namespace ApacsAdapterService
                 proc.WaitForExit();
                 exitCode = proc.ExitCode;
             }
-
-            if (exitCode != 0)
-                throw new InvalidOperationException();
         }
     }
 }

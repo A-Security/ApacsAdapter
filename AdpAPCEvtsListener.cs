@@ -13,37 +13,40 @@ namespace ApacsAdapter
         private ApcServer Apacs;
         private AdpMBAdapter producer;
         private AdpGRAdapter grAdp;
+        private DateTime lastSentEventTime;
+        private delegate void SendLatestEventsDelegate(DateTime fromDT, DateTime toDT);
         
         public AdpAPCEvtsListener(ApcServer Apacs, AdpCfgXml cfg) 
         {
             this.log = new AdpLog();
             this.Apacs = Apacs;
             this.cfg = cfg;
+            this.lastSentEventTime = DateTime.Parse(cfg.lastSentEventTime);
             this.data = new ApcData();
             this.producer = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword, cfg.MBoutQueue);
             this.grAdp = new AdpGRAdapter(cfg.GRhost, cfg.GRuser, cfg.GRpassword);
         }
-        public void sendLatestEvents()
+        private void sendLatestEvents(DateTime fromDT, DateTime toDT)
         {
-            producer.connect();
-            if (String.IsNullOrEmpty(cfg.lastSentEventTime))
-            {
-                return;
-            }
-            ApcPropObj[] events = Apacs.getEvents(data.getTApcEvents(), DateTime.Parse(cfg.lastSentEventTime), DateTime.Now);
+            ApcPropObj[] events = Apacs.getEvents(data.getTApcEvents(), fromDT, toDT);
             log.AddLog("Send latest " + events.Length + " events");
-            foreach(ApcPropObj aop in events)
+            foreach (ApcPropObj aop in events)
             {
                 onEvent(aop);
             }
             log.AddLog("Send complete");
-            
+        }
+        private void sendLatestEvents()
+        {
+            SendLatestEventsDelegate sender = new SendLatestEventsDelegate(sendLatestEvents);
+            sender.DynamicInvoke(new object[] { lastSentEventTime, DateTime.Now });
         }
         public void start()
         {
             try
             {
                 producer.connect();
+                sendLatestEvents();
                 Apacs.ApacsDisconnect += new ApcServer.ApacsDisconnectHandler(onDisconnect);
                 Apacs.ApacsNotifyAdd += new ApcServer.ApacsNotifyAddHandler(onAddObject);
                 Apacs.ApacsNotifyDelete += new ApcServer.ApacsNotifyDeleteHandler(onDelObject);
@@ -85,35 +88,18 @@ namespace ApacsAdapter
 
         private void onEvent(ApcPropObj evtSet)
         {
-            string fullEvtType = evtSet.getStringProperty(ApcObjProp.strEventTypeID);
-            string evtType = fullEvtType.Split('_')[0];
-            AdpAPCEvtObj aeObj = null;
-            switch (evtType)
+            AdpAPCEvtObj aeObj = data.getEvtObj(evtSet);
+            byte[] msgBody = Encoding.UTF8.GetBytes(aeObj.ToXmlString());
+            AdpMBMsgObj msg = new AdpMBMsgObj(aeObj.EventID, msgBody, aeObj.EventType);
+            if (!producer.PublishMessage(msg))
             {
-                case ApcObjType.TApcCardHolderAccess:
-                    {
-                        aeObj = data.getEvtObj_CHA(evtSet, fullEvtType);
-                        break;
-                    }
-                default:
-                    {
-                        aeObj = data.getEvtObj(evtSet, fullEvtType);
-                        break;
-                    }
+                log.AddLog("Error send event to MB " + Encoding.UTF8.GetString(msg.body));
             }
-            if (aeObj != null)
+            else
             {
-                byte[] msgBody = Encoding.UTF8.GetBytes(aeObj.ToXmlString());
-                AdpMBMsgObj msg = new AdpMBMsgObj(aeObj.EventID, msgBody, aeObj.EventType);
-                if (!producer.PublishMessage(msg))
-                {
-                    log.AddLog("Error send event to MB " + Encoding.UTF8.GetString(msg.body));
-                }
-                else
-                {
-                    cfg.saveLastSentEventTime(aeObj.Time.ToString());
-                }
+                cfg.setLastSentEventTime(aeObj.Time.ToString());
             }
+            
         }
         private void onAddObject(ApcObj newObject) 
         {

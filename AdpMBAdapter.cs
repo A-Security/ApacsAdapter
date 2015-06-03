@@ -10,16 +10,16 @@ namespace ApacsAdapter
 {
     public class AdpMBAdapter : IDisposable
     {
-        private delegate void ConsumerDelegate();
-        public delegate void onReceiveMessage(AdpMBMsgObj msg);
-        public event onReceiveMessage onMessageReceived;
+        private delegate void VoidDelegate();
+        public delegate void ReceiverMessage(AdpMBMsgObj msg);
+        public event ReceiverMessage onMessageReceived;
         private const string EXCHANGE_NAME = "amq.direct";
         private const string CONTENT_TYPE = "text/xml";
         private const string VIRTUAL_HOST = "/carbon";
         private const byte DELIVERY_MODE = 2;
         private string Queue;
         private AdpLog log;
-        private Dictionary<string, AdpMBMsgObj> deferredMsgs;
+        private static Dictionary<string, AdpMBMsgObj> deferredMsgs;
         private ConnectionFactory Factory;
         private IConnection Conn;
         private IModel Model;
@@ -27,11 +27,24 @@ namespace ApacsAdapter
         private TimerCallback timerCallback;
         private bool isConsuming;
 
-
+        private void sendDeferredMsg()
+        {
+            while (deferredMsgs.Count != 0)
+            {
+                foreach (AdpMBMsgObj msg in deferredMsgs.Values)
+                {
+                    if (PublishMessage(msg))
+                    {
+                        deferredMsgs.Remove(msg.id);
+                    }
+                }
+            }
+            log.AddLog("WSO2 MB deferred message send successful");
+        }
         public AdpMBAdapter(string hostName, int port, string userName, string password, string queue)
         {
             this.log = new AdpLog();
-            this.deferredMsgs = new Dictionary<string, AdpMBMsgObj>();
+            deferredMsgs = new Dictionary<string, AdpMBMsgObj>();
             this.Factory = new ConnectionFactory();
             this.Factory.AutomaticRecoveryEnabled = true;
             this.Factory.VirtualHost = VIRTUAL_HOST;
@@ -91,19 +104,12 @@ namespace ApacsAdapter
         {
             if (Conn != null && Conn.IsOpen && Model != null && Model.IsOpen)
             {
-                isConsuming = true;
                 log.AddLog("WSO2 MB connection recovery!");
                 log.AddLog("WSO2 MB deferred message to send: " + deferredMsgs.Count);
-                if (deferredMsgs.Count != 0)
+                if (!isConsuming)
                 {
-                    foreach (AdpMBMsgObj msg in deferredMsgs.Values)
-                    {
-                        if (PublishMessage(msg))
-                        {
-                            deferredMsgs.Remove(msg.id);
-                        }
-                    }
-                    log.AddLog("WSO2 MB deferred message send successful");
+                    VoidDelegate sendDM = new VoidDelegate(sendDeferredMsg);
+                    sendDM.DynamicInvoke(null);
                 }
                 if (timer != null)
                 {
@@ -116,10 +122,10 @@ namespace ApacsAdapter
 
         public bool PublishMessage(AdpMBMsgObj msg)
         {
-            bool IsSend = false;
+            bool SendOk = false;
             if (msg == null || msg.IsBodyEmpty || String.IsNullOrEmpty(Queue))
             {
-                return IsSend;
+                return SendOk;
             }
             if (!(Model == null || Model.IsClosed || Conn == null || !Conn.IsOpen))
             {
@@ -134,25 +140,25 @@ namespace ApacsAdapter
                     props.Type = msg.type;
                     props.DeliveryMode = DELIVERY_MODE;
                     Model.BasicPublish(String.Empty, Queue, props, msg.body);
-                    IsSend = true;
+                    SendOk = true;
                 }
                 catch (Exception e)
                 {
                     log.AddLog(e.ToString());
                 }
             }
-            if (!IsSend && (deferredMsgs.Count == 0 || !deferredMsgs.ContainsKey(msg.id)))
+            if (!SendOk && (deferredMsgs.Count == 0 || !deferredMsgs.ContainsKey(msg.id)))
             {
                 deferredMsgs.Add(msg.id, msg);
             }
-            return IsSend;
+            return SendOk;
         }
 
         public void RetrieveMessage()
         {
             isConsuming = true;
-            ConsumerDelegate cons = new ConsumerDelegate(Consume);
-            cons.BeginInvoke(null, null);
+            VoidDelegate consume = new VoidDelegate(Consume);
+            consume.DynamicInvoke(null);
         }
         private void Consume()
         {

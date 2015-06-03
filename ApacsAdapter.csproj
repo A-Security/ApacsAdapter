@@ -45,7 +45,6 @@
   <ItemGroup>
     <Compile Include="AdpCHObj.cs" />
     <Compile Include="AdpMBMsgsListener.cs" />
-    <Compile Include="AdpAPCEvtObj_CHA.cs" />
     <Compile Include="AdpCfgXml.cs" />
     <Compile Include="AdpAPCEvtObj.cs" />
     <Compile Include="AdpAPCEvtsListener.cs" />

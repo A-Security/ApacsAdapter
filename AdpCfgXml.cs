@@ -100,12 +100,12 @@ namespace ApacsAdapter
                 log.AddLog(e.ToString());
             }
         }
-        public void saveLastSentEventTime(string eventTime)
+        public void setLastSentEventTime(string eventTime)
         {
             xdoc.Load(path);
             XmlElement configNode = xdoc.DocumentElement;
             XmlNode latestEventSendTimeNode = configNode.GetElementsByTagName("lastSentEventTime")[0];
-            latestEventSendTimeNode.InnerText = eventTime;
+            latestEventSendTimeNode.InnerText = this.lastSentEventTime = eventTime;
             xdoc.Save(path);
         }
     }

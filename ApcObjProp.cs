@@ -25,5 +25,6 @@
         public const string SysAddrAccount = "SysAddrAccount";
         public const string SysAddrJobTitle = "SysAddrJobTitle";
         public const string SysAddrCompany = "SysAddrCompany";
+        public const string bEmployee = "bEmployee";
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -23,6 +24,20 @@ namespace ApacsAdapter
         public string EventType { get; set; }
         [DataMember]
         public string EventTypeDesc { get; set; }
+        [DataMember]
+        public string HolderID { get; set; }
+        [DataMember]
+        public string HolderName { get; set; }
+        [DataMember]
+        public string HolderShortName { get; set; }
+        [DataMember]
+        public string CardNo { get; set; }
+        [DataMember]
+        public string HolderCompany { get; set; }
+        [DataMember]
+        public string HolderJobTitle { get; set; }
+        [DataMember]
+        public string HolderCategory { get; set; }
         public string ToJsonString()
         {
             try
@@ -36,7 +51,7 @@ namespace ApacsAdapter
             catch (Exception e) 
             {
                 log.AddLog(e.ToString());
-                return null; 
+                return String.Empty; 
             }
         }
         public string ToXmlString()
@@ -52,7 +67,7 @@ namespace ApacsAdapter
             catch (Exception e)
             {
                 log.AddLog(e.ToString());
-                return null;
+                return String.Empty;
             }
         }
     }

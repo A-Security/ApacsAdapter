@@ -15,11 +15,11 @@ namespace ApacsAdapter
 
         public string getUID()
         {
+            string strUID = String.Empty;
             if (objWrap == null)
             {
-                return null;
+                return strUID;
             }
-            string strUID = null;
             try
             {
                 objWrap.getUID(out strUID);
@@ -32,18 +32,25 @@ namespace ApacsAdapter
         }
         public string getSampleUID()
         {
-            string res = getUID();
-            return String.IsNullOrEmpty(res) ? null : res.Split('.')[1];
+            string[] res = getUID().Split('.');
+            return res.Length > 1 ? res[1] : res[0];
         }
 
         public string getApacsType()
         {
+            string strApacsType = String.Empty;
             if (objWrap == null)
             {
-                return null;
+                return strApacsType;
             }
-            string strApacsType = null;
-            objWrap.getApacsType(out strApacsType);
+            try 
+            {
+                objWrap.getApacsType(out strApacsType);
+            }
+            catch (Exception e)
+            {
+                log.AddLog(e.ToString());
+            }
             return strApacsType;
         }
 
@@ -53,30 +60,51 @@ namespace ApacsAdapter
             {
                 return;
             }
-            objWrap.deleteObject();
+            try
+            {
+                objWrap.deleteObject();
+            }
+            catch (Exception e)
+            {
+                log.AddLog(e.ToString());
+            }
         }
 
         public ApcObj getParentObject()
         {
             if (objWrap == null)
             {
-                return null;
+                return new ApcObj(null);
             }
             object parent = null;
-            objWrap.getParentObject(out parent);
-            return parent == null ? null : new ApcObj(parent as IApcObjectWrap);
+            try
+            {
+                objWrap.getParentObject(out parent);
+            }
+            catch (Exception e)
+            {
+                log.AddLog(e.ToString());
+            }
+            return parent == null ? new ApcObj(null) : new ApcObj(parent as IApcObjectWrap);
 
         }
 
         public ApcPropObj getCurrentSettings()
         {
+            object objSettings = null;
             if (objWrap == null)
             {
-                return null;
+                return new ApcPropObj(objSettings);
             }
-            object objSettings = null;
-            objWrap.getCurrentSettings(out objSettings);
-            return objSettings == null ? null : new ApcPropObj(objSettings);
+            try
+            {
+                objWrap.getCurrentSettings(out objSettings);
+            }
+            catch (Exception e)
+            {
+                log.AddLog(e.ToString());
+            }
+            return new ApcPropObj(objSettings);
         }
 
         public void applySettings(ApcPropObj aobjSettings)
@@ -94,20 +122,20 @@ namespace ApacsAdapter
         {
             if (objWrap == null)
             {
-                return null;
+                return new ApcObj[] { };
             }
             Array childrenObjs = new object[] { };
             objWrap.getChildrenObjs(out childrenObjs);
             if (childrenObjs.Length == 0)
             {
-                return null;
+                return new ApcObj[] { };
             }
 
             ApcObj[] result = new ApcObj[childrenObjs.Length];
             for (int i = 0; i < childrenObjs.Length; i++)
             {
                 object obj = childrenObjs.GetValue(i);
-                result[i] = obj == null ? null : new ApcObj(obj as IApcObjectWrap);
+                result[i] = obj == null ? new ApcObj(null) : new ApcObj(obj as IApcObjectWrap);
             }
             return result;
         }
@@ -116,22 +144,18 @@ namespace ApacsAdapter
         {
             if (objWrap == null || aobjSettings == null)
             {
-                return null;
+                return new ApcObj(null);
             }
             object obj = null;
             objWrap.addChildWithSettings(aobjSettings.objSettings, out obj);
-            if (obj == null)
-            {
-                return null;
-            }
-            return new ApcObj(obj as IApcObjectWrap);
+            return obj == null ? new ApcObj(null) : new ApcObj(obj as IApcObjectWrap);
         }
 
         public ApcObj[] getChildrenObjsByTypes(string[] astrTypes)
         {
             if (objWrap == null)
             {
-                return null;
+                return new ApcObj[] { };
             }
             ParameterModifier p = new ParameterModifier(2);
             p[1] = true;
@@ -150,7 +174,7 @@ namespace ApacsAdapter
                                                               null);
             if (nResult != 0)
             {
-                return null;
+                return new ApcObj[] { };
             }
 
             object[] childrenObjs = args[1] as object[];
@@ -158,13 +182,13 @@ namespace ApacsAdapter
             for (int i = 0; i < childrenObjs.Length; i++)
             {
                 object obj = childrenObjs.GetValue(i);
-                result[i] = obj == null ? null : new ApcObj(obj as IApcObjectWrap);
+                result[i] = obj == null ?  new ApcObj(null) : new ApcObj(obj as IApcObjectWrap);
             }
             return result;
         }
         public byte[] getMainPhoto()
         {
-            byte[] result = null;
+            byte[] result = new byte[] { };
             ApcObj[] chMainPhotoAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcCHMainPhoto });
             foreach (ApcObj photoProp in chMainPhotoAOs)
             {
@@ -175,40 +199,26 @@ namespace ApacsAdapter
         }
         public string getCardNumber()
         {
-            string result = null;
+            string result = String.Empty;
             ApcObj[] acc2linkAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcAccount2HolderLink });
             foreach (ApcObj chldAO in acc2linkAOs)
             {
                 ApcPropObj childAOCurSet = chldAO.getCurrentSettings();
-                if (childAOCurSet != null)
-                {
-                    ApcObj sysAdAc = childAOCurSet.getObjectProperty(ApcObjProp.SysAddrAccount);
-                    if (sysAdAc != null)
-                    {
-                        ApcPropObj sysAdAcProp = sysAdAc.getCurrentSettings();
-                        if (sysAdAcProp != null)
-                        {
-                            result = sysAdAcProp.getNameProperty();
-                        }
-                    }
-                }
-
+                ApcObj sysAdAc = childAOCurSet.getObjectProperty(ApcObjProp.SysAddrAccount);
+                ApcPropObj sysAdAcProp = sysAdAc.getCurrentSettings();
+                result = sysAdAcProp.getNameProperty();
             }
 
             return result;
         }
         public ApcPropObj getChildSettingsForAdd(string aObjType)
         {
+            object objSettings = null;
             if (objWrap == null || String.IsNullOrEmpty(aObjType))
             {
-                return null;
+                return new ApcPropObj(objSettings);
             }
-            object objSettings = null;
-            int nResult = objWrap.getChildSettingsForAdd(aObjType, out objSettings);
-            if (nResult != 0 || objSettings == null)
-            {
-                return null;
-            }
+            objWrap.getChildSettingsForAdd(aObjType, out objSettings);
             return new ApcPropObj(objSettings);
         }
 

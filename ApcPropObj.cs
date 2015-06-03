@@ -7,14 +7,10 @@ namespace ApacsAdapter
 {
     public class ApcPropObj
     {
-        AdpLog log = new AdpLog();
+        private AdpLog log = new AdpLog();
         internal object objSettings = null;
         public ApcPropObj(object aobjSettings)
         {
-            if (aobjSettings == null)
-            {
-                return;
-            }
             objSettings = aobjSettings;
         }
 
@@ -41,9 +37,8 @@ namespace ApacsAdapter
             {
                 return objSettings.GetType().InvokeMember(strName, BindingFlags.GetProperty, null, objSettings, null);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.AddLog(e.ToString());
                 return null;
             }
 
@@ -52,25 +47,25 @@ namespace ApacsAdapter
         public string getStringProperty(string strName)
         {
             object res = getProperty(strName);
-            return res == null ? null : res as string;
+            return res == null ? String.Empty : res as string;
         }
 
         public byte[] getByteArrayProperty(string strName)
         {
             object res = getProperty(strName);
-            return res == null ? null : res as byte[];
+            return res == null ? new byte[] { } : res as byte[];
         }
 
         public ApcObj getObjectProperty(string strName)
         {
             object res = getProperty(strName);
-            return res == null ? null : new ApcObj(res as IApcObjectWrap);
+            return res == null ? new ApcObj(null) : new ApcObj(res as IApcObjectWrap);
         }
         public string[] getPropertyNames()
         {
             if (objSettings == null)
             {
-                return null;
+                return new string[] { };
             }
             try
             {
@@ -85,7 +80,7 @@ namespace ApacsAdapter
             catch (Exception e)
             {
                 log.AddLog(e.ToString());
-                return null;
+                return new string[] { };
             }
         }
 
@@ -97,17 +92,18 @@ namespace ApacsAdapter
 
         public string getFullNameProperty()
         {
+            if (objSettings == null)
+            {
+                return String.Empty;
+            }
             string _lastName = getStringProperty(ApcObjProp.strLastName),
                    _middleName = getStringProperty(ApcObjProp.strMiddleName),
                    _firstName = getStringProperty(ApcObjProp.strFirstName);
-            if (!String.IsNullOrEmpty(_lastName) | !String.IsNullOrEmpty(_middleName) | !String.IsNullOrEmpty(_firstName))
+            if (String.IsNullOrEmpty(_lastName) && String.IsNullOrEmpty(_middleName) && String.IsNullOrEmpty(_firstName))
             {
-                return String.Format("{0} {1} {2}", _lastName, _firstName, _middleName);
+                return String.Empty;
             }
-            else
-            {
-                return null;
-            }
+            return String.Format("{0} {1} {2}", _lastName, _firstName, _middleName);
         }
         public DateTime getRealDateTime()
         {
@@ -115,13 +111,13 @@ namespace ApacsAdapter
         }
         public string getSampleEventUID()
         {
-            string res = getStringProperty(ApcObjProp.SysAddrEventID);
-            return String.IsNullOrEmpty(res) ? null : res.Split('.')[1];
+            string[] res = getStringProperty(ApcObjProp.SysAddrEventID).Split('.');
+            return res.Length > 1 ? res[1] : res[0];
         }
         public string getSampleSourceUID()
         {
             ApcObj sourceObj = getObjectProperty(ApcObjProp.SysAddrInitObj);
-            return sourceObj == null ? null : sourceObj.getSampleUID();
+            return sourceObj.getSampleUID();
         }
         public string getNameProperty()
         {
@@ -131,9 +127,10 @@ namespace ApacsAdapter
         {
             return getStringProperty(ApcObjProp.strInitObjName);
         }
-        public uint getDwCardNumber()
+        public string getDwCardNumber()
         {
-            return getUIntProperty(ApcObjProp.dwCardNumber);
+            uint res = getUIntProperty(ApcObjProp.dwCardNumber);
+            return res == 0 ? String.Empty: res.ToString();
         }
         public DateTime getDateTimeProperty(string strName)
         {
@@ -143,14 +140,23 @@ namespace ApacsAdapter
         public string getCompanyNameProperty()
         {
             ApcObj sysAddrCompany = getObjectProperty(ApcObjProp.SysAddrCompany);
-            ApcPropObj sysAddrCompProp = sysAddrCompany != null ? sysAddrCompany.getCurrentSettings() : null;
-            return sysAddrCompProp != null ? sysAddrCompProp.getNameProperty() : null;
+            ApcPropObj sysAddrCompProp = sysAddrCompany.getCurrentSettings();
+            return sysAddrCompProp.getNameProperty();
         }
         public string getJobTitleNameProperty()
         {
             ApcObj sysAddrJobTitle = getObjectProperty(ApcObjProp.SysAddrJobTitle);
-            ApcPropObj sysAddrJobTitleProp = sysAddrJobTitle != null ? sysAddrJobTitle.getCurrentSettings() : null;
-            return sysAddrJobTitleProp != null ? sysAddrJobTitleProp.getNameProperty() : null;
+            ApcPropObj sysAddrJobTitleProp  = sysAddrJobTitle.getCurrentSettings();
+            return sysAddrJobTitleProp.getNameProperty();
+        }
+        public string getEventTypeProperty()
+        {
+            return getStringProperty(ApcObjProp.strEventTypeID);
+        }
+        public string getbEmployeeProperty()
+        {
+            object emp = getProperty(ApcObjProp.bEmployee);
+            return (emp == null || (byte)emp == byte.MaxValue) ? String.Empty : Convert.ToBoolean(emp).ToString().ToLower();
         }
 
         public void setProperty(string strName, object objProp)
@@ -173,6 +179,5 @@ namespace ApacsAdapter
         {
             setProperty(strName, (obj == null ? null : obj.objWrap));
         }
-
     }
 }

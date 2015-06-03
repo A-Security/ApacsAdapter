@@ -256,13 +256,13 @@ namespace ApacsAdapter
         {
             if (Apacs == null || String.IsNullOrEmpty(astrUID))
             {
-                return null;
+                return new ApcObj(null);
             }
             object obj = null;
             int nResult = Apacs.getObjectByUID(astrUID, out obj);
             if (nResult != 0 || obj == null)
             {
-                return null;
+                return new ApcObj(null);
             }
             return new ApcObj(obj as IApcObjectWrap);
         }
@@ -271,7 +271,7 @@ namespace ApacsAdapter
         {
             if (String.IsNullOrEmpty(UID))
             {
-                return null;
+                return new ApcObj(null);
             }
             UID = "SA 0000." + UID;
             return getObjectByUID(UID);
@@ -281,13 +281,13 @@ namespace ApacsAdapter
         {
             if (Apacs == null || String.IsNullOrEmpty(astrAlias))
             {
-                return null;
+                return new ApcObj(null);
             }
             object obj = null;
             int nResult = Apacs.getObjectByAlias(astrAlias, out obj);
             if (nResult != 0 || obj == null)
             {
-                return null;
+                return new ApcObj(null);
             }
             return new ApcObj(obj as IApcObjectWrap);
         }
@@ -295,7 +295,7 @@ namespace ApacsAdapter
         {
             if (Apacs == null || String.IsNullOrEmpty(astrObjType) || String.IsNullOrEmpty(filterStrName) || String.IsNullOrEmpty(filterValue))
             {
-                return null;
+                return new ApcObj[] { };
             }
             Array res = new object[] { };
             TApcEQUALObjFilter apFilter = new TApcEQUALObjFilter();
@@ -304,12 +304,13 @@ namespace ApacsAdapter
             int nResult = Apacs.getObjectsByFilter(astrObjType, apFilter, out res);
             if (nResult != 0 || res == null)
             {
-                return null;
+                return new ApcObj[] { };
             }
             ApcObj[] result = new ApcObj[res.Length];
             for (int i = 0; i < res.Length; i++)
             {
-                result[i] = new ApcObj(res.GetValue(i) as IApcObjectWrap);
+                object obj = res.GetValue(i);
+                result[i] = obj == null ? new ApcObj(null) : new ApcObj(obj as IApcObjectWrap);
             }
             return result;
         }
@@ -318,18 +319,19 @@ namespace ApacsAdapter
         {
             if (Apacs == null || String.IsNullOrEmpty(astrObjType))
             {
-                return null;
+                return new ApcObj[] { };
             }
             Array res = new object[] { };
             int nResult = Apacs.getObjectsByFilter(astrObjType, null, out res);
             if (nResult != 0 || res == null)
             {
-                return null;
+                return new ApcObj[] { };
             }
             ApcObj[] result = new ApcObj[res.Length];
             for (int i = 0; i < res.Length; i++)
             {
-                result[i] = new ApcObj(res.GetValue(i) as IApcObjectWrap);
+                object obj = res.GetValue(i);
+                result[i] = obj == null ? new ApcObj(null) : new ApcObj(obj as IApcObjectWrap);
             }
             return result;
         }
@@ -337,13 +339,13 @@ namespace ApacsAdapter
         {
             if (Apacs == null)
             {
-                return null;
+                return new ApcObj(null);
             }
             object obj = null;
             int nResult = Apacs.getRootObject(out obj);
             if (nResult != 0 || obj == null)
             {
-                return null;
+                return new ApcObj(null);
             }
             return new ApcObj(obj as IApcObjectWrap);
         }
@@ -352,13 +354,13 @@ namespace ApacsAdapter
         {
             if (Apacs == null || astrTypes == null || adtFrom == null || adtTo == null)
             {
-                return null;
+                return new ApcPropObj[] { };
             }
             Array eventsProps = new object[] { };
             int nResult = Apacs.getEvents(astrTypes, adtFrom, adtTo, out eventsProps);
             if (nResult != 0 || eventsProps == null)
             {
-                return null;
+                return new ApcPropObj[] { };
             }
             ApcPropObj[] result = new ApcPropObj[eventsProps.Length];
             for (int i = 0; i < eventsProps.Length; i++)

@@ -33,13 +33,12 @@
             // 
             // serviceProcessInstaller
             // 
-            this.serviceProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
+            this.serviceProcessInstaller.Account = System.ServiceProcess.ServiceAccount.User;
             this.serviceProcessInstaller.Password = null;
             this.serviceProcessInstaller.Username = null;
             // 
             // serviceInstaller
             // 
-            this.serviceInstaller.DelayedAutoStart = true;
             this.serviceInstaller.Description = "Apacs Adapter for WSO2";
             this.serviceInstaller.DisplayName = "Apacs Adapter Service";
             this.serviceInstaller.ServiceName = "ApacsAdapterService";
