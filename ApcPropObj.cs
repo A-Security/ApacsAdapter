@@ -61,6 +61,10 @@ namespace ApacsAdapter
             object res = getProperty(strName);
             return res == null ? new ApcObj(null) : new ApcObj(res as IApcObjectWrap);
         }
+        public ApcObj getSysAddrHolderProperty()
+        {
+            return getObjectProperty(ApcObjProp.SysAddrHolder);
+        }
         public string[] getPropertyNames()
         {
             if (objSettings == null)

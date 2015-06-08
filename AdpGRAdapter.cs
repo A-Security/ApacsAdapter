@@ -78,7 +78,7 @@ namespace ApacsAdapter
             {
                 clearCollection(holdersFullPath);
                 ApcData agd = new ApcData();
-                foreach (AdpCHObj ch in agd.getCardHolders(apacsInstance))
+                foreach (AdpCHObj ch in agd.getAdpCHObjs(apacsInstance))
                 {
                     putCardHolder(ch);
                 }

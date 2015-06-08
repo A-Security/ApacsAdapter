@@ -221,6 +221,10 @@ namespace ApacsAdapter
 
         public ApcServer(string astrLogin, string astrPassword)
         {
+            if(String.IsNullOrEmpty(astrLogin))
+            {
+                return;
+            }
             TApcConnection Connection = new TApcConnection();
             int nResult = int.MinValue;
             while (nResult != 0)

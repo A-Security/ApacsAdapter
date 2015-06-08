@@ -3,13 +3,14 @@ using System.Reflection;
 using System.IO;
 using System.Xml;
 using System.Diagnostics;
+using System.Configuration;
 
 namespace ApacsAdapter
 {
     public class AdpCfgXml
     {
-        private AdpLog log = new AdpLog();
-        private string path = AppDomain.CurrentDomain.BaseDirectory + "ApacsAdapter.cfg";
+        private AdpLog log;
+        private Configuration cfg;
         public string MBhost { get ; private set; }
         public string MBuser { get; private set; }
         public string MBpassword { get; private set; }
@@ -22,91 +23,71 @@ namespace ApacsAdapter
         public string apcLogin { get; private set; }
         public string apcPasswd { get; private set; }
         public string lastSentEventTime { get; private set; }
+        public string[] controllerSourceIDs { get; private set; }
 
-        private XmlDocument xdoc = new XmlDocument();
         public AdpCfgXml()
         {
-            
-            // WSO2 Message Broker default settings
-            //this.MBhost = "10.28.65.224"; // PROD SERVER
-            this.MBhost = "192.168.0.74"; // TEST SERVER
-            this.MBuser = "Apacs";
-            this.MBpassword = "Aa1234567";
-            this.MBoutQueue = "ApacsOUT";
-            this.MBinQueue = "ApacsIN";
-            this.MBport = "5672";
-            
-            // WSO2 Governancy Registry default settings
-            //this.GRhost = "10.28.65.228"; // PROD SERVER
-            this.GRhost = "192.168.0.151"; // TEST SERVER
-            this.GRuser = "Apacs";
-            this.GRpassword = "Aa1234567";
-
-            // Apacs user\pass settings
-            this.apcLogin = "Inst";
-            this.apcPasswd = "1945";
-
-            // Default last send event time - yesterday
-            this.lastSentEventTime = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss.fff");
-
-            // Create config if file not exists
-            if (!File.Exists(path))
+            log = new AdpLog();
+            cfg = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            // Create config if not exists
+            if (cfg.AppSettings.Settings.Count == 0)
             {
-                createConfig(path);
+                createConfig();
             }
-
-            readConfig(path);
+            readConfig();
         }
 
         // Read config file and set property value in config class uses reflection
-        private void readConfig(string path)
+        private void readConfig()
         {
-            try
-            {
-                xdoc.Load(path);
-                XmlElement configNode = xdoc.DocumentElement;
-                foreach (PropertyInfo pi in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                {
-                    XmlNode xn = configNode.GetElementsByTagName(pi.Name)[0];
-                    pi.SetValue(this, xn.InnerText);
-                }
-            }
-            catch (Exception e)
-            {
-                log.AddLog(e.ToString());
-            }
+            this.MBhost = ConfigurationManager.AppSettings["MBhost"];
+            this.MBuser = ConfigurationManager.AppSettings["MBuser"];
+            this.MBpassword = ConfigurationManager.AppSettings["MBpassword"];
+            this.MBoutQueue = ConfigurationManager.AppSettings["MBoutQueue"];
+            this.MBinQueue = ConfigurationManager.AppSettings["MBinQueue"];
+            this.MBport = ConfigurationManager.AppSettings["MBport"];
+
+            this.GRhost = ConfigurationManager.AppSettings["GRhost"];
+            this.GRuser = ConfigurationManager.AppSettings["GRuser"];
+            this.GRpassword = ConfigurationManager.AppSettings["GRpassword"];
+
+            this.apcLogin = ConfigurationManager.AppSettings["apcLogin"];
+            this.apcPasswd = ConfigurationManager.AppSettings["apcPasswd"];
+            this.lastSentEventTime = ConfigurationManager.AppSettings["lastSentEventTime"];
+            string tmpSrcIDs = ConfigurationManager.AppSettings["controllerSourceIDs"];
+            this.controllerSourceIDs = String.IsNullOrEmpty(tmpSrcIDs) ? new string[] { String.Empty } : tmpSrcIDs.Split(',');
         }
 
         // Create config file uses default property value 
-        private void createConfig(string path)
+        private void createConfig()
         {
-            try
-            {
-                XmlDeclaration xdec = xdoc.CreateXmlDeclaration("1.0", String.Empty, String.Empty);
-                xdoc.InsertBefore(xdec, xdoc.DocumentElement);
-                XmlElement xel = xdoc.CreateElement(this.GetType().Name);
-                XmlNode xn;
-                foreach (PropertyInfo pi in this.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                {
-                    xn = xdoc.CreateElement(pi.Name);
-                    xn.InnerText = pi.GetValue(this) as string;
-                    xel.AppendChild(xn);
-                }
-                xdoc.AppendChild(xel);
-                xdoc.Save(path);
-            }
-            catch (Exception e)
-            {
-                log.AddLog(e.ToString());
-            }
+            // WSO2 Message Broker default settings
+            //"10.28.65.224"; // PROD SERVER
+            cfg.AppSettings.Settings.Add("MBhost", "192.168.0.74");
+            cfg.AppSettings.Settings.Add("MBuser", "Apacs");
+            cfg.AppSettings.Settings.Add("MBpassword", "Aa1234567");
+            cfg.AppSettings.Settings.Add("MBoutQueue", "ApacsOUT");
+            cfg.AppSettings.Settings.Add("MBinQueue", "ApacsIN");
+            cfg.AppSettings.Settings.Add("MBport", "5672");
+            
+            // WSO2 Governancy Registry default settings
+            //"10.28.65.228"; // PROD SERVER
+            cfg.AppSettings.Settings.Add("GRhost", "192.168.0.151");
+            cfg.AppSettings.Settings.Add("GRuser", "Apacs");
+            cfg.AppSettings.Settings.Add("GRpassword", "Aa1234567");
+            
+            // Apacs user\pass settings
+            cfg.AppSettings.Settings.Add("apcLogin", "Inst");
+            cfg.AppSettings.Settings.Add("apcPasswd", "1945");
+            
+            // Default last send event time - yesterday
+            cfg.AppSettings.Settings.Add("lastSentEventTime", DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            cfg.Save();
         }
         public void setLastSentEventTime(string eventTime)
         {
-            xdoc.Load(path);
-            XmlElement configNode = xdoc.DocumentElement;
-            XmlNode latestEventSendTimeNode = configNode.GetElementsByTagName("lastSentEventTime")[0];
-            latestEventSendTimeNode.InnerText = this.lastSentEventTime = eventTime;
-            xdoc.Save(path);
+            cfg.AppSettings.Settings["lastSentEventTime"].Value = this.lastSentEventTime = eventTime;
+            cfg.Save(ConfigurationSaveMode.Modified);
         }
     }
 }

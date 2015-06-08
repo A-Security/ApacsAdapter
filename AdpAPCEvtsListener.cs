@@ -88,7 +88,7 @@ namespace ApacsAdapter
 
         private void onEvent(ApcPropObj evtSet)
         {
-            AdpAPCEvtObj aeObj = data.getEvtObj(evtSet);
+            AdpAPCEvtObj aeObj = data.mapAdpAPCEvtObj(evtSet);
             byte[] msgBody = Encoding.UTF8.GetBytes(aeObj.ToXmlString());
             AdpMBMsgObj msg = new AdpMBMsgObj(aeObj.EventID, msgBody, aeObj.EventType);
             if (!producer.PublishMessage(msg))
@@ -132,7 +132,7 @@ namespace ApacsAdapter
             {
                 return;
             }
-            grAdp.putCardHolder(data.getCardHolder(ch));
+            grAdp.putCardHolder(data.mapAdpCHObj(ch));
         }
     }
 }
