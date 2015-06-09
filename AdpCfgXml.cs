@@ -82,6 +82,9 @@ namespace ApacsAdapter
             
             // Default last send event time - yesterday
             cfg.AppSettings.Settings.Add("lastSentEventTime", DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss.fff"));
+
+            // Default set APACS Demo SourceID
+            cfg.AppSettings.Settings.Add("controllerSourceIDs", "000000E4");
             cfg.Save();
         }
         public void setLastSentEventTime(string eventTime)

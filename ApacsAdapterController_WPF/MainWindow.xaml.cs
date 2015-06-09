@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ApacsAdapter;
+using System;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ApacsAdapter;
-using System.IO;
 
 namespace ApacsAdapterController
 {
@@ -26,19 +16,16 @@ namespace ApacsAdapterController
         private ApcServer Apacs;
         private AdpCfgXml cfg;
         private ApcData apcData;
+        
         public MainWindow()
         {
+       
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
-            log = new AdpLog();
-            cfg = new AdpCfgXml();
-            InitializeComponent();
-            Apacs = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
-            apcData = new ApcData();
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            apcSubscribe();
+            this.log = new AdpLog();
+            this.cfg = new AdpCfgXml();
+            this.Apacs = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
+            this.apcData = new ApcData();
+            this.apcSubscribe();
         }
         private void apcSubscribe()
         {
@@ -88,9 +75,9 @@ namespace ApacsAdapterController
             mainPhoto.Source = biImg as ImageSource;
         }
 
-        private static void AdpLog_OnAddLog(object sender, EventArgs arg)
+        private void AdpLog_OnAddLog(object sender, EventArgs arg)
         {
-            MessageBox.Show(((AdpLog)sender).Log);
+            msgLabel.Content = (sender as AdpLog).Log;
         }
     }
 }
