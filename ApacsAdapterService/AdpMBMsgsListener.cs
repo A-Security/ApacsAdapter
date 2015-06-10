@@ -1,19 +1,20 @@
-﻿using System;
+﻿using ApacsAdapter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApacsAdapter
+namespace ApacsAdapterService
 {
     public class AdpMBMsgsListener
     {
         private AdpLog log;
-        private AdpCfgXml cfg;
+        private AdpSrvCfg cfg;
         private ApcServer Apacs;
         private AdpMBAdapter consumer;
         
-        public AdpMBMsgsListener(ApcServer Apacs, AdpCfgXml cfg) 
+        public AdpMBMsgsListener(ApcServer Apacs, AdpSrvCfg cfg) 
         {
             this.log = new AdpLog();
             this.Apacs = Apacs;

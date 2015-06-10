@@ -27,39 +27,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="RabbitMQ.Client, Version=3.5.1.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\RabbitMQ.Client.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="WSO2">
-      <HintPath>lib\WSO2.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdpCHObj.cs" />
-    <Compile Include="AdpMBMsgsListener.cs" />
-    <Compile Include="AdpCfgXml.cs" />
     <Compile Include="AdpAPCEvtObj.cs" />
-    <Compile Include="AdpAPCEvtsListener.cs" />
+    <Compile Include="AdpCHObj.cs" />
     <Compile Include="AdpLog.cs" />
-    <Compile Include="AdpMBAdapter.cs" />
+    <Compile Include="ApcData.cs" />
+    <Compile Include="ApcData.Types.cs" />
     <Compile Include="ApcObj.cs" />
     <Compile Include="ApcObjProp.cs" />
     <Compile Include="ApcPropObj.cs" />
     <Compile Include="ApcServer.cs" />
-    <Compile Include="ApcData.cs" />
     <Compile Include="ApcObjType.cs" />
-    <Compile Include="ApcData.Types.cs" />
-    <Compile Include="AdpMBMsgObj.cs" />
-    <Compile Include="AdpGRAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

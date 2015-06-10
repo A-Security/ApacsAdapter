@@ -123,10 +123,10 @@
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="msgLabel.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI Semibold, 57.75pt, style=Bold</value>
+    <value>Segoe UI Semibold, 50pt</value>
   </data>
   <data name="msgLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 343</value>
+    <value>0, 454</value>
   </data>
   <data name="msgLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>5, 0, 5, 5</value>
@@ -135,17 +135,17 @@
     <value>5, 0, 5, 5</value>
   </data>
   <data name="msgLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1335, 115</value>
+    <value>921, 160</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="msgLabel.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
   <data name="msgLabel.Text" xml:space="preserve">
-    <value>Горинова Валентина Юльевна</value>
+    <value>Фамилия Имя Отчество</value>
   </data>
   <data name="msgLabel.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopCenter</value>
+    <value>MiddleCenter</value>
   </data>
   <data name="&gt;&gt;msgLabel.Name" xml:space="preserve">
     <value>msgLabel</value>
@@ -160,7 +160,7 @@
     <value>0</value>
   </data>
   <data name="timeLabel.Font" type="System.Drawing.Font, System.Drawing">
-    <value>Segoe UI Semibold, 62.25pt</value>
+    <value>Segoe UI Semibold, 62pt</value>
   </data>
   <data name="timeLabel.Location" type="System.Drawing.Point, System.Drawing">
     <value>44, 10</value>
@@ -172,7 +172,7 @@
     <value>1</value>
   </data>
   <data name="timeLabel.Text" xml:space="preserve">
-    <value>19:03</value>
+    <value>03:33</value>
   </data>
   <data name="timeLabel.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
     <value>MiddleCenter</value>
@@ -205,7 +205,7 @@
     <value>5, 5, 5, 5</value>
   </data>
   <data name="mainPhoto.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1335, 458</value>
+    <value>921, 614</value>
   </data>
   <data name="mainPhoto.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
     <value>StretchImage</value>
@@ -235,7 +235,7 @@
     <value>Stretch</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>1335, 458</value>
+    <value>921, 614</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterScreen</value>

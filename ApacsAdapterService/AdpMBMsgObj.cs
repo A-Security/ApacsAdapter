@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ApacsAdapter
+namespace ApacsAdapterService
 {
     public class AdpMBMsgObj
     {

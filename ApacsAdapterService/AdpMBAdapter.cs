@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using ApacsAdapter;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Impl;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace ApacsAdapter
+namespace ApacsAdapterService
 {
     public class AdpMBAdapter : IDisposable
     {

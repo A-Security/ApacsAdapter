@@ -66,6 +66,7 @@ namespace ApacsAdapterController
             this.Controls.Add(this.msgLabel);
             this.Controls.Add(this.timeLabel);
             this.Controls.Add(this.mainPhoto);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -73,6 +74,7 @@ namespace ApacsAdapterController
             this.ShowIcon = false;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.mainPhoto)).EndInit();
             this.ResumeLayout(false);
 

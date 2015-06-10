@@ -5,11 +5,10 @@ using System.Xml;
 using System.Diagnostics;
 using System.Configuration;
 
-namespace ApacsAdapter
+namespace ApacsAdapterService
 {
-    public class AdpCfgXml
+    public class AdpSrvCfg
     {
-        private AdpLog log;
         private Configuration cfg;
         public string MBhost { get ; private set; }
         public string MBuser { get; private set; }
@@ -23,11 +22,9 @@ namespace ApacsAdapter
         public string apcLogin { get; private set; }
         public string apcPasswd { get; private set; }
         public string lastSentEventTime { get; private set; }
-        public string[] controllerSourceIDs { get; private set; }
 
-        public AdpCfgXml()
+        public AdpSrvCfg()
         {
-            log = new AdpLog();
             cfg = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             // Create config if not exists
             if (cfg.AppSettings.Settings.Count == 0)
@@ -54,8 +51,6 @@ namespace ApacsAdapter
             this.apcLogin = ConfigurationManager.AppSettings["apcLogin"];
             this.apcPasswd = ConfigurationManager.AppSettings["apcPasswd"];
             this.lastSentEventTime = ConfigurationManager.AppSettings["lastSentEventTime"];
-            string tmpSrcIDs = ConfigurationManager.AppSettings["controllerSourceIDs"];
-            this.controllerSourceIDs = String.IsNullOrEmpty(tmpSrcIDs) ? new string[] { String.Empty } : tmpSrcIDs.Split(',');
         }
 
         // Create config file uses default property value 
@@ -83,8 +78,6 @@ namespace ApacsAdapter
             // Default last send event time - yesterday
             cfg.AppSettings.Settings.Add("lastSentEventTime", DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
-            // Default set APACS Demo SourceID
-            cfg.AppSettings.Settings.Add("controllerSourceIDs", "000000E4");
             cfg.Save();
         }
         public void setLastSentEventTime(string eventTime)

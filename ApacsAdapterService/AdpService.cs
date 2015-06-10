@@ -50,7 +50,7 @@ namespace ApacsAdapterService
         internal void StartService()
         {
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
-            AdpCfgXml cfg = new AdpCfgXml();
+            AdpSrvCfg cfg = new AdpSrvCfg();
             apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             eventLister = new AdpAPCEvtsListener(apacsInstance, cfg);
             eventLister.start();

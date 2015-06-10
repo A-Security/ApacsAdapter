@@ -12,11 +12,11 @@ using System.Web.Services;
 // [System.Web.Script.Services.ScriptService]
 public class ApacsAdapterWS : System.Web.Services.WebService
 {
-    private AdpCfgXml cfg;
+    private AdpWSCfg cfg;
     private ApcServer apacsInstance;
     public ApacsAdapterWS()
     {
-        this.cfg = new AdpCfgXml();
+        this.cfg = new AdpWSCfg();
         this.apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
         //Uncomment the following line if using designed components 
         //InitializeComponent(); 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,22 +19,28 @@ namespace ApacsAdapterController
         private bool resizeFlag = false;
         private AdpLog log;
         private ApcServer Apacs;
-        private AdpCfgXml cfg;
+        private AdpCtrlCfg cfg;
         private ApcData apcData;
-        private delegate void ToLabelDelegate(Label lbl, string str);
         public MainForm()
         {
+            this.cfg = new AdpCtrlCfg();
             InitializeComponent();
+            this.mainPhoto.SizeMode = cfg.ctrlMainPhotoSizeMode;
+            this.msgLabel.Height = cfg.ctrlMsgLabelHeight;
+            this.msgLabel.Font = new Font(this.msgLabel.Font.Name, cfg.ctrlMsgLabelFontSize);
+            this.timeLabel.Height = cfg.ctrlTimeLabelHeight;
+            this.timeLabel.Font = new Font(this.timeLabel.Font.Name, cfg.ctrlTimeLabelFontSize);
         }
+        
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             this.log = new AdpLog();
-            this.cfg = new AdpCfgXml();
             this.Apacs = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             this.apcData = new ApcData();
             apcSubscribe();
+
         }
         private void apcSubscribe()
         {
@@ -70,17 +77,6 @@ namespace ApacsAdapterController
             Apacs = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             apcSubscribe();
         }
-        private void toLabel(Label lbl, string text)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new ToLabelDelegate(toLabel), text);
-            }
-            else
-            {
-                lbl.Text = text;
-            }
-        }
         private void onEvent(ApcPropObj aEvtSettings)
         {
             Invoke(new ApcServer.ApacsEventHandler(onEventSync), new object[] { aEvtSettings });
@@ -94,15 +90,15 @@ namespace ApacsAdapterController
             {
                 return;
             }
+            AdpAPCEvtObj evnt = apcData.mapAdpAPCEvtObj(evtSets);
+            if (String.IsNullOrEmpty(cfg.ctrlSourceIDs.Single(x => x == evnt.SourceID)))
+            {
+                return;
+            }
             if (resizeFlag)
             {
                 msgLabel.Height /= 2;
                 resizeFlag = false;
-            }
-            AdpAPCEvtObj evnt = apcData.mapAdpAPCEvtObj(evtSets);
-            if (String.IsNullOrEmpty(cfg.controllerSourceIDs.Single(x => x == evnt.SourceID)))
-            {
-                return;
             }
             BackColor = mainPhoto.BackColor = Color.Black;
             timeLabel.BackColor = msgLabel.BackColor = Color.White;
@@ -110,7 +106,7 @@ namespace ApacsAdapterController
             timeLabel.Text = DateTime.Parse(evnt.Time).ToString("HH:mm");
             msgLabel.Text = String.IsNullOrEmpty(evnt.HolderID) ? "НЕИЗВЕСТНЫЙ" : evnt.HolderName;
             ApcObj holder = evtSets.getSysAddrHolderProperty();
-            mainPhoto.Image = Image.FromStream(new MemoryStream(holder.getMainPhoto()));
+            mainPhoto.Image = String.IsNullOrEmpty(evnt.HolderID) ? null : Image.FromStream(new MemoryStream(holder.getMainPhoto()));
             regExp = new Regex("ErrHolder|Denied");
             if (resizeFlag = regExp.IsMatch(eventType))
             {
@@ -128,6 +124,16 @@ namespace ApacsAdapterController
         private void AdpLog_OnAddLog(object sender, EventArgs arg)
         {
             msgLabel.Text = (sender as AdpLog).Log;
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                apcUnsubscribe();
+                Apacs.Dispose();
+                this.Close();
+            }
         }
         
     }

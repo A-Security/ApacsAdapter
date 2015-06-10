@@ -1,14 +1,15 @@
-﻿using System;
+﻿using ApacsAdapter;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace ApacsAdapter
+namespace ApacsAdapterService
 {
     public class AdpAPCEvtsListener
     {
         private AdpLog log;
-        private AdpCfgXml cfg;
+        private AdpSrvCfg cfg;
         private ApcData data;
         private ApcServer Apacs;
         private AdpMBAdapter producer;
@@ -16,7 +17,7 @@ namespace ApacsAdapter
         private DateTime lastSentEventTime;
         private delegate void SendLatestEventsDelegate(DateTime fromDT, DateTime toDT);
         
-        public AdpAPCEvtsListener(ApcServer Apacs, AdpCfgXml cfg) 
+        public AdpAPCEvtsListener(ApcServer Apacs, AdpSrvCfg cfg) 
         {
             this.log = new AdpLog();
             this.Apacs = Apacs;

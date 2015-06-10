@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using WSO2;
 using WSO2.Registry;
 using System.Text;
+using ApacsAdapter;
 
-namespace ApacsAdapter
+namespace ApacsAdapterService
 {
     public class AdpGRAdapter
     {
