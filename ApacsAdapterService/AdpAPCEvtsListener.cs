@@ -15,7 +15,6 @@ namespace ApacsAdapterService
         private AdpMBAdapter producer;
         private AdpGRAdapter grAdp;
         private DateTime lastSentEventTime;
-        private delegate void SendLatestEventsDelegate(DateTime fromDT, DateTime toDT);
         
         public AdpAPCEvtsListener(ApcServer Apacs, AdpSrvCfg cfg) 
         {
@@ -37,17 +36,12 @@ namespace ApacsAdapterService
             }
             log.AddLog("Send complete");
         }
-        private void sendLatestEvents()
-        {
-            SendLatestEventsDelegate sender = new SendLatestEventsDelegate(sendLatestEvents);
-            sender.BeginInvoke(lastSentEventTime, DateTime.Now, null, null);
-        }
         public void start()
         {
             try
             {
                 producer.connect();
-                sendLatestEvents();
+                sendLatestEvents(lastSentEventTime, DateTime.Now);
                 Apacs.ApacsDisconnect += new ApcServer.ApacsDisconnectHandler(onDisconnect);
                 Apacs.ApacsNotifyAdd += new ApcServer.ApacsNotifyAddHandler(onAddObject);
                 Apacs.ApacsNotifyDelete += new ApcServer.ApacsNotifyDeleteHandler(onDelObject);
@@ -89,16 +83,16 @@ namespace ApacsAdapterService
 
         private void onEvent(ApcPropObj evtSet)
         {
-            AdpAPCEvtObj aeObj = data.mapAdpAPCEvtObj(evtSet);
+            AdpApcEvtObj aeObj = data.mapAdpApcEvtObj(evtSet);
             byte[] msgBody = Encoding.UTF8.GetBytes(aeObj.ToXmlString());
-            AdpMBMsgObj msg = new AdpMBMsgObj(aeObj.EventID, msgBody, aeObj.EventType);
+            AdpMBMsgObj msg = new AdpMBMsgObj(Guid.NewGuid().ToString(), msgBody, aeObj.TYPE);
             if (!producer.PublishMessage(msg))
             {
                 log.AddLog("Error send event to MB " + Encoding.UTF8.GetString(msg.body));
             }
             else
             {
-                cfg.setLastSentEventTime(aeObj.Time);
+                cfg.setLastSentEventTime(aeObj.EventTime);
             }
             
         }
@@ -108,7 +102,7 @@ namespace ApacsAdapterService
             {
                 return;
             }
-            grObjWorker(newObject, false);
+            chModHundler(newObject, 1);
         }
         private void onDelObject(ApcObj delObject)
         {
@@ -116,7 +110,7 @@ namespace ApacsAdapterService
             {
                 return;
             }
-            grObjWorker(delObject, true);
+            chModHundler(delObject, -1);
         }
         private void onChangeObject(ApcObj changeObject, ApcPropObj evtSet)
         {
@@ -124,16 +118,18 @@ namespace ApacsAdapterService
             {
                 return;
             }
-            grObjWorker(changeObject, false);
+            chModHundler(changeObject, 0);
         }
-        private void grObjWorker(ApcObj ch, bool IsDelete)
+        private void chModHundler(ApcObj ch, int _ModType)
         {
-            grAdp.removeCardHolder(ch.getSampleUID());
-            if (IsDelete)
+            AdpCHObj aeCHObj = data.mapAdpCHObj(ch);
+            aeCHObj.ModType = _ModType;
+            byte[] msgBody = Encoding.UTF8.GetBytes(aeCHObj.ToXmlString());
+            AdpMBMsgObj msg = new AdpMBMsgObj(Guid.NewGuid().ToString(), msgBody, aeCHObj.TYPE);
+            if (!producer.PublishMessage(msg))
             {
-                return;
+                log.AddLog("Error send event to MB " + Encoding.UTF8.GetString(msg.body));
             }
-            grAdp.putCardHolder(data.mapAdpCHObj(ch));
         }
     }
 }

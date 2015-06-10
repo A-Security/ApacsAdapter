@@ -90,7 +90,7 @@ namespace ApacsAdapterController
             {
                 return;
             }
-            AdpAPCEvtObj evnt = apcData.mapAdpAPCEvtObj(evtSets);
+            AdpApcEvtObj evnt = apcData.mapAdpApcEvtObj(evtSets);
             if (String.IsNullOrEmpty(cfg.ctrlSourceIDs.Single(x => x == evnt.SourceID)))
             {
                 return;
@@ -103,10 +103,10 @@ namespace ApacsAdapterController
             BackColor = mainPhoto.BackColor = Color.Black;
             timeLabel.BackColor = msgLabel.BackColor = Color.White;
             timeLabel.ForeColor = msgLabel.ForeColor = Color.Black;
-            timeLabel.Text = DateTime.Parse(evnt.Time).ToString("HH:mm");
-            msgLabel.Text = String.IsNullOrEmpty(evnt.HolderID) ? "НЕИЗВЕСТНЫЙ" : evnt.HolderName;
+            timeLabel.Text = DateTime.Parse(evnt.EventTime).ToString("HH:mm");
+            msgLabel.Text = String.IsNullOrEmpty(evnt.Parameters.HolderID) ? "НЕИЗВЕСТНЫЙ" : evnt.Parameters.HolderName;
             ApcObj holder = evtSets.getSysAddrHolderProperty();
-            mainPhoto.Image = String.IsNullOrEmpty(evnt.HolderID) ? null : Image.FromStream(new MemoryStream(holder.getMainPhoto()));
+            mainPhoto.Image = String.IsNullOrEmpty(evnt.Parameters.HolderID) ? null : Image.FromStream(new MemoryStream(holder.getMainPhoto()));
             regExp = new Regex("ErrHolder|Denied");
             if (resizeFlag = regExp.IsMatch(eventType))
             {

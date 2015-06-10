@@ -8,42 +8,31 @@ using System.Runtime.Serialization.Json;
 namespace ApacsAdapter
 {
     [DataContract]
-    public class AdpAPCEvtObj
+    public class AdpApcEvtObj
     {
         private AdpLog log = new AdpLog();
         private const string NAMESPACE = @"http://schemas.datacontract.org/2004/07/ApacsAdapter";
-        [DataMember]
-        public string Time { get; set; }
-        [DataMember]
+        public string TYPE { get { return @"AccessControlEventRq"; } }
+        [DataMember(EmitDefaultValue = false)]
         public string SourceID { get; set; }
-        [DataMember]
+        [DataMember(EmitDefaultValue = false)]
         public string SourceName { get; set; }
-        [DataMember]
+        [DataMember(EmitDefaultValue = false)]
         public string EventID { get; set; }
-        [DataMember]
+        [DataMember(EmitDefaultValue = false)]
         public string EventType { get; set; }
-        [DataMember]
+        [DataMember(EmitDefaultValue = false)]
         public string EventTypeDesc { get; set; }
-        [DataMember]
-        public string HolderID { get; set; }
-        [DataMember]
-        public string HolderName { get; set; }
-        [DataMember]
-        public string HolderShortName { get; set; }
-        [DataMember]
-        public string CardNo { get; set; }
-        [DataMember]
-        public string HolderCompany { get; set; }
-        [DataMember]
-        public string HolderJobTitle { get; set; }
-        [DataMember]
-        public string HolderCategory { get; set; }
+        [DataMember(EmitDefaultValue = false)]
+        public string EventTime { get; set; }
+        [DataMember(EmitDefaultValue = false)]
+        public AdpCHObj Parameters { get; set; }
         public string ToJsonString()
         {
             try
             {
                 MemoryStream ms = new MemoryStream();
-                DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(this.GetType(), EventType);
+                DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(this.GetType());
                 jsonSerializer.WriteObject(ms, this);
                 ms.Position = 0;
                 return new StreamReader(ms).ReadToEnd();
@@ -59,7 +48,7 @@ namespace ApacsAdapter
             try
             {
                 MemoryStream ms = new MemoryStream();
-                DataContractSerializer xmlSerializer = new DataContractSerializer(this.GetType(), EventType, NAMESPACE);
+                DataContractSerializer xmlSerializer = new DataContractSerializer(this.GetType(), TYPE, NAMESPACE);
                 xmlSerializer.WriteObject(ms, this);
                 ms.Position = 0;
                 return new StreamReader(ms).ReadToEnd();

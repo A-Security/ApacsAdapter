@@ -35,7 +35,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdpAPCEvtObj.cs" />
+    <Compile Include="AdpApcEvtObj.cs" />
     <Compile Include="AdpCHObj.cs" />
     <Compile Include="AdpLog.cs" />
     <Compile Include="ApcData.cs" />

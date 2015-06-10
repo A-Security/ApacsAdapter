@@ -30,31 +30,23 @@ namespace ApacsAdapter
             sb.AppendLine("================END Property=" + apoName + "============");
             return sb.ToString();
         }
-        public AdpAPCEvtObj mapAdpAPCEvtObj(ApcPropObj evtSets)
+        public AdpApcEvtObj mapAdpApcEvtObj(ApcPropObj evtSets)
         {
             string eventType = evtSets.getEventTypeProperty();
             ApcObj holder = evtSets.getSysAddrHolderProperty();
-            AdpCHObj chObj = mapAdpCHObj(holder, true);
-            AdpAPCEvtObj aobj = new AdpAPCEvtObj
+            AdpApcEvtObj aobj = new AdpApcEvtObj
             {
-                Time = evtSets.getRealDateTime().ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                EventTime = evtSets.getRealDateTime().ToString("yyyy-MM-dd HH:mm:ss.fff"),
                 EventID = evtSets.getSampleEventUID(),
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
                 SourceID = evtSets.getSampleSourceUID(),
                 SourceName = evtSets.getSourceNameProperty(),
-                HolderID = chObj.ID,
-                HolderName = chObj.Name,
-                HolderShortName = chObj.ShortName,
-                HolderCompany = chObj.Company,
-                HolderJobTitle = chObj.JobTitle,
-                HolderCategory = chObj.Category,
-                CardNo = evtSets.getDwCardNumber()
-
+                Parameters = mapAdpCHObj(holder, false)
             };
             return aobj;
         }
-        public AdpCHObj mapAdpCHObj(ApcObj cardHolderAO, bool withOutPhoto = false)
+        public AdpCHObj mapAdpCHObj(ApcObj cardHolderAO, bool withPhoto = true)
         {
             if (!ApcObjType.TApcCardHolder.Equals(cardHolderAO.getApacsType()))
             {
@@ -63,13 +55,13 @@ namespace ApacsAdapter
             ApcPropObj holderSets = cardHolderAO.getCurrentSettings();
             AdpCHObj chObj = new AdpCHObj
             {
-                Photo = withOutPhoto ? new byte[]{ } : cardHolderAO.getMainPhoto(),
-                ID = cardHolderAO.getSampleUID(),
-                Name = holderSets.getFullNameProperty(),
-                ShortName = holderSets.getNameProperty(),
-                Company = holderSets.getCompanyNameProperty(),
-                JobTitle = holderSets.getJobTitleNameProperty(),
-                Category = holderSets.getbEmployeeProperty(),
+                HolderPhoto = withPhoto ? cardHolderAO.getMainPhoto() : new byte[] { },
+                HolderID = cardHolderAO.getSampleUID(),
+                HolderName = holderSets.getFullNameProperty(),
+                HolderShortName = holderSets.getNameProperty(),
+                HolderCompany = holderSets.getCompanyNameProperty(),
+                HolderJobTitle = holderSets.getJobTitleNameProperty(),
+                HolderCategory = holderSets.getbEmployeeProperty(),
                 CardNo = cardHolderAO.getCardNumber()
             };
             return chObj;

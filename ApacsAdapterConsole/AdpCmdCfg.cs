@@ -5,9 +5,9 @@ using System.Xml;
 using System.Diagnostics;
 using System.Configuration;
 
-namespace ApacsAdapterService
+namespace ApacsAdapterConsole
 {
-    public class AdpSrvCfg
+    public class AdpCmdCfg
     {
         private Configuration cfg;
         public string MBhost { get ; private set; }
@@ -23,7 +23,7 @@ namespace ApacsAdapterService
         public string apcPasswd { get; private set; }
         public string lastSentEventTime { get; private set; }
 
-        public AdpSrvCfg()
+        public AdpCmdCfg()
         {
             cfg = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             // Create config if not exists
@@ -76,7 +76,7 @@ namespace ApacsAdapterService
             cfg.AppSettings.Settings.Add("apcPasswd", "1945");
             
             // Default last send event time - yesterday
-            cfg.AppSettings.Settings.Add("lastSentEventTime", DateTime.Now.AddMinutes(-1).ToString("yyyy-MM-dd HH:mm:ss.fff"));
+            cfg.AppSettings.Settings.Add("lastSentEventTime", DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd HH:mm:ss.fff"));
 
             cfg.Save();
         }

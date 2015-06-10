@@ -91,20 +91,20 @@ public class AdpGRAdapter
     }
     public void putCardHolder(AdpCHObj ch)
     {
-        string holderVipValue = IsVIP(ch.ID).ToString().ToLower();
-        string holderResName = ch.ID + ".xml";
-        string holderPhotoResName = ch.ID + ".jpg";
+        string holderVipValue = IsVIP(ch.HolderID).ToString().ToLower();
+        string holderResName = ch.HolderID + ".xml";
+        string holderPhotoResName = ch.HolderID + ".jpg";
         string holderPhotoPath = @"/" + HOLDERS_PHOTO_PATH + holderPhotoResName;
         Resource holderPhotoRes = registry.NewResource();
         holderPhotoRes.mediaType = "image/jpeg";
-        holderPhotoRes.contentFile = ch.Photo;
+        holderPhotoRes.contentFile = ch.HolderPhoto;
         holderPhotoRes.name = holderPhotoResName;
         string holderPhotoResPath = holdersPhotoFullPath + holderPhotoResName;
         holderPhotoRes.properties = new WSProperty[]
                     {
-                        new WSProperty(){ key = "holder_id", values = new string[] { ch.ID } },
-                        new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
-                        new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
+                        new WSProperty(){ key = "holder_id", values = new string[] { ch.HolderID } },
+                        new WSProperty(){ key = "holder_shortName", values = new string[] { ch.HolderShortName } },
+                        new WSProperty(){ key = "holder_name", values = new string[] { ch.HolderName } },
                         new WSProperty(){ key = "holder_cardNo", values = new string[] { ch.CardNo } },
                         new WSProperty(){ key = "holder_path", values = new string[] { @"/" + HOLDERS_PATH + holderResName } },
                         new WSProperty(){ key = "holder_vip", values = new string[] { holderVipValue } }
@@ -118,9 +118,9 @@ public class AdpGRAdapter
         XElement holderResContentXDoc =
             new XElement(xn + "metadata",
                 new XElement(xn + "holder",
-                    new XElement(xn + "id", ch.ID),
-                    new XElement(xn + "shortName", ch.ShortName),
-                    new XElement(xn + "name", ch.Name),
+                    new XElement(xn + "id", ch.HolderID),
+                    new XElement(xn + "shortName", ch.HolderShortName),
+                    new XElement(xn + "name", ch.HolderName),
                     new XElement(xn + "cardNo", ch.CardNo),
                     new XElement(xn + "photo", holderPhotoPath),
                     new XElement(xn + "photoLink", holderPhotoLinkValue),
@@ -130,9 +130,9 @@ public class AdpGRAdapter
         holderRes.contentFile = Encoding.UTF8.GetBytes(holderResContentXDoc.ToString());
         holderRes.properties = new WSProperty[]
                     {
-                        new WSProperty(){ key = "holder_id", values = new string[] { ch.ID } },
-                        new WSProperty(){ key = "holder_shortName", values = new string[] { ch.ShortName } },
-                        new WSProperty(){ key = "holder_name", values = new string[] { ch.Name } },
+                        new WSProperty(){ key = "holder_id", values = new string[] { ch.HolderID } },
+                        new WSProperty(){ key = "holder_shortName", values = new string[] { ch.HolderShortName } },
+                        new WSProperty(){ key = "holder_name", values = new string[] { ch.HolderName } },
                         new WSProperty(){ key = "holder_cardNo", values = new string[] { ch.CardNo } },
                         new WSProperty(){ key = "holder_photo", values = new string[] { holderPhotoPath } },
                         new WSProperty(){ key = "holder_photoLink", values = new string[] { holderPhotoLinkValue } },
