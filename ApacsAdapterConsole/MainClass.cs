@@ -12,27 +12,20 @@ namespace ApacsAdapterConsole
         {
             AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
             AdpCmdCfg cfg = new AdpCmdCfg();
-            
-            AdpApcEvtObj evt = new AdpApcEvtObj()
+
+
+            AdpCHObj CardHolderMod = new AdpCHObj
             {
-                EventID = "EventID",
-                EventType = "EventType",
-                EventTypeDesc = "EventTypeDesc",
-                EventTime = "EventTime",
-                SourceID = "SourceID",
-                SourceName = "SourceName",
-                Parameters = new AdpCHObj
-                {
-                    CardNo = "CardNo",
-                    HolderCategory = "HolderCategory",
-                    HolderCompany = "HolderCompany",
-                    HolderID = "HolderID",
-                    HolderJobTitle = "HolderJobTitle",
-                    HolderName = "HolderName",
-                    HolderShortName = "HolderShortName"
-                }
+                CardNo = "CardNo",
+                HolderCategory = "HolderCategory",
+                HolderCompany = "HolderCompany",
+                HolderID = "HolderID",
+                HolderJobTitle = "HolderJobTitle",
+                HolderName = "HolderName",
+                HolderShortName = "HolderShortName",
             };
-            Console.WriteLine(evt.ToXmlString());
+            CardHolderMod.modType = AdpCHObj.ModType.DelRq;
+            Console.WriteLine(CardHolderMod.ToXmlString());
             //ApcServer apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             //ApcData data = new ApcData();
             //Console.WriteLine(data.getPropHierarchy(apacsInstance.getObjectBySampleUID("00000189").getCurrentSettings()));

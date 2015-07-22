@@ -7,39 +7,32 @@ namespace ApacsAdapter
     [DataContract]
     public class AdpCHObj
     {
+        public enum ModType { AddRq, ModRq, DelRq }
         private AdpLog log = new AdpLog();
         private const string NAMESPACE = @"http://schemas.datacontract.org/2004/07/ApacsAdapter";
-        private int _ModType = 0;
-        public int ModType
-        {
-            set
-            {
-                if (value >= -1 & value <= 1)
-                {
-                    _ModType = value;
-                }
-            }
-        }
+        private ModType _modType = ModType.ModRq;
+        public ModType modType { set { _modType = value; } }
+        
         public string TYPE 
         { 
             get 
             {
                 string mod = @"CardHolder";
-                switch (_ModType)
+                switch (_modType)
                 {
-                    case -1:
+                    case ModType.AddRq:
                         {
-                            mod += "DelRq";
+                            mod += "AddRq";
                             break;
                         }
-                    case 0:
+                    case ModType.ModRq:
                         {
                             mod += "ModRq";
                             break;
                         }
-                    case 1:
+                    case ModType.DelRq:
                         {
-                            mod += "AddRq";
+                            mod += "DelRq";
                             break;
                         }
                 }

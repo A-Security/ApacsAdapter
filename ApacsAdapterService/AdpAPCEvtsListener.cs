@@ -102,7 +102,7 @@ namespace ApacsAdapterService
             {
                 return;
             }
-            chModHundler(newObject, 1);
+            chModHundler(newObject, AdpCHObj.ModType.AddRq);
         }
         private void onDelObject(ApcObj delObject)
         {
@@ -110,7 +110,7 @@ namespace ApacsAdapterService
             {
                 return;
             }
-            chModHundler(delObject, -1);
+            chModHundler(delObject, AdpCHObj.ModType.DelRq);
         }
         private void onChangeObject(ApcObj changeObject, ApcPropObj evtSet)
         {
@@ -118,18 +118,24 @@ namespace ApacsAdapterService
             {
                 return;
             }
-            chModHundler(changeObject, 0);
+            chModHundler(changeObject, AdpCHObj.ModType.ModRq);
         }
-        private void chModHundler(ApcObj ch, int _ModType)
+        private void chModHundler(ApcObj ch, AdpCHObj.ModType _modType)
         {
             AdpCHObj aeCHObj = data.mapAdpCHObj(ch);
-            aeCHObj.ModType = _ModType;
+            aeCHObj.modType = _modType;
             byte[] msgBody = Encoding.UTF8.GetBytes(aeCHObj.ToXmlString());
             AdpMBMsgObj msg = new AdpMBMsgObj(Guid.NewGuid().ToString(), msgBody, aeCHObj.TYPE);
             if (!producer.PublishMessage(msg))
             {
                 log.AddLog("Error send event to MB " + Encoding.UTF8.GetString(msg.body));
             }
+            //grAdp.removeCardHolder(ch.getSampleUID());
+            //if (_ModType <0)
+            //{
+            //    return;
+            //}
+            //grAdp.putCardHolder(data.mapAdpCHObj(ch));
         }
     }
 }
