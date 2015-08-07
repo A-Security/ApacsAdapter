@@ -28,7 +28,14 @@ namespace ApacsAdapterService
             holdersPhotoFullPath = ARTIFACT_PATH + HOLDERS_PHOTO_PATH;
             serviceUrl = String.Format(@"https://{0}:9443/services/", GRhost);
             permaLinkBaseUrl = String.Format(@"http://{0}:9763/registry/resource", GRhost);
-            registry = new RegistryClient(GRuser, GRpassword, serviceUrl);
+            try
+            {
+                registry = new RegistryClient(GRuser, GRpassword, serviceUrl);
+            }
+            catch (Exception e)
+            {
+                log.AddLog(e.ToString());
+            }
         }
         public List<string> getListStringCHs()
         {

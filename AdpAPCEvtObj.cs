@@ -17,6 +17,7 @@ namespace ApacsAdapter
         public string SourceID { get; set; }
         [DataMember(EmitDefaultValue = false)]
         public string SourceName { get; set; }
+        public string SourceAlias { get; set; }
         [DataMember(EmitDefaultValue = false)]
         public string EventID { get; set; }
         [DataMember(EmitDefaultValue = false)]

@@ -91,7 +91,7 @@ namespace ApacsAdapterController
                 return;
             }
             AdpApcEvtObj evnt = apcData.mapAdpApcEvtObj(evtSets);
-            if (String.IsNullOrEmpty(cfg.ctrlSourceIDs.Single(x => x == evnt.SourceID)))
+            if (String.IsNullOrEmpty(evnt.SourceAlias) || String.IsNullOrEmpty(cfg.ctrlSourceAliases.Single(x => x == evnt.SourceAlias)))
             {
                 return;
             }

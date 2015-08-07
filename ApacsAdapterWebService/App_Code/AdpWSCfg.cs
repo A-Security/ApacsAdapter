@@ -5,6 +5,7 @@ using System.Xml;
 using System.Diagnostics;
 using System.Configuration;
 using ApacsAdapter;
+using System.Web.Configuration;
 
 public class AdpWSCfg
 {
@@ -18,7 +19,7 @@ public class AdpWSCfg
 
     public AdpWSCfg()
     {
-        cfg = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+        cfg = WebConfigurationManager.OpenWebConfiguration(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
         // Create config if not exists
         if (cfg.AppSettings.Settings.Count == 0)
         {
@@ -30,11 +31,11 @@ public class AdpWSCfg
     // Read config file and set property value in config class uses reflection
     private void readConfig()
     {
-        this.GRhost = ConfigurationManager.AppSettings["GRhost"];
-        this.GRuser = ConfigurationManager.AppSettings["GRuser"];
-        this.GRpassword = ConfigurationManager.AppSettings["GRpassword"];
-        this.apcLogin = ConfigurationManager.AppSettings["apcLogin"];
-        this.apcPasswd = ConfigurationManager.AppSettings["apcPasswd"];
+        this.GRhost = WebConfigurationManager.AppSettings["GRhost"];
+        this.GRuser = WebConfigurationManager.AppSettings["GRuser"];
+        this.GRpassword = WebConfigurationManager.AppSettings["GRpassword"];
+        this.apcLogin = WebConfigurationManager.AppSettings["apcLogin"];
+        this.apcPasswd = WebConfigurationManager.AppSettings["apcPasswd"];
     }
 
     // Create config file uses default property value 
@@ -49,6 +50,7 @@ public class AdpWSCfg
         // Apacs user\pass settings
         cfg.AppSettings.Settings.Add("apcLogin", "Inst");
         cfg.AppSettings.Settings.Add("apcPasswd", "1945");
+        cfg.Save();
     }
 }
 

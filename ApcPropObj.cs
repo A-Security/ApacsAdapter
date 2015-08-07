@@ -123,6 +123,16 @@ namespace ApacsAdapter
             ApcObj sourceObj = getObjectProperty(ApcObjProp.SysAddrInitObj);
             return sourceObj.getSampleUID();
         }
+        public string getSourceAlias()
+        {
+            ApcObj SysAddrInitObj = getObjectProperty(ApcObjProp.SysAddrInitObj);
+            ApcPropObj SysAddrInitObjProp = SysAddrInitObj.getCurrentSettings();
+            return SysAddrInitObjProp.getAliasProperty();
+        }
+        public string getAliasProperty()
+        {
+            return getStringProperty(ApcObjProp.strAlias);
+        }
         public string getNameProperty()
         {
             return getStringProperty(ApcObjProp.strName);

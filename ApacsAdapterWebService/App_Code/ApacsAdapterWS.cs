@@ -30,10 +30,16 @@ public class ApacsAdapterWS : System.Web.Services.WebService
     }
 
     [WebMethod]
+    public AdpCHObj[] getCardHolders()
+    {
+        ApcData data = new ApcData();
+        return data.getAdpCHObjs(apacsInstance);
+    }
+
+    [WebMethod]
     public AdpCHObj getCardHolderByUID(string sampleUID)
     {
         ApcData data = new ApcData();
         return data.getCardHolderByUID(apacsInstance, sampleUID);
     }
-
 }

@@ -34,7 +34,7 @@ namespace ApacsAdapterService
             readConfig();
         }
 
-        // Read config file and set property value in config class uses reflection
+        // Read app.config and set property value in config class 
         private void readConfig()
         {
             this.MBhost = ConfigurationManager.AppSettings["MBhost"];
@@ -61,8 +61,8 @@ namespace ApacsAdapterService
             cfg.AppSettings.Settings.Add("MBhost", "192.168.0.74");
             cfg.AppSettings.Settings.Add("MBuser", "Apacs");
             cfg.AppSettings.Settings.Add("MBpassword", "Aa1234567");
-            cfg.AppSettings.Settings.Add("MBoutQueue", "ApacsOUT");
-            cfg.AppSettings.Settings.Add("MBinQueue", "ApacsIN");
+            cfg.AppSettings.Settings.Add("MBoutQueue", "AcsOUT");
+            cfg.AppSettings.Settings.Add("MBinQueue", "AcsIN");
             cfg.AppSettings.Settings.Add("MBport", "5672");
             
             // WSO2 Governancy Registry default settings

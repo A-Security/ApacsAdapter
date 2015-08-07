@@ -41,6 +41,7 @@ namespace ApacsAdapter
                 EventType = eventType,
                 EventTypeDesc = getTypeDesc(eventType),
                 SourceID = evtSets.getSampleSourceUID(),
+                SourceAlias = evtSets.getSourceAlias(),
                 SourceName = evtSets.getSourceNameProperty(),
                 Parameters = mapAdpCHObj(holder, false)
             };
