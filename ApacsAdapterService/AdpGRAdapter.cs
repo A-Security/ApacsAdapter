@@ -5,6 +5,7 @@ using WSO2;
 using WSO2.Registry;
 using System.Text;
 using ApacsAdapter;
+using System.Collections.ObjectModel;
 
 namespace ApacsAdapterService
 {
@@ -37,9 +38,9 @@ namespace ApacsAdapterService
                 log.AddLog(e.ToString());
             }
         }
-        public List<string> getListStringCHs()
+        public Collection<string> GetListStringCHs()
         {
-            List<string> result = new List<string>();
+            Collection<string> result = new Collection<string>();
             StringBuilder singleResult = new StringBuilder();
             Collection cardHolderCollection = (Collection)registry.Get(holdersFullPath);
             Resource res;
@@ -67,28 +68,28 @@ namespace ApacsAdapterService
             }
             return result;
         }
-        public void clearCollection(string collPath)
+        public void ClearCollection(string collPath)
         {
             Collection coll = (Collection)registry.Get(collPath);
             foreach (string res in coll.children)
             {
                 if (registry.Get(res).collection)
                 {
-                    clearCollection(res);
+                    ClearCollection(res);
                 }
                 registry.Delete(res);
             }
 
         }
-        public bool fillGRfromApacsCH(ApcServer apacsInstance)
+        public bool FillGrFromApacsCH(ApcServer apacsInstance)
         {
             try
             {
-                clearCollection(holdersFullPath);
+                ClearCollection(holdersFullPath);
                 ApcData agd = new ApcData();
                 foreach (AdpCHObj ch in agd.getAdpCHObjs(apacsInstance))
                 {
-                    putCardHolder(ch);
+                    PutCardholder(ch);
                 }
             }
             catch (Exception e)
@@ -98,7 +99,7 @@ namespace ApacsAdapterService
             }
             return true;
         }
-        public void putCardHolder(AdpCHObj ch)
+        public void PutCardholder(AdpCHObj ch)
         {
             string holderVipValue = IsVIP(ch.HolderID).ToString().ToLower();
             string holderResName =  ch.HolderID + ".xml";
@@ -154,7 +155,7 @@ namespace ApacsAdapterService
             string VIPpath = VIPsFullPath + id;
             return registry.ResourceExists(VIPpath); ;
         }
-        public void removeCardHolder(string id)
+        public void RemoveCardholder(string id)
         {
             string chPath = holdersFullPath + id + ".xml";
             string chPhotoPath = holdersPhotoFullPath + id + ".jpg";

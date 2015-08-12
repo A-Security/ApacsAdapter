@@ -10,18 +10,18 @@ namespace ApacsAdapterService
     public class AdpSrvCfg
     {
         private Configuration cfg;
-        public string MBhost { get ; private set; }
-        public string MBuser { get; private set; }
-        public string MBpassword { get; private set; }
-        public string MBoutQueue { get; private set; }
-        public string MBinQueue { get; private set; }
-        public string MBport { get; private set; }
-        public string GRhost { get; private set; }
-        public string GRuser { get; private set; }
-        public string GRpassword { get; private set; }
-        public string apcLogin { get; private set; }
-        public string apcPasswd { get; private set; }
-        public string lastSentEventTime { get; private set; }
+        public string MbHost { get ; private set; }
+        public string MbUser { get; private set; }
+        public string MbPass { get; private set; }
+        public string MbOutQueue { get; private set; }
+        public string MbInQueue { get; private set; }
+        public string MbPort { get; private set; }
+        public string GrHost { get; private set; }
+        public string GrUser { get; private set; }
+        public string GrPass { get; private set; }
+        public string ApcUser { get; private set; }
+        public string ApcPasswd { get; private set; }
+        public string LastSentEventTime { get; private set; }
 
         public AdpSrvCfg()
         {
@@ -37,20 +37,20 @@ namespace ApacsAdapterService
         // Read app.config and set property value in config class 
         private void readConfig()
         {
-            this.MBhost = ConfigurationManager.AppSettings["MBhost"];
-            this.MBuser = ConfigurationManager.AppSettings["MBuser"];
-            this.MBpassword = ConfigurationManager.AppSettings["MBpassword"];
-            this.MBoutQueue = ConfigurationManager.AppSettings["MBoutQueue"];
-            this.MBinQueue = ConfigurationManager.AppSettings["MBinQueue"];
-            this.MBport = ConfigurationManager.AppSettings["MBport"];
+            this.MbHost = ConfigurationManager.AppSettings["MBhost"];
+            this.MbUser = ConfigurationManager.AppSettings["MBuser"];
+            this.MbPass = ConfigurationManager.AppSettings["MBpassword"];
+            this.MbOutQueue = ConfigurationManager.AppSettings["MBoutQueue"];
+            this.MbInQueue = ConfigurationManager.AppSettings["MBinQueue"];
+            this.MbPort = ConfigurationManager.AppSettings["MBport"];
 
-            this.GRhost = ConfigurationManager.AppSettings["GRhost"];
-            this.GRuser = ConfigurationManager.AppSettings["GRuser"];
-            this.GRpassword = ConfigurationManager.AppSettings["GRpassword"];
+            this.GrHost = ConfigurationManager.AppSettings["GRhost"];
+            this.GrUser = ConfigurationManager.AppSettings["GRuser"];
+            this.GrPass = ConfigurationManager.AppSettings["GRpassword"];
 
-            this.apcLogin = ConfigurationManager.AppSettings["apcLogin"];
-            this.apcPasswd = ConfigurationManager.AppSettings["apcPasswd"];
-            this.lastSentEventTime = ConfigurationManager.AppSettings["lastSentEventTime"];
+            this.ApcUser = ConfigurationManager.AppSettings["apcLogin"];
+            this.ApcPasswd = ConfigurationManager.AppSettings["apcPasswd"];
+            this.LastSentEventTime = ConfigurationManager.AppSettings["lastSentEventTime"];
         }
 
         // Create config file uses default property value 
@@ -80,9 +80,9 @@ namespace ApacsAdapterService
 
             cfg.Save();
         }
-        public void setLastSentEventTime(string eventTime)
+        public void SetLastSentEventTime(string eventTime)
         {
-            cfg.AppSettings.Settings["lastSentEventTime"].Value = this.lastSentEventTime = eventTime;
+            cfg.AppSettings.Settings["lastSentEventTime"].Value = this.LastSentEventTime = eventTime;
             cfg.Save(ConfigurationSaveMode.Modified);
         }
     }

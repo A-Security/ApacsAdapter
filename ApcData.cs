@@ -2,13 +2,15 @@
 
 namespace ApacsAdapter
 {
+    // APACS 3000 API helper class
     public partial class ApcData
-    {       
+    {   
+        // Get APACS 3000 property object in text
         public string getPropHierarchy(ApcPropObj objSets)
         {
             StringBuilder sb = new StringBuilder();
-            string apoName = objSets.hasProperty(ApcObjProp.strName) ? objSets.getStringProperty(ApcObjProp.strName) : "Event";
-            string apoAlias = objSets.hasProperty(ApcObjProp.strAlias) ? objSets.getStringProperty(ApcObjProp.strAlias) : "Event";
+            string apoName = objSets.isProperty(ApcObjProp.strName) ? objSets.getStringProperty(ApcObjProp.strName) : "Event";
+            string apoAlias = objSets.isProperty(ApcObjProp.strAlias) ? objSets.getStringProperty(ApcObjProp.strAlias) : "Event";
             sb.AppendLine("================Property=" + apoName + "==Alias=" + apoAlias + "=======");
             foreach (string propName in objSets.getPropertyNames())
             {
@@ -30,7 +32,8 @@ namespace ApacsAdapter
             sb.AppendLine("================END Property=" + apoName + "============");
             return sb.ToString();
         }
-        public AdpApcEvtObj mapAdpApcEvtObj(ApcPropObj evtSets)
+        // Create event class instance from APACS 3000 property object for APACS 3000 event object
+        public AdpApcEvtObj mapAdpApcEvtObj(ApcPropObj evtSets, bool withCardHolderPhoto = false)
         {
             string eventType = evtSets.getEventTypeProperty();
             ApcObj holder = evtSets.getSysAddrHolderProperty();
@@ -43,10 +46,11 @@ namespace ApacsAdapter
                 SourceID = evtSets.getSampleSourceUID(),
                 SourceAlias = evtSets.getSourceAlias(),
                 SourceName = evtSets.getSourceNameProperty(),
-                Parameters = mapAdpCHObj(holder, false)
+                Parameters = mapAdpCHObj(holder, withCardHolderPhoto)
             };
             return aobj;
         }
+        // Create cardholder class instance from APACS 3000 TApcCardHolder object
         public AdpCHObj mapAdpCHObj(ApcObj cardHolderAO, bool withPhoto = true)
         {
             if (!ApcObjType.TApcCardHolder.Equals(cardHolderAO.getApacsType()))
@@ -67,6 +71,7 @@ namespace ApacsAdapter
             };
             return chObj;
         }
+        // return all cardholders object from APACS 3000
         public AdpCHObj[] getAdpCHObjs(ApcServer apacsInstance)
         {
             ApcObj[] cardHolders = apacsInstance.getObjectsByType(ApcObjType.TApcCardHolder);
@@ -77,6 +82,7 @@ namespace ApacsAdapter
             }
             return result;
         }
+        // return cardholder object from APACS 3000 by sample APACS 3000 cardholder UID
         public AdpCHObj getCardHolderByUID(ApcServer apacsInstance, string SampleUID)
         {
             ApcObj ch = apacsInstance.getObjectBySampleUID(SampleUID);

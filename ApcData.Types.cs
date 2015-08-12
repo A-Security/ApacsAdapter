@@ -3,22 +3,28 @@ using System.Linq;
 
 namespace ApacsAdapter
 {
+    // APACS 3000 API helper class 
+    // APACS 3000 types - descripton mapper (temporary)
     partial class ApcData
     {
+        // get descripton type by type
         public string getTypeDesc(string strType)
         {
             string strTypeDesc = null;
             apcTypeDesc.TryGetValue(strType, out strTypeDesc);
             return strTypeDesc;
         }
+        // return string array of cardholder access APACS 3000 events type name
         public string[] getTApcCHAEvents()
         {
             return apcTypeDesc.Where(x => x.Key.StartsWith(ApcObjType.TApcCardHolderAccess)).Select(x => x.Key).ToArray();
         }
+        // return string array of all APACS 3000 events type name
         public string[] getTApcEvents()
         {
             return apcTypeDesc.Select(x => x.Key).ToArray();
         }
+        // Types description dictionary (temporary)
         private Dictionary<string, string> apcTypeDesc = new Dictionary<string, string>()
             {
                 {"TApcBolidEvent_Entry", "Проход"},

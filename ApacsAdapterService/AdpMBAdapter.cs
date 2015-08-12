@@ -13,8 +13,8 @@ namespace ApacsAdapterService
     {
         private delegate void ConsumeDelegate();
         private delegate void SendDeferredMsgDelegate();
-        public delegate void ReceiverMessage(AdpMBMsgObj msg);
-        public event ReceiverMessage onMessageReceived;
+        public delegate void ReceiverMessageEventHandler(AdpMBMsgObj msg);
+        public event ReceiverMessageEventHandler OnMessageReceived;
         private const string EXCHANGE_NAME = "amq.direct";
         private const string CONTENT_TYPE = "text/xml";
         private const string VIRTUAL_HOST = "/carbon";
@@ -57,7 +57,7 @@ namespace ApacsAdapterService
             this.Queue = queue;
             this.isConsuming = false;
         }
-        public void connect()
+        public void Connect()
         {
             if (Conn != null && Conn.IsOpen && Model != null && Model.IsOpen)
             {
@@ -75,7 +75,7 @@ namespace ApacsAdapterService
             this.timerCallback = new TimerCallback(recovery);
             this.timer = new Timer(timerCallback, sender, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
         }
-        public void disconnect()
+        public void Disconnect()
         {
             this.isConsuming = false;
             this.Conn.ConnectionShutdown -= ConnectionShutdownHundler;
@@ -135,12 +135,12 @@ namespace ApacsAdapterService
                     IBasicProperties props = Model.CreateBasicProperties();
                     props.AppId = AppDomain.CurrentDomain.FriendlyName;
                     props.MessageId = msg.id;
-                    props.Timestamp = new AmqpTimestamp(msg.unixTime);
+                    props.Timestamp = new AmqpTimestamp(msg.UnixTime);
                     props.ContentEncoding = Encoding.UTF8.HeaderName;
                     props.ContentType = CONTENT_TYPE;
-                    props.Type = msg.type;
+                    props.Type = msg.Type;
                     props.DeliveryMode = DELIVERY_MODE;
-                    Model.BasicPublish(String.Empty, Queue, props, msg.body);
+                    Model.BasicPublish(String.Empty, Queue, props, msg.Body);
                     SendOk = true;
                 }
                 catch (Exception e)
@@ -170,11 +170,11 @@ namespace ApacsAdapterService
                 try
                 {
                     BasicDeliverEventArgs eventQueue = consumer.Queue.Dequeue();
-                    if (onMessageReceived != null && eventQueue != null)
+                    if (OnMessageReceived != null && eventQueue != null)
                     {
                         IBasicProperties props = eventQueue.BasicProperties;
                         AdpMBMsgObj msg = new AdpMBMsgObj(props.MessageId, eventQueue.Body, props.Type, props.Timestamp.UnixTime, props.AppId);
-                        onMessageReceived(msg);
+                        OnMessageReceived(msg);
                         Model.BasicAck(eventQueue.DeliveryTag, false);
                     }
                 }
@@ -188,7 +188,14 @@ namespace ApacsAdapterService
 
         public void Dispose()
         {
-            disconnect();
+            Disconnect();
+            if (timer != null)
+            {
+                timer.Dispose();
+                timer = null;
+            }
+            timerCallback = null;
+            GC.SuppressFinalize(this);
         }
     }
 

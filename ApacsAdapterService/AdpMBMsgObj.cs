@@ -14,27 +14,27 @@ namespace ApacsAdapterService
         public AdpMBMsgObj(string id, byte[] body, string type)
         {
             this.id = id;
-            this.type = type;
-            this.body = body;
-            this.unixTime = (DateTime.Now.Ticks - unixTimeOffset) / TimeSpan.TicksPerSecond;
-            this.appid = AppDomain.CurrentDomain.FriendlyName;
+            this.Type = type;
+            this.Body = body;
+            this.UnixTime = (DateTime.Now.Ticks - unixTimeOffset) / TimeSpan.TicksPerSecond;
+            this.AppId = AppDomain.CurrentDomain.FriendlyName;
         }
         public AdpMBMsgObj (string id, byte[] body, string type, long unixTime, string appid) : this(id, body, type)
         {
-            this.unixTime = unixTime;
-            this.appid = appid;
+            this.UnixTime = unixTime;
+            this.AppId = appid;
         }
-        public string appid
+        public string AppId
         {
             get { return _appid; }
             private set { _appid = value; }
         }
-        public string type
+        public string Type
         {
             get { return _type; }
             private set { _type = value; }
         }
-        public byte[] body
+        public byte[] Body
         {
             get { return _body; }
             private set
@@ -52,7 +52,7 @@ namespace ApacsAdapterService
                 _id = value;
             }
         }
-        public long unixTime
+        public long UnixTime
         {
             get { return _unixTime; }
             private set
@@ -60,7 +60,7 @@ namespace ApacsAdapterService
                 _unixTime = value;
             }
         }
-        public DateTime dotNetTime
+        public DateTime DotNetTime
         {
             get 
             {

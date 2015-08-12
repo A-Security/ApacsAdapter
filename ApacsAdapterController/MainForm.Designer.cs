@@ -14,6 +14,11 @@ namespace ApacsAdapterController
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if (Apacs != null)
+            { 
+                Apacs.Dispose();
+                Apacs = null;
+            }
             if (disposing && (components != null))
             {
                 components.Dispose();

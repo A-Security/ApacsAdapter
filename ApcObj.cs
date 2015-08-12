@@ -4,15 +4,19 @@ using System.Reflection;
 
 namespace ApacsAdapter
 {
+    // APACS 3000 Object class
     public class ApcObj
     {
+        // Log instance
         private AdpLog log = new AdpLog();
+        // Object wrapper interface
         internal IApcObjectWrap objWrap = null;
+        // Default constructor 
         public ApcObj(IApcObjectWrap aobjWrap)
         {
             this.objWrap = aobjWrap;
         }
-
+        // Get this APACS 3000 Object UID
         public string getUID()
         {
             string strUID = String.Empty;
@@ -30,12 +34,13 @@ namespace ApacsAdapter
             }
             return strUID;
         }
+        // Get this APACS 3000 Object sample UID
         public string getSampleUID()
         {
             string[] res = getUID().Split('.');
             return res.Length > 1 ? res[1] : res[0];
         }
-
+        // Get this APACS 3000 Object type
         public string getApacsType()
         {
             string strApacsType = String.Empty;
@@ -53,7 +58,7 @@ namespace ApacsAdapter
             }
             return strApacsType;
         }
-
+        // Delete this APACS 3000 Object method
         public void deleteObject()
         {
             if (objWrap == null)
@@ -69,7 +74,7 @@ namespace ApacsAdapter
                 log.AddLog(e.ToString());
             }
         }
-
+        // Get parent APACS 3000 Object for this APACS 3000 Object
         public ApcObj getParentObject()
         {
             if (objWrap == null)
@@ -88,7 +93,7 @@ namespace ApacsAdapter
             return parent == null ? new ApcObj(null) : new ApcObj(parent as IApcObjectWrap);
 
         }
-
+        // Get APACS 3000 Property Object for this APACS 3000 Object
         public ApcPropObj getCurrentSettings()
         {
             object objSettings = null;
@@ -106,8 +111,8 @@ namespace ApacsAdapter
             }
             return new ApcPropObj(objSettings);
         }
-
-        public void applySettings(ApcPropObj aobjSettings)
+        // Set APACS 3000 Property Object for this APACS 3000 Object
+        public void setSettings(ApcPropObj aobjSettings)
         {
             if (objWrap == null || aobjSettings == null)
             {
@@ -117,7 +122,7 @@ namespace ApacsAdapter
             objWrap.applySettings(nativeObjSettings);
 
         }
-
+        // Get children APACS 3000 Object for this APACS 3000 Object
         public ApcObj[] getChildrenObjs()
         {
             if (objWrap == null)
@@ -139,7 +144,7 @@ namespace ApacsAdapter
             }
             return result;
         }
-
+        // Add child APACS 3000 Object with APACS 3000 Property Object to this APACS 3000 Object and return this child APACS 3000 Object
         public ApcObj addChildWithSettings(ApcPropObj aobjSettings)
         {
             if (objWrap == null || aobjSettings == null)
@@ -150,7 +155,7 @@ namespace ApacsAdapter
             objWrap.addChildWithSettings(aobjSettings.objSettings, out obj);
             return obj == null ? new ApcObj(null) : new ApcObj(obj as IApcObjectWrap);
         }
-
+        // Get array of children APACS 3000 Object by APACS 3000 Type for this APACS 3000 Object
         public ApcObj[] getChildrenObjsByTypes(string[] astrTypes)
         {
             if (objWrap == null)
@@ -186,17 +191,20 @@ namespace ApacsAdapter
             }
             return result;
         }
+        // Get cardholder main photo byte array for this APACS 3000 cardholder Object (TApcCardHolder type)
         public byte[] getMainPhoto()
         {
             byte[] result = new byte[] { };
             ApcObj[] chMainPhotoAOs = getChildrenObjsByTypes(new string[] { ApcObjType.TApcCHMainPhoto });
-            foreach (ApcObj photoProp in chMainPhotoAOs)
+            foreach (ApcObj photoObj in chMainPhotoAOs)
             {
-                result = photoProp.getCurrentSettings().getByteArrayProperty(ApcObjProp.binBufPhoto);
+                ApcPropObj photoObjProp = photoObj.getCurrentSettings();
+                result = photoObjProp.getByteArrayProperty(ApcObjProp.binBufPhoto);
                 break;
             }
             return result;
         }
+        // Get cardholder card number for this APACS 3000 cardholder Object (TApcCardHolder type)
         public string getCardNumber()
         {
             string result = String.Empty;
@@ -211,6 +219,7 @@ namespace ApacsAdapter
 
             return result;
         }
+        // Get Default APACS 3000 Property Object for APACS 3000 Object by APACS 3000 Type
         public ApcPropObj getChildSettingsForAdd(string aObjType)
         {
             object objSettings = null;
@@ -221,7 +230,7 @@ namespace ApacsAdapter
             objWrap.getChildSettingsForAdd(aObjType, out objSettings);
             return new ApcPropObj(objSettings);
         }
-
+        // Execute APACS 3000 command with return result code (0 - normal, != 0 - APACS 3000 Error)
         public int execCmd(string strCmd)
         {
             if (objWrap == null || String.IsNullOrEmpty(strCmd))

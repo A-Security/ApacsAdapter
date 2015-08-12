@@ -5,6 +5,7 @@ using WSO2;
 using WSO2.Registry;
 using System.Text;
 using ApacsAdapter;
+using System.Collections.ObjectModel;
 
 public class AdpGRAdapter
 {
@@ -28,9 +29,9 @@ public class AdpGRAdapter
         permaLinkBaseUrl = String.Format(@"http://{0}:9763/registry/resource", GRhost);
         registry = new RegistryClient(GRuser, GRpassword, serviceUrl);
     }
-    public List<string> getListStringCHs()
+    public Collection<string> getListStringCHs()
     {
-        List<string> result = new List<string>();
+        Collection<string> result = new Collection<string>();
         StringBuilder singleResult = new StringBuilder();
         Collection cardHolderCollection = (Collection)registry.Get(holdersFullPath);
         Resource res;

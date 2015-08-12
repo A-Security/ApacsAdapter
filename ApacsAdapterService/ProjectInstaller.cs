@@ -15,7 +15,6 @@ namespace ApacsAdapterService
 
         private void serviceInstaller_AfterInstall(object sender, InstallEventArgs e)
         {
-            int exitCode;
             using (Process proc = new Process())
             {
                 ProcessStartInfo startInfo = proc.StartInfo;
@@ -26,7 +25,6 @@ namespace ApacsAdapterService
                 startInfo.Arguments = string.Format("failure {0} reset= 30 actions= restart/5000", serviceInstaller.ServiceName);
                 proc.Start();
                 proc.WaitForExit();
-                exitCode = proc.ExitCode;
             }
         }
     }

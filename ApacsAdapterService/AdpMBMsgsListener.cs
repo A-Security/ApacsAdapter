@@ -7,26 +7,26 @@ using System.Threading.Tasks;
 
 namespace ApacsAdapterService
 {
-    public class AdpMBMsgsListener
+    public class AdpMBMsgsListener : IDisposable
     {
         private AdpLog log;
         private AdpSrvCfg cfg;
         private ApcServer Apacs;
         private AdpMBAdapter consumer;
         
-        public AdpMBMsgsListener(ApcServer Apacs, AdpSrvCfg cfg) 
+        public AdpMBMsgsListener(ApcServer apacs, AdpSrvCfg cfg) 
         {
             this.log = new AdpLog();
-            this.Apacs = Apacs;
+            this.Apacs = apacs;
             this.cfg = cfg;
-            this.consumer = new AdpMBAdapter(cfg.MBhost, Convert.ToInt32(cfg.MBport), cfg.MBuser, cfg.MBpassword, cfg.MBinQueue);
+            this.consumer = new AdpMBAdapter(cfg.MbHost, Convert.ToInt32(cfg.MbPort), cfg.MbUser, cfg.MbPass, cfg.MbInQueue);
         }
-        public void start()
+        public void Start()
         {
             try
             {
-                consumer.connect();
-                consumer.onMessageReceived += onMessageReceived;
+                consumer.Connect();
+                consumer.OnMessageReceived += onMessageReceived;
                 Apacs.ApacsDisconnect += new ApcServer.ApacsDisconnectHandler(onDisconnect);
                 consumer.RetrieveMessage();
                 log.AddLog("WSO2 MB incoming messages listener started");
@@ -39,16 +39,16 @@ namespace ApacsAdapterService
 
         private void onMessageReceived(AdpMBMsgObj msg)
         {
-            log.AddLog(Encoding.UTF8.GetString(msg.body));
+            log.AddLog(Encoding.UTF8.GetString(msg.Body));
         }
         
-        public void stop()
+        public void Stop()
         {
             try
             {
                 Apacs.ApacsDisconnect -= new ApcServer.ApacsDisconnectHandler(onDisconnect);
-                consumer.onMessageReceived -= onMessageReceived;
-                consumer.disconnect();
+                consumer.OnMessageReceived -= onMessageReceived;
+                consumer.Disconnect();
                 log.AddLog("WSO2 MB incoming messages listener stopped");
             }
             catch (Exception e)
@@ -59,10 +59,26 @@ namespace ApacsAdapterService
         private void onDisconnect()
         {
             log.AddLog("APACS SERVER DISCONNECTED!");
-            stop();
+            Stop();
             Apacs.Dispose();
-            Apacs = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
-            start();
+            Apacs = new ApcServer(cfg.ApcUser, cfg.ApcPasswd);
+            Start();
+        }
+
+        public void Dispose()
+        {
+            Stop();
+            if (Apacs != null)
+            {
+                Apacs.Dispose();
+                Apacs = null;
+            }
+            if (consumer != null)
+            {
+                consumer.Dispose();
+                consumer = null;
+            }
+            GC.SuppressFinalize(this);
         }
     }
 }

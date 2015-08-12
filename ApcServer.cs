@@ -1,5 +1,6 @@
 ﻿using ApcSrvSDK;
 using System;
+using System.Threading;
 
 namespace ApacsAdapter
 {
@@ -229,10 +230,12 @@ namespace ApacsAdapter
             int nResult = int.MinValue;
             while (nResult != 0)
             {
+                Thread.Sleep(1000);
                 nResult = Connection.createSession(astrLogin, astrPassword, out Session);
             }
             while (Apacs == null)
             {
+                Thread.Sleep(1000);
                 Apacs = (IApcServerWrap)Session.getServer();
             }
             try
@@ -254,8 +257,9 @@ namespace ApacsAdapter
             }
             Apacs = null;
             log.AddLog("APACS Server disposed");
+            GC.SuppressFinalize(this);
         }
-
+        // Get APACS 3000 Object by APACS 3000 UID
         public ApcObj getObjectByUID(string astrUID)
         {
             if (Apacs == null || String.IsNullOrEmpty(astrUID))
@@ -270,7 +274,7 @@ namespace ApacsAdapter
             }
             return new ApcObj(obj as IApcObjectWrap);
         }
-
+        // Get APACS 3000 Object by APACS 3000 Sample UID
         public ApcObj getObjectBySampleUID(string UID)
         {
             if (String.IsNullOrEmpty(UID))
@@ -280,7 +284,7 @@ namespace ApacsAdapter
             UID = "SA 0000." + UID;
             return getObjectByUID(UID);
         }
-
+        // Get APACS 3000 Object by APACS 3000 alias
         public ApcObj getObjectByAlias(string astrAlias)
         {
             if (Apacs == null || String.IsNullOrEmpty(astrAlias))
@@ -295,6 +299,7 @@ namespace ApacsAdapter
             }
             return new ApcObj(obj as IApcObjectWrap);
         }
+        // Get APACS 3000 Objects array by APACS 3000 filter(TApcEQUALObjFilter)
         public ApcObj[] getObjectsByFilter(string astrObjType, string filterStrName, string filterValue)
         {
             if (Apacs == null || String.IsNullOrEmpty(astrObjType) || String.IsNullOrEmpty(filterStrName) || String.IsNullOrEmpty(filterValue))
@@ -318,7 +323,7 @@ namespace ApacsAdapter
             }
             return result;
         }
-
+        //  Get APACS 3000 Objects array by APACS 3000 Object Type (getObjectsByFilter with NULL APACS 3000 filter)
         public ApcObj[] getObjectsByType(string astrObjType)
         {
             if (Apacs == null || String.IsNullOrEmpty(astrObjType))
@@ -339,6 +344,7 @@ namespace ApacsAdapter
             }
             return result;
         }
+        // Get APACS 3000 System root Object
         public ApcObj getRootObject()
         {
             if (Apacs == null)
@@ -353,7 +359,7 @@ namespace ApacsAdapter
             }
             return new ApcObj(obj as IApcObjectWrap);
         }
-
+        // Get events for DateTime range
         public ApcPropObj[] getEvents(string[] astrTypes, DateTime adtFrom, DateTime adtTo)
         {
             if (Apacs == null || astrTypes == null || adtFrom == null || adtTo == null)

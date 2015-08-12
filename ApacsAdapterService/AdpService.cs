@@ -11,7 +11,7 @@ namespace ApacsAdapterService
     {
         private AdpLog log = new AdpLog();
         private ApcServer apacsInstance = null;
-        private AdpAPCEvtsListener eventLister = null;
+        private AdpApcEvtsListener eventLister = null;
 
         public AdpService()
         {
@@ -29,9 +29,10 @@ namespace ApacsAdapterService
         }
         protected void AdpLog_OnAddLog(object sender, EventArgs arg)
         {
+            AdpLog adpLog = sender as AdpLog;
             if (Environment.UserInteractive)
             {
-                Console.WriteLine(((AdpLog)sender).Log);
+                Console.WriteLine(adpLog.Log);
             }
             else
             {
@@ -42,24 +43,24 @@ namespace ApacsAdapterService
                         EventLog.CreateEventSource("ApacsAdapterService", "ApacsAdapter");
                     }
                     adpServiceLog.Source = "ApacsAdapterService";
-                    adpServiceLog.WriteEntry(((AdpLog)sender).Log);
+                    adpServiceLog.WriteEntry(adpLog.Log);
                 }
                 catch { }
             }
         }
         internal void StartService()
         {
-            AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
+            AdpLog.OnAddLogEventHandler += new EventHandler(AdpLog_OnAddLog);
             AdpSrvCfg cfg = new AdpSrvCfg();
-            apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
-            eventLister = new AdpAPCEvtsListener(apacsInstance, cfg);
-            eventLister.start();
+            apacsInstance = new ApcServer(cfg.ApcUser, cfg.ApcPasswd);
+            eventLister = new AdpApcEvtsListener(apacsInstance, cfg);
+            eventLister.Start();
         }
         internal void StopService()
         {
             if (eventLister != null)
             {
-                eventLister.stop();
+                eventLister.Stop();
                 eventLister = null;
             }
             if (apacsInstance != null)
@@ -67,7 +68,7 @@ namespace ApacsAdapterService
                 apacsInstance.Dispose();
                 apacsInstance = null;
             }
-            AdpLog.OnAddLog -= new EventHandler(AdpLog_OnAddLog);
+            AdpLog.OnAddLogEventHandler -= new EventHandler(AdpLog_OnAddLog);
         }
     }
 }

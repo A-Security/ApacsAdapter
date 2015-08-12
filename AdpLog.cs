@@ -2,17 +2,23 @@
 
 namespace ApacsAdapter
 {
+    //Adapter Log class
     public class AdpLog
     {
+        // Last message string
         public string Log { get; private set; }
-        public static event EventHandler OnAddLog;
+        // On add message event handler
+        public static event EventHandler OnAddLogEventHandler;
+        // Add message to log method
         public void AddLog(object log)
         {
             this.Log = log.ToString();
-            if (OnAddLog != null)
+            //call event subscribers and recive message (in instance)
+            if (OnAddLogEventHandler != null)
             {
-                OnAddLog(this, EventArgs.Empty);
+                OnAddLogEventHandler(this, EventArgs.Empty);
             }
         }
+
     }
 }
