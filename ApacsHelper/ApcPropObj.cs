@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-namespace ApacsAdapter
+namespace ApacsHelper
 {
     // APACS 3000 Property Object class
     public class ApcPropObj

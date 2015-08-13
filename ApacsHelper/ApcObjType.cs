@@ -1,4 +1,4 @@
-namespace ApacsAdapter
+namespace ApacsHelper
 {
     // APACS 3000 Object Type name
     public struct ApcObjType

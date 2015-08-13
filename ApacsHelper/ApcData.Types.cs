@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace ApacsAdapter
+namespace ApacsHelper
 {
     // APACS 3000 API helper class 
     // APACS 3000 types - descripton mapper (temporary)

@@ -74,13 +74,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ApacsAdapter.csproj">
+    <ProjectReference Include="..\ApacsHelper\ApacsHelper.csproj">
       <Project>{acc18fab-da9b-43aa-aac4-0da5b728af28}</Project>
-      <Name>ApacsAdapter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ApacsAdapterService\ApacsAdapterService.csproj">
-      <Project>{ffe06482-4bcb-4013-b54b-64714885d5a3}</Project>
-      <Name>ApacsAdapterService</Name>
+      <Name>ApacsHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

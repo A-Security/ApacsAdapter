@@ -2,7 +2,7 @@
 using System;
 using System.Reflection;
 
-namespace ApacsAdapter
+namespace ApacsHelper
 {
     // APACS 3000 Object class
     public class ApcObj

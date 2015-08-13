@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ApacsAdapter
+namespace ApacsHelper
 {
     // APACS 3000 API helper class
     public partial class ApcData

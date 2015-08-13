@@ -2,7 +2,7 @@
 using System;
 using System.Threading;
 
-namespace ApacsAdapter
+namespace ApacsHelper
 {
     public class ApcServer : IDisposable
     {

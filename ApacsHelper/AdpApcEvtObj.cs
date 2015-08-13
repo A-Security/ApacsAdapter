@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 
 
-namespace ApacsAdapter
+namespace ApacsHelper
 {   // APACS 3000 generic event Class
     [DataContract]
     public class AdpApcEvtObj

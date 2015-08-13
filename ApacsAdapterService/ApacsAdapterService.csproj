@@ -160,9 +160,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ApacsAdapter.csproj">
+    <ProjectReference Include="..\ApacsHelper\ApacsHelper.csproj">
       <Project>{acc18fab-da9b-43aa-aac4-0da5b728af28}</Project>
-      <Name>ApacsAdapter</Name>
+      <Name>ApacsHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

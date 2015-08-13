@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using WSO2;
 using WSO2.Registry;
 using System.Text;
-using ApacsAdapter;
+using ApacsHelper;
 using System.Collections.ObjectModel;
 
 namespace ApacsAdapterService
 {
+    // Governacy Registry adapter class
     public class AdpGRAdapter
     {
         private AdpLog log = new AdpLog();

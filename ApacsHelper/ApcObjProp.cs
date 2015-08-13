@@ -1,4 +1,4 @@
-﻿namespace ApacsAdapter
+﻿namespace ApacsHelper
 {
     // APACS 3000 Object parameters
     public struct ApcObjProp

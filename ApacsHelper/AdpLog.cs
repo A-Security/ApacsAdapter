@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ApacsAdapter
+namespace ApacsHelper
 {
     //Adapter Log class
     public class AdpLog

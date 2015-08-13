@@ -1,19 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacsAdapter", "ApacsAdapter.csproj", "{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacsAdapterConsole", "ApacsAdapterConsole\ApacsAdapterConsole.csproj", "{A44499B6-38B4-4630-AAE4-1DE9C240BEB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacsAdapterService", "ApacsAdapterService\ApacsAdapterService.csproj", "{FFE06482-4BCB-4013-B54B-64714885D5A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28} = {ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}
+	EndProjectSection
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ApacsAdapterWebService", "http://localhost:33008", "{F57054F7-6451-441C-922B-4B735E6170C5}"
 	ProjectSection(WebsiteProperties) = preProject
 		UseIISExpress = "true"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		ProjectReferences = "{acc18fab-da9b-43aa-aac4-0da5b728af28}|ApacsAdapter.dll;"
+		ProjectReferences = "{acc18fab-da9b-43aa-aac4-0da5b728af28}|ApacsHelper.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_33008"
 		Debug.AspNetCompiler.PhysicalPath = "ApacsAdapterWebService\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_33008\"
@@ -32,6 +33,11 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ApacsAdapterWebService", "h
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacsAdapterController", "ApacsAdapterController\ApacsAdapterController.csproj", "{6D39097F-39BD-4DFA-A0A9-577162911D2B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28} = {ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApacsHelper", "ApacsHelper\ApacsHelper.csproj", "{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,17 +49,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|x86.ActiveCfg = Debug|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|x86.Build.0 = Debug|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|Any CPU.ActiveCfg = Release|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|Mixed Platforms.Build.0 = Release|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|Mixed Platforms.Deploy.0 = Release|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|x86.ActiveCfg = Release|x86
-		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|x86.Build.0 = Release|x86
 		{A44499B6-38B4-4630-AAE4-1DE9C240BEB1}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{A44499B6-38B4-4630-AAE4-1DE9C240BEB1}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{A44499B6-38B4-4630-AAE4-1DE9C240BEB1}.Debug|Mixed Platforms.Build.0 = Debug|x86
@@ -98,6 +93,16 @@ Global
 		{6D39097F-39BD-4DFA-A0A9-577162911D2B}.Release|Mixed Platforms.Build.0 = Release|x86
 		{6D39097F-39BD-4DFA-A0A9-577162911D2B}.Release|x86.ActiveCfg = Release|x86
 		{6D39097F-39BD-4DFA-A0A9-577162911D2B}.Release|x86.Build.0 = Release|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|x86.ActiveCfg = Debug|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Debug|x86.Build.0 = Debug|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|Any CPU.ActiveCfg = Release|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|Mixed Platforms.Build.0 = Release|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|x86.ActiveCfg = Release|x86
+		{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

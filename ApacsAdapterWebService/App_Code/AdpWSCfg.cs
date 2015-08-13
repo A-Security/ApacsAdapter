@@ -4,7 +4,6 @@ using System.IO;
 using System.Xml;
 using System.Diagnostics;
 using System.Configuration;
-using ApacsAdapter;
 using System.Web.Configuration;
 
 public class AdpWSCfg
@@ -19,7 +18,7 @@ public class AdpWSCfg
 
     public AdpWSCfg()
     {
-        cfg = WebConfigurationManager.OpenWebConfiguration(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+        cfg = WebConfigurationManager.OpenWebConfiguration("~");
         // Create config if not exists
         if (cfg.AppSettings.Settings.Count == 0)
         {

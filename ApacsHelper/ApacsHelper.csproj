@@ -6,13 +6,13 @@
     <ProjectGuid>{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}</ProjectGuid>
     <OutputType>Library</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>ApacsAdapter</AssemblyName>
+    <AssemblyName>ApacsHelper</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>ApacsAdapter</RootNamespace>
+    <RootNamespace>ApacsHelper</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>

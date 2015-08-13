@@ -1,4 +1,4 @@
-﻿using ApacsAdapter;
+﻿using ApacsHelper;
 using System;
 using System.ComponentModel;
 using System.Text;
@@ -10,7 +10,7 @@ namespace ApacsAdapterConsole
     {
         static void Main(string[] args)
         {
-            AdpLog.OnAddLog += new EventHandler(AdpLog_OnAddLog);
+            AdpLog.OnAddLogEventHandler += new EventHandler(AdpLog_OnAddLog);
             AdpCmdCfg cfg = new AdpCmdCfg();
 
 

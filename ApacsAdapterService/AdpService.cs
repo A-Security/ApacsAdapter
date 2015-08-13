@@ -1,5 +1,5 @@
 ﻿using System;
-using ApacsAdapter;
+using ApacsHelper;
 using System.Diagnostics;
 using System.ServiceProcess;
 using System.Threading;

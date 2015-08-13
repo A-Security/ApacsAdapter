@@ -1,4 +1,4 @@
-﻿using ApacsAdapter;
+﻿using ApacsHelper;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Impl;
