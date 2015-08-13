@@ -9,7 +9,7 @@ namespace ApacsHelper
         public string Log { get; private set; }
         // On add message event handler
         public static event EventHandler OnAddLogEventHandler;
-        // Add message to log method
+        // Add message to log
         public void AddLog(object log)
         {
             this.Log = log.ToString();

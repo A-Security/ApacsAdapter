@@ -42,9 +42,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </AssemblyAttributes>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ApacsAdapter.csproj">
+    <ProjectReference Include="..\ApacsHelper\ApacsHelper.csproj">
       <Project>{ACC18FAB-DA9B-43AA-AAC4-0DA5B728AF28}</Project>
-      <Name>ApacsAdapter</Name>
+      <Name>ApacsHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(_WebPublishTargetsPath)\Web\Microsoft.WebSite.Publishing.targets" />
