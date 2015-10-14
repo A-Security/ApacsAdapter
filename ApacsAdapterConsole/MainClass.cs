@@ -25,7 +25,9 @@ namespace ApacsAdapterConsole
                 HolderShortName = "HolderShortName",
             };
             CardHolderMod.modType = AdpCHObj.ModType.DelRq;
-            Console.WriteLine(CardHolderMod.ToXmlString());
+            string var = CardHolderMod.ToJsonString();
+            Console.WriteLine(var);
+
             //ApcServer apacsInstance = new ApcServer(cfg.apcLogin, cfg.apcPasswd);
             //ApcData data = new ApcData();
             //Console.WriteLine(data.getPropHierarchy(apacsInstance.getObjectBySampleUID("00000189").getCurrentSettings()));

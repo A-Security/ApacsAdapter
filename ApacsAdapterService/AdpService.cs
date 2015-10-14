@@ -45,7 +45,10 @@ namespace ApacsAdapterService
                     adpServiceLog.Source = "ApacsAdapterService";
                     adpServiceLog.WriteEntry(adpLog.Log);
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    log.AddLog(e.ToString());
+                }
             }
         }
         internal void StartService()

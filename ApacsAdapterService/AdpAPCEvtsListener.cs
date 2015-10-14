@@ -52,9 +52,11 @@ namespace ApacsAdapterService
             try
             {
                 // Connect to Message Broker
-                producer.Connect();
+                //producer.Connect();
+                
                 // Send last unsent messages
-                sendLatestEvents(lastSentEventTime, DateTime.Now);
+                //sendLatestEvents(lastSentEventTime, DateTime.Now);
+                
                 // Subscribe on APACS 3000 events
                 Apacs.ApacsDisconnect += new ApcServer.ApacsDisconnectHandler(onDisconnectHandler);
                 Apacs.ApacsNotifyAdd += new ApcServer.ApacsNotifyAddHandler(onAddObjectHandler);
@@ -105,19 +107,23 @@ namespace ApacsAdapterService
             Start();
         }
         // APACS 3000 access control event handler
-        private void onEventHandler(ApcPropObj evtSet)
+        private void onEventHandler(ApcPropObj evtPropObj)
         {
             // Create Event object from APACS 3000 Property Object
-            AdpApcEvtObj aeObj = data.mapAdpApcEvtObj(evtSet);
+            AdpApcEvtObj aeObj = data.mapAdpApcEvtObj(evtPropObj);
+                        
             // Create XML message from Event object and cast to byte array
             byte[] msgBody = Encoding.UTF8.GetBytes(aeObj.ToXmlString());
+            
             // Create AMQP message for send
             AdpMBMsgObj msg = new AdpMBMsgObj(Guid.NewGuid().ToString(), msgBody, aeObj.TYPE);
+            
             // Send message to Message Broker and save sent time
             if (producer.PublishMessage(msg))
             {
                 cfg.SetLastSentEventTime(aeObj.EventTime);
             }
+            
             // Write to log if unsuccessful send
             else
             {
